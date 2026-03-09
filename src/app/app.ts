@@ -36,7 +36,11 @@ export class App {
 
   get hideLeftNav() {
     return (
-      this.router.url === '/' || this.router.url === '/login' || this.router.url === '/register'
+      this.router.url === '/' ||
+      this.router.url.startsWith('/login') ||
+      this.router.url.startsWith('/verification-process') ||
+      this.router.url === '/register' ||
+      this.router.url.startsWith('/verify-email')
     );
   }
 

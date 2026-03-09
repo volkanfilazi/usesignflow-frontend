@@ -8,20 +8,24 @@ import { GenericFormDetailComponent } from './components/generic-form-detail/gen
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { RegisterPageComponent } from './components/auth/register/register-page.component';
 import { LoginPageComponent } from './components/auth/login/login-page.component';
+import { VerifyEmailComponent } from './components/auth/verify-email/verify-email.component';
+import { VerificationProcessComponent } from './components/auth/verification-process/verification-process.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
+  { path: 'verify-email', component: VerifyEmailComponent },
+  { path: 'verification-process', component: VerificationProcessComponent },
   { path: 'dashboard', component: ResumeComponent },
   { path: 'formgenerator', component: FormGeneratorComponent },
   { path: 'genericformlist', component: GenericFormListComponent },
   { path: 'genericformlistdetail/:id', component: GenericFormDetailComponent },
-  { path: 'todo', component: TodoComponent }
+  { path: 'todo', component: TodoComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class FeaturesRoutingModule {}

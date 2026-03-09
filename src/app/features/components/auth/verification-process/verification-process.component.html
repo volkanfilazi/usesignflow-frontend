@@ -1,0 +1,81 @@
+<div class="verification-page">
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <div class="verification-card" [ngClass]="status">
+    <div class="status-ring">
+      @if (status === 'loading') {
+        <div class="spinner"></div>
+      }
+
+      @if (status === 'success') {
+        <div class="icon success-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M20 6L9 17L4 12"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+      }
+
+      @if (status === 'error') {
+        <div class="icon error-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 8V12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="12" cy="16" r="1" fill="currentColor" />
+            <path
+              d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21H20.47A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+      }
+    </div>
+
+    <div class="badge" [ngClass]="status">
+      @if (status === 'loading') {
+        <span>Verification in progress</span>
+      }
+      @if (status === 'success') {
+        <span>Email verified</span>
+      }
+      @if (status === 'error') {
+        <span>Verification failed</span>
+      }
+    </div>
+
+    <h1>{{ title }}</h1>
+    <p class="description">{{ message }}</p>
+
+    @if (email) {
+      <div class="email-box">
+        <span>Account</span>
+        <strong>{{ email }}</strong>
+      </div>
+    }
+
+    <div class="progress-wrapper" *ngIf="status === 'loading'">
+      <div class="progress-bar"></div>
+    </div>
+
+    <div class="actions" *ngIf="status !== 'loading'">
+      <a routerLink="/login" class="btn btn-primary">Go to login</a>
+
+      @if (status === 'error') {
+        <a routerLink="/email-verify" [queryParams]="{ email: email }" class="btn btn-secondary">
+          Resend email
+        </a>
+      }
+    </div>
+
+    <p class="redirect-text" *ngIf="status !== 'loading'">
+      You will be redirected automatically...
+    </p>
+  </div>
+</div>
