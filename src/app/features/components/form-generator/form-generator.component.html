@@ -1,0 +1,79 @@
+<app-header
+  [title]="'Form Generator Component'"
+  [loading$]="loading$"
+  (buttonActionEmitter)="create()"
+></app-header>
+<div class="d-flex align-items-center gap-2 mt-2" [formGroup]="myGroup">
+  <app-text-input [isRequired]="true" [label]="'Dynamic Form Name'" [formGroup]="myGroup" [controlName]="'formName'">
+  </app-text-input>
+  <app-text-input [isRequired]="true" [label]="'Version'" [formGroup]="myGroup" [controlName]="'version'">
+  </app-text-input>
+  <app-checkbox
+    [formGroup]="myGroup"
+    [controlName]="'expanded'"
+    [checkboxName]="'expanded'"
+  ></app-checkbox>
+  <app-primary-button
+    (buttonClick)="createNewControl()"
+    [buttonName]="'Create new group'"
+  ></app-primary-button>
+</div>
+
+<div
+  cdkDropList
+  [cdkDropListData]="dynamicFormIds"
+  (cdkDropListDropped)="drop($event)"
+  class="d-flex flex-column gap-1 mt-2"
+>
+  <ng-container *ngFor="let id of dynamicFormIds; let i = index">
+    <div
+      class="border-1 border p-3 mt-1 d-flex flex-row justify-content-between align-items-center group-container"
+      cdkDrag
+      [formGroup]="myGroup"
+    >
+      <div class="d-flex flex-row align-items-center gap-2">
+        <app-text-input
+          [label]="'Element label'"
+          [isRequired]="true"
+          [formGroup]="myGroup"
+          [controlName]="FormElementsEnum.DynamicFormLabel + id"
+        ></app-text-input>
+        <app-combobox
+          [formGroup]="myGroup"
+          [controlName]="FormElementsEnum.DynamicFormType + id"
+          [options]="options"
+          (typeChanged)="comboboxChanged(id, $event)"
+        ></app-combobox>
+        @if (myGroup.get(FormElementsEnum.DynamicFormSelectOptions + id)) {
+          <app-chips-input
+            [formGroup]="myGroup"
+            [controlName]="FormElementsEnum.DynamicFormSelectOptions + id"
+          ></app-chips-input>
+        }
+        <div class="d-flex flex-column">
+          <label class="text-center" [id]="FormElementsEnum.DynamicFormColSpan + id">Colspan</label>
+          <mat-radio-group
+            [formControlName]="FormElementsEnum.DynamicFormColSpan + id"
+            [name]="FormElementsEnum.DynamicFormColSpan + id"
+          >
+            <mat-radio-button id="radio_1" value="4">100%</mat-radio-button>
+            <mat-radio-button id="radio_2" value="3">75%</mat-radio-button>
+            <mat-radio-button id="radio_3" value="2">50%</mat-radio-button>
+            <mat-radio-button id="radio_4" value="1">25%</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <app-checkbox
+          [formGroup]="myGroup"
+          [controlName]="FormElementsEnum.DynamicFormRequired + id"
+          [checkboxName]="'required'"
+        ></app-checkbox>
+      </div>
+      <div class="drag-handle" cdkDragHandle>
+        <mat-icon>drag_indicator</mat-icon>
+      </div>
+    </div>
+  </ng-container>
+</div>
+@if (validationErrors) {
+  <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>
+}

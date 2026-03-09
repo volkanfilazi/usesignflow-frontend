@@ -1,0 +1,84 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <a routerLink="/" class="back-link">← Back to home</a>
+
+    <div class="auth-header">
+      <div class="brand-badge">F</div>
+      <h2>Create your account</h2>
+      <p>Start building and sending digital contracts in minutes.</p>
+    </div>
+
+    @if (formGroup) {
+      <form class="auth-form" [formGroup]="formGroup">
+        <div class="form-group">
+          <label for="fullName">Full name</label>
+          <input
+            [class.invalid]="isInvalid('fullName')"
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            required="true"
+            placeholder="John Doe"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input
+            [class.invalid]="isInvalid('email')"
+            id="email"
+            type="email"
+            formControlName="email"
+            required="true"
+            placeholder="name@email.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            [class.invalid]="isInvalid('password')"
+            id="password"
+            type="password"
+            formControlName="password"
+            required="true"
+            placeholder="••••••••"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm password</label>
+          <input
+            [class.invalid]="isInvalid('passwordConfirm')"
+            id="passwordConfirm"
+            type="password"
+            required="true"
+            formControlName="passwordConfirm"
+            placeholder="••••••••"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" (click)="register()">
+          Create account
+        </button>
+      </form>
+    } @else {
+      <div class="w-100 d-flex align-items-center justify-content-center">
+        <app-spinner [diameter]="50"></app-spinner>
+      </div>
+    }
+
+    <div class="auth-divider">
+      <span>or</span>
+    </div>
+
+    <div class="auth-footer">
+      <span>Already have an account?</span>
+      <a routerLink="/login">Login</a>
+    </div>
+  </div>
+</div>
+
+@if (validationErrors && validationErrors.length > 0) {
+  <app-validation [validationMessages]="validationErrors" [myGroup]="formGroup"></app-validation>
+}

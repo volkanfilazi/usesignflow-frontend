@@ -1,0 +1,7 @@
+@if (controlName && formGroup) {
+  <div [formGroup]="formGroup">
+    <mat-checkbox [id]="controlName" [formControlName]="controlName">{{
+      checkboxName
+    }}</mat-checkbox>
+  </div>
+}

@@ -1,0 +1,13 @@
+@if (formGroup && controlName) {
+  <mat-form-field class="w-100"  [formGroup]="formGroup" appearance="outline">
+    <mat-label>{{ label }}</mat-label>
+    <input
+      matInput
+      [formControlName]="controlName"
+      [id]="controlName"
+      [required]="isRequired"
+      [type]="type"
+      placeholder="Enter your {{ label }}"
+    />
+  </mat-form-field>
+}

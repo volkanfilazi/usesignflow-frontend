@@ -1,0 +1,12 @@
+.dynamic-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  align-items: start;
+}
+
+.field-wrapper {
+  width: 100%;
+  min-width: 0;
+}

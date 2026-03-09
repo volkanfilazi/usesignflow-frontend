@@ -1,0 +1,60 @@
+<div>
+  @if (selected === 0) {
+    <div class="d-flex align-items-center justify-content-center gap-2">
+      <mat-icon>work</mat-icon>
+      <h2 class="mb-0">Work Experience</h2>
+    </div>
+    @for (item of works; track $index) {
+      <app-timeline [item]="item"></app-timeline>
+    }
+  }
+
+  @if (selected === 1) {
+    <div class="d-flex align-items-center justify-content-center gap-2">
+      <mat-icon>school</mat-icon>
+      <h2 class="mb-0">Education</h2>
+    </div>
+    @for (item of education; track $index) {
+      <app-timeline [item]="item"></app-timeline>
+    }
+  }
+
+  @if (selected === 2) {
+    <div class="d-flex align-items-center justify-content-center gap-2">
+      <mat-icon>download</mat-icon>
+      <h2 class="mb-0">Download page</h2>
+    </div>
+    <div class="pdf-preview">
+      <mat-tab-group>
+        <mat-tab label="Resume">
+          <iframe src="VolkanFilaziResume.pdf" width="100%" height="800px"></iframe>
+        </mat-tab>
+        <mat-tab label="Cover letter">
+          <iframe src="VolkanFilaziCoverLetter.pdf" width="100%" height="800px"></iframe>
+        </mat-tab>
+        <mat-tab label="TechnikDetails">
+          <iframe src="VolkanFilaziTechnikDetails.pdf" width="100%" height="800px"></iframe>
+        </mat-tab>
+        <mat-tab label="Certificate">
+          <iframe src="VolkanFilaziCertificate.pdf" width="100%" height="800px"></iframe>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  }
+
+  <div class="floating-buttons">
+    <button [color]="selected === 0 ? 'primary' : ''" (click)="selected = 0" matFab>
+      <mat-icon>work</mat-icon>
+    </button>
+    <button [color]="selected === 1 ? 'primary' : ''" (click)="selected = 1" matFab>
+      <mat-icon>school</mat-icon>
+    </button>
+    <button
+      [color]="selected === 2 ? 'primary' : ''"
+      (click)="selected = 2; downloadSelected = 0"
+      matFab
+    >
+      <mat-icon>download</mat-icon>
+    </button>
+  </div>
+</div>

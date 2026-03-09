@@ -1,0 +1,110 @@
+.auth-page {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at top left, rgba(146,227,169,.15), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(146,227,169,.12), transparent 30%),
+    #f8fffa;
+}
+
+.auth-card {
+
+  width: 420px;
+
+  background: white;
+  border-radius: 24px;
+
+  padding: 40px;
+
+  box-shadow:
+    0 30px 60px rgba(0,0,0,.08);
+}
+
+.auth-header {
+
+  text-align: center;
+  margin-bottom: 30px;
+
+  h2 {
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  p {
+    color: #6b7280;
+  }
+}
+
+.brand-badge {
+
+  width: 48px;
+  height: 48px;
+
+  margin: auto;
+  margin-bottom: 12px;
+
+  border-radius: 12px;
+
+  display: grid;
+  place-items: center;
+
+  background: linear-gradient(135deg,#92e3a9,#6dd58c);
+
+  font-weight: 800;
+}
+
+.form-group {
+
+  margin-bottom: 16px;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  input {
+
+    width: 100%;
+
+    margin-top: 6px;
+    padding: 12px 14px;
+
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+
+    font-size: 14px;
+  }
+}
+
+.btn-primary {
+
+  margin-top: 10px;
+
+  background: linear-gradient(135deg,#92e3a9,#6dd58c);
+
+  border: none;
+  padding: 12px;
+
+  border-radius: 12px;
+
+  font-weight: 600;
+}
+
+.auth-footer {
+
+  margin-top: 20px;
+  text-align: center;
+
+  span {
+    color: #6b7280;
+  }
+
+  a {
+    margin-left: 6px;
+    font-weight: 600;
+  }
+}

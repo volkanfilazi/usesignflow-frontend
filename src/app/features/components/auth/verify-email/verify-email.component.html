@@ -1,0 +1,19 @@
+<div class="auth-page">
+  <div class="auth-card text-center">
+    <div class="brand-badge">F</div>
+    <h2>Verify your email</h2>
+    <p>
+      We sent a verification link to <strong>{{ email }}</strong
+      >. Please confirm your email before accessing your dashboard.
+    </p>
+
+    <div class="info-box">
+      Check your inbox and spam folder. After verification, you can sign in.
+    </div>
+
+    <div class="d-flex flex-column gap-2 mt-4">
+      <button class="btn btn-primary" (click)="resendEmail()">Resend email</button>
+      <a routerLink="/login" class="btn btn-ghost">Back to login</a>
+    </div>
+  </div>
+</div>

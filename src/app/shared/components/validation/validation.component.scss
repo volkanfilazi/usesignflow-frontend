@@ -1,0 +1,10 @@
+.validation-item {
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: background 0.2s ease;
+}
+
+.validation-item:hover {
+  background: rgba(252, 111, 111, 0.12);
+  border-radius: 4px;
+}

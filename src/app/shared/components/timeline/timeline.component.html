@@ -1,0 +1,65 @@
+<li class="timeline-item list-unstyled">
+  <div class="timeline-row">
+    <div class="timeline-time text-center">
+      <div class="fw-semibold" [ngClass]="!item.time?.[0]?.deadline ? 'text-success' : ''">
+        {{ !item.time?.[0]?.deadline ? 'Present' : item.time?.[0]?.deadline }}
+      </div>
+      <div class="text-body-secondary">{{ item.time?.[0]?.date ?? '-' }}</div>
+      @if (item.time?.[0]?.type || item.time?.[0]?.untilToday) {
+        <div>-</div>
+      }
+      @if (item.time?.[0]?.untilToday) {
+        <div class="small text-body-secondary">({{ item.time?.[0]?.untilToday }})</div>
+      }
+      <div class="small fst-italic text-body-secondary">{{ item.time?.[0]?.type }}</div>
+    </div>
+
+    <div class="timeline-mid">
+      <div class="timeline-logo-box">
+        @if (item.logo) {
+          <img
+            [src]="item.logo"
+            loading="lazy"
+            height="64"
+            alt="Loidl Consulting &amp;amp; IT Services GmbH logo"
+            id="ember69"
+            class="evi-image lazy-image ember-view org-company-info-module__logo"
+            alt="Sorwe"
+            class="timeline-logo-img"
+          />
+        } @else {
+          <mat-icon>hide_image</mat-icon>
+        }
+      </div>
+    </div>
+
+    <div class="timeline-content">
+      <div class="fw-semibold">{{ item.company }}</div>
+      <div class="small text-body-secondary">
+        {{ item.location }} <span class="fst-italic">{{ item.side }}</span>
+      </div>
+      @if (item.key) {
+        <div class="fw-semibold mt-1">{{ item.key }}</div>
+      }
+
+      @if (item.role || (item.descriptions && item.descriptions.length > 0)) {
+        <div class="mt-3 mb-3 text-body-secondary">
+          @if (item.role) {
+            <p class="mb-2">
+              <strong>Role:</strong>
+              {{ item.role }}
+            </p>
+          }
+
+          @for (description of item.descriptions; track $index) {
+            <ul class="mb-0">
+              @if (description) {
+                <li>{{ description }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</li>

@@ -1,0 +1,23 @@
+@if (controlName && formGroup && formGroup.get(controlName)) {
+  <mat-form-field [formGroup]="formGroup" class="example-chip-list w-100">
+    <mat-label>Options</mat-label>
+    <mat-chip-grid #chipGrid aria-label="Enter dropdown items">
+      @for (option of chipsHolder(); track option) {
+        <mat-chip-row (removed)="remove(option)" [editable]="true" (edited)="edit(option, $event)">
+          {{ option }}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+    </mat-chip-grid>
+    <input
+      placeholder="New option..."
+      [matChipInputFor]="chipGrid"
+      [id]="controlName"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      [matChipInputAddOnBlur]="addOnBlur"
+      (matChipInputTokenEnd)="add($event)"
+    />
+  </mat-form-field>
+}

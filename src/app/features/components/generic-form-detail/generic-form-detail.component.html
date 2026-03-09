@@ -1,0 +1,59 @@
+@if (loading) {
+  <mat-icon>spinner</mat-icon>
+}
+
+<app-header [title]="form?.formName"></app-header>
+
+@if (!loading && myGroup) {
+  <div class="dynamic-form-grid mt-2">
+    @for (item of form?.fields; track item.fieldId) {
+      <div class="field-wrapper" [style.grid-column]="'span ' + item.colSpan">
+        @if (item.type === 'Text') {
+          <app-text-input
+            class="full-width-field"
+            [formGroup]="myGroup"
+            [ariaRequired]="item.required"
+            [label]="item.label"
+            [controlName]="item.fieldId"
+          ></app-text-input>
+        }
+
+        @if (item.type === 'Email') {
+          <app-text-input
+            class="full-width-field"
+            [formGroup]="myGroup"
+            [label]="item.label"
+            [controlName]="item.fieldId"
+          ></app-text-input>
+        }
+
+        @if (item.type === 'Select') {
+          <app-combobox
+            class="full-width-field"
+            [formGroup]="myGroup"
+            [controlName]="item.fieldId"
+            [options]="item.options ?? []"
+          ></app-combobox>
+        }
+
+        @if (item.type === 'Checkbox') {
+          <app-checkbox
+            class="full-width-field"
+            [formGroup]="myGroup"
+            [controlName]="item.fieldId"
+            [checkboxName]="item.label"
+          ></app-checkbox>
+        }
+
+        @if (item.type === 'SignaturePad') {
+          <app-signature-pad
+            class="full-width-field"
+            [formGroup]="myGroup"
+            [label]="item.label"
+            [controlName]="item.fieldId"
+          ></app-signature-pad>
+        }
+      </div>
+    }
+  </div>
+}
