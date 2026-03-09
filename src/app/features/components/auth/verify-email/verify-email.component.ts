@@ -10,10 +10,16 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 })
 export class VerifyEmailComponent {
   private route = inject(ActivatedRoute);
+  resending = false;
 
   email = this.route.snapshot.queryParamMap.get('email') ?? '';
 
   resendEmail() {
-    // API call
+    this.resending = true;
+
+    // API çağrısı burada
+    setTimeout(() => {
+      this.resending = false;
+    }, 1200);
   }
 }

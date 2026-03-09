@@ -1,19 +1,49 @@
-<div class="auth-page">
-  <div class="auth-card text-center">
-    <div class="brand-badge">F</div>
-    <h2>Verify your email</h2>
-    <p>
-      We sent a verification link to <strong>{{ email }}</strong
-      >. Please confirm your email before accessing your dashboard.
-    </p>
+<div class="verify-page">
+  <div class="verify-card">
+    <a routerLink="/" class="back-link">← Back to home</a>
 
-    <div class="info-box">
-      Check your inbox and spam folder. After verification, you can sign in.
+    <div class="verify-icon-wrap">
+      <div class="verify-icon">
+        ✉
+      </div>
     </div>
 
-    <div class="d-flex flex-column gap-2 mt-4">
-      <button class="btn btn-primary" (click)="resendEmail()">Resend email</button>
-      <a routerLink="/login" class="btn btn-ghost">Back to login</a>
+    <div class="verify-content">
+      <span class="verify-badge">Email verification required</span>
+      <h1>Verify your email address</h1>
+
+      <p class="verify-text">
+        We sent a verification link to your email address.
+        Please open your inbox and confirm your account before accessing the dashboard.
+      </p>
+
+      @if (email) {
+        <div class="email-box">
+          <span>Verification email sent to</span>
+          <strong>{{ email }}</strong>
+        </div>
+      }
+
+      <div class="tips-box">
+        <p class="tips-title">Didn’t receive the email?</p>
+        <ul>
+          <li>Check your spam or junk folder.</li>
+          <li>Make sure you entered the correct email address.</li>
+          <li>You can request a new verification email below.</li>
+        </ul>
+      </div>
+
+      <div class="verify-actions">
+        <button class="btn btn-primary" (click)="resendEmail()" [disabled]="resending">
+          @if (!resending) {
+            <span>Resend email</span>
+          } @else {
+            <span>Sending...</span>
+          }
+        </button>
+
+        <a routerLink="/login" class="btn btn-ghost">Back to login</a>
+      </div>
     </div>
   </div>
 </div>
