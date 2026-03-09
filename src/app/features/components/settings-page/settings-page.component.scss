@@ -1,0 +1,270 @@
+:host {
+  display: block;
+}
+
+.settings-page {
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.08), transparent 28%),
+    linear-gradient(180deg, #f8fffb 0%, #f4fbf7 100%);
+  min-height: 100%;
+}
+
+.settings-hero-card,
+.settings-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(34, 197, 94, 0.12);
+  box-shadow:
+    0 12px 30px rgba(16, 24, 40, 0.08),
+    0 4px 12px rgba(34, 197, 94, 0.06);
+  backdrop-filter: blur(12px);
+}
+
+.settings-hero-card {
+  border-radius: 28px;
+  padding: 28px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+}
+
+.settings-kicker,
+.section-kicker {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #16a34a;
+  margin-bottom: 6px;
+}
+
+.settings-hero-card h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 38px);
+  color: #0f172a;
+}
+
+.settings-hero-card p {
+  margin: 10px 0 0;
+  color: #4b5563;
+  max-width: 720px;
+  line-height: 1.7;
+}
+
+.settings-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.settings-card {
+  border-radius: 28px;
+  padding: 24px;
+}
+
+.settings-card.danger {
+  border-color: rgba(239, 68, 68, 0.18);
+}
+
+.card-head {
+  margin-bottom: 18px;
+}
+
+.card-head h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #0f172a;
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #fbfefc;
+  border: 1px solid #e6f7ea;
+}
+
+.setting-row strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #111827;
+}
+
+.setting-row p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.65;
+  font-size: 14px;
+  max-width: 720px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  color: white;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  box-shadow: 0 12px 24px rgba(34, 197, 94, 0.22);
+}
+
+.btn-danger {
+  color: white;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.18);
+}
+
+.mini-btn {
+  border: 0;
+  background: #f0fdf4;
+  color: #166534;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 700;
+}
+
+.select-shell {
+  border: 1px solid #d8f1df;
+  background: #fbfefc;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.select-shell select {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 14px 16px;
+  font: inherit;
+  color: #111827;
+}
+
+.theme-pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.theme-pill {
+  border: 1px solid #d8f1df;
+  background: #fff;
+  color: #166534;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.theme-pill.active {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: white;
+  border-color: transparent;
+}
+
+.switch {
+  position: relative;
+  width: 54px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background: #d1d5db;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 4px;
+  left: 4px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.switch input:checked + .slider {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+.danger-kicker {
+  color: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 16px;
+  }
+
+  .settings-hero-card,
+  .setting-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

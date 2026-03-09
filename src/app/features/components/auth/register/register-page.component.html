@@ -1,5 +1,13 @@
 <div class="auth-page">
   <div class="auth-card">
+    @if (this.loading$ | async) {
+      <app-loading-overlay
+        [visible]="this.loading$.value"
+        [title]="'Signup you in...'"
+        [message]="'Please wait while we securely log you into your account.'"
+      >
+      </app-loading-overlay>
+    }
     <a routerLink="/" class="back-link">← Back to home</a>
 
     <div class="auth-header">
