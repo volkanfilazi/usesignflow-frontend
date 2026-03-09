@@ -1,0 +1,67 @@
+<div class="user-menu">
+  <button
+    type="button"
+    class="user-menu-trigger"
+    (click)="toggleMenu()"
+    [attr.aria-expanded]="isOpen"
+    aria-haspopup="menu"
+  >
+    <div class="user-avatar">
+      {{ getInitials(userName) }}
+    </div>
+
+    <div class="user-meta">
+      <span class="user-label">Account</span>
+      <strong class="user-name">{{ userName }}</strong>
+    </div>
+
+    <span class="chevron" [class.open]="isOpen">▾</span>
+  </button>
+
+  @if (isOpen) {
+    <div class="user-menu-panel">
+      <div class="panel-header">
+        <div class="panel-avatar">
+          {{ getInitials(userName) }}
+        </div>
+
+        <div class="panel-user-info">
+          <span>Signed in as</span>
+          <strong>{{ userName }}</strong>
+        </div>
+      </div>
+
+      <div class="menu-divider"></div>
+
+      <div class="menu-items">
+        @for (item of items; track item.label) {
+          @if (item.route) {
+            <a
+              class="menu-item"
+              [class.danger]="item.danger"
+              [routerLink]="item.route"
+              (click)="onItemClick(item)"
+            >
+              @if (item.icon) {
+                <mat-icon>{{ item.icon }}</mat-icon>
+              }
+              <span>{{ item.label }}</span>
+            </a>
+          } @else {
+            <button
+              type="button"
+              class="menu-item"
+              [class.danger]="item.danger"
+              (click)="onItemClick(item)"
+            >
+              @if (item.icon) {
+                <mat-icon>{{ item.icon }}</mat-icon>
+              }
+              <span>{{ item.label }}</span>
+            </button>
+          }
+        }
+      </div>
+    </div>
+  }
+</div>

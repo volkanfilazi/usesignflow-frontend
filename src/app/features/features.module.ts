@@ -33,6 +33,7 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
 import { RegisterPageComponent } from './components/auth/register/register-page.component';
 import { LoginPageComponent } from './components/auth/login/login-page.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AuthLoadingOverlayComponent } from "../shared/components/loading-overlay/loading-overlay.component";
 
 @NgModule({
   declarations: [
@@ -74,7 +75,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatTabsModule,
     MatSnackBarModule,
     MatRadioModule,
-    MatProgressSpinnerModule
-  ],
+    MatProgressSpinnerModule,
+    AuthLoadingOverlayComponent
+],
 })
 export class FeaturesModule {}

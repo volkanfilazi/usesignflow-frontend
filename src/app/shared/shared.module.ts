@@ -21,6 +21,7 @@ import { ValidationComponent } from './components/validation/validation.componen
 import { SignaturePadComponent } from './components/signature-pad/signature-pad.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SpinnerComponent } from './components/spinner/spinner.component';
+import { UserMenuComponent } from "./components/user-menu/user-menu.component";
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
     MatIcon,
     MatButtonModule,
     MatProgressSpinnerModule,
-  ],
+    UserMenuComponent
+],
   exports: [
     TextInputComponent,
     PrimaryButtonComponent,

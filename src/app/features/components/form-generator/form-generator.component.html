@@ -1,12 +1,17 @@
-<app-header
-  [title]="'Form Generator Component'"
-  [loading$]="loading$"
-  (buttonActionEmitter)="create()"
-></app-header>
 <div class="d-flex align-items-center gap-2 mt-2" [formGroup]="myGroup">
-  <app-text-input [isRequired]="true" [label]="'Dynamic Form Name'" [formGroup]="myGroup" [controlName]="'formName'">
+  <app-text-input
+    [isRequired]="true"
+    [label]="'Dynamic Form Name'"
+    [formGroup]="myGroup"
+    [controlName]="'formName'"
+  >
   </app-text-input>
-  <app-text-input [isRequired]="true" [label]="'Version'" [formGroup]="myGroup" [controlName]="'version'">
+  <app-text-input
+    [isRequired]="true"
+    [label]="'Version'"
+    [formGroup]="myGroup"
+    [controlName]="'version'"
+  >
   </app-text-input>
   <app-checkbox
     [formGroup]="myGroup"
@@ -74,6 +79,7 @@
     </div>
   </ng-container>
 </div>
+<button matButton="outlined" [disabled]="loading$ | async" (click)="create()">Create</button>
 @if (validationErrors) {
   <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>
 }

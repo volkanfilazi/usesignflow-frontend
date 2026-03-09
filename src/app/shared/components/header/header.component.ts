@@ -10,6 +10,7 @@ export class HeaderComponent {
   @Output() buttonActionEmitter = new EventEmitter();
   @Input() loading$ = new BehaviorSubject<boolean>(false);
   @Input() title?: string;
+  @Input() buttonTitle?: string;
 
   buttonClicked() {
     this.buttonActionEmitter.emit();
