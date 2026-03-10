@@ -1,30 +1,45 @@
-<div
-  style="background-color: #ebebeb"
-  class="validation-panel position-fixed border-1 border-gray border bottom-0 end-0 p-2"
-  [class.minimized]="isMinimized"
->
-  <div class="d-flex justify-content-between align-items-center">
-    <h6 class="m-0">Validation Issues</h6>
-    @if (isMinimized) {
-      <h6 class="m-0 mx-1 text-danger">{{ validationMessages?.length }} errors</h6>
-    }
+@if (validationMessages?.length) {
+  <div class="validation-panel position-fixed bottom-0 end-0 m-3" [class.minimized]="isMinimized">
+    <div class="validation-header">
+      <div class="validation-title-wrap">
+        <div class="validation-icon">
+          <mat-icon>error_outline</mat-icon>
+        </div>
 
-    <div class="d-flex align-items-center gap-1">
-      <button matMiniFab (click)="toggleMinimize()">
+        <div>
+          <h6 class="validation-title m-0">Validation Issues</h6>
+
+          @if (isMinimized) {
+            <span class="validation-count">{{ validationMessages?.length }} errors</span>
+          } @else {
+            <span class="validation-subtitle">Please review the highlighted fields</span>
+          }
+        </div>
+      </div>
+
+      <button class="toggle-btn" mat-icon-button (click)="toggleMinimize()">
         <mat-icon>
-          {{ isMinimized ? 'open_in_full' : 'minimize' }}
+          {{ isMinimized ? 'keyboard_arrow_up' : 'remove' }}
         </mat-icon>
       </button>
     </div>
-  </div>
 
-  @if (!isMinimized) {
-    <ol class="text-danger mt-2 mb-0">
-      @for (item of validationMessages; track $index) {
-        <li class="validation-item" (click)="focus(item)">
-          <a class="text-danger mb-1">{{ item.message }}</a>
-        </li>
-      }
-    </ol>
-  }
-</div>
+    @if (!isMinimized) {
+      <div class="validation-body">
+        <ol class="validation-list mb-0">
+          @for (item of validationMessages; track $index) {
+            <li class="validation-item" (click)="focus(item)">
+              <div class="validation-bullet">
+                <mat-icon>priority_high</mat-icon>
+              </div>
+
+              <div class="validation-text">
+                <span>{{ item.message }}</span>
+              </div>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+  </div>
+}

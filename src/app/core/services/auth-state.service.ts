@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { JwtPayload } from './auth.types';
+import { JwtPayload } from '../auth/auth.types';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {

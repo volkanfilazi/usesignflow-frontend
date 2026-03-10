@@ -20,18 +20,21 @@ export class ValidationComponent {
   focus(item: ValidationIssue) {
     if (!item.elementId) return;
 
-    console.log(item.elementId);
     const element = document.getElementById(item.elementId);
 
-    console.log(element);
     if (element) {
-      console.log('1');
       element.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
 
       (element as HTMLElement).focus();
+
+      element.classList.add('focus-highlight');
+
+      setTimeout(() => {
+        element.classList.remove('focus-highlight');
+      }, 1500);
     }
   }
 }

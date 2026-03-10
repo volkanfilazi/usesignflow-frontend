@@ -9,6 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { ValidationService } from '../../../shared/services/validation.service';
+import { PageActionService } from '../../../shared/services/page-action.service';
 
 @Component({
   selector: 'app-form-generator',
@@ -28,7 +29,8 @@ export class FormGeneratorComponent {
     private readonly formApiService: FormsApiService,
     private readonly router: Router,
     private readonly toolsService: ToolsService,
-    private readonly validationService: ValidationService
+    private readonly validationService: ValidationService,
+    private readonly pageActionService: PageActionService
   ) {
     this.myGroup = new FormGroup({
       formName: new FormControl(),
@@ -37,6 +39,7 @@ export class FormGeneratorComponent {
     });
 
     this.myGroup.get('formName')?.valueChanges.subscribe((value) => {});
+    this.pageActionService.setAction('Save UI', 'Create', () => this.create());
   }
 
   createNewControl() {
@@ -124,7 +127,7 @@ export class FormGeneratorComponent {
         setTimeout(() => {
           this.loading$.next(false);
           this.toolsService.showSnackbar('Form created successfully.', 'success-snackbar');
-          this.router.navigate(['/genericformlist']);
+          this.router.navigate(['/dashboard/forms']);
         });
       },
       error: () => {

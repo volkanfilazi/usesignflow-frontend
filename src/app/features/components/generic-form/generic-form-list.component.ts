@@ -34,6 +34,6 @@ export class GenericFormListComponent implements OnInit {
   }
 
   onFormClick(formDef: FormDefinitionDto) {
-    this.router.navigate(['/genericformlistdetail', formDef.id]);
+    this.router.navigate(['/dashboard/forms', formDef.id]);
   }
 }
