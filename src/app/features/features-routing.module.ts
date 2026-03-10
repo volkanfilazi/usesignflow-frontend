@@ -15,8 +15,11 @@ import { ProfilePageComponent } from './components/profile-page/profile-page.com
 import { SettingsPageComponent } from './components/settings-page/settings-page.component';
 
 const routes: Routes = [
-  { path: '', component: LandingPageComponent },
-
+  {
+    path: '',
+    component: LandingPageComponent,
+    canActivate: [guestGuard],
+  },
   {
     path: 'login',
     component: LoginPageComponent,
@@ -44,7 +47,7 @@ const routes: Routes = [
       { path: 'forms/:id', component: GenericFormDetailComponent },
       { path: 'form-generator', component: FormGeneratorComponent },
       { path: 'profile', component: ProfilePageComponent },
-      { path: 'settings', component: SettingsPageComponent }
+      { path: 'settings', component: SettingsPageComponent },
     ],
   },
 

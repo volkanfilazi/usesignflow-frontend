@@ -13,6 +13,21 @@ export interface LoginDto {
 
 export interface AuthResponse {
   token: string;
+  tokenExpiresAtUtc: string;
+  refreshToken: string;
+  refreshTokenExpiresAtUtc: string;
   email: string;
   fullName: string;
+}
+
+export interface RefreshTokenRequest {
+  email: string;
+  refreshToken: string;
+}
+
+export interface JwtPayloadModel {
+  nameid: string;
+  email: string;
+  fullName: string;
+  exp: number;
 }

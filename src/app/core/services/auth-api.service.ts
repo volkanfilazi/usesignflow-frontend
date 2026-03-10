@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthResponse, LoginDto, RegisterDto } from '../../shared/models/auth.model';
+import { AuthResponse, LoginDto, RefreshTokenRequest, RegisterDto } from '../../shared/models/auth.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -16,5 +16,9 @@ export class AuthApiService {
 
   login(form: LoginDto): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, form);
+  }
+
+  refreshToken(request: RefreshTokenRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/refresh`, request);
   }
 }

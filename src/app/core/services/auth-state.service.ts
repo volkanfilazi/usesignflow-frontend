@@ -1,22 +1,31 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { JwtPayload } from '../auth/auth.types';
+import { JwtPayloadModel } from '../../shared/models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
   private router = inject(Router);
 
+  setSession(token: string, refreshToken: string): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  private getPayload(): JwtPayload | null {
+  private getPayload(): JwtPayloadModel | null {
     const token = this.getToken();
     if (!token) return null;
 
     try {
-      return jwtDecode<JwtPayload>(token);
+      return jwtDecode<JwtPayloadModel>(token);
     } catch {
       return null;
     }
@@ -45,8 +54,13 @@ export class AuthStateService {
     return payload?.nameid ?? null;
   }
 
-  logout(): void {
+  clearSession(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+  }
+
+  logout(): void {
+    this.clearSession();
     this.router.navigate(['/login']);
   }
 }
