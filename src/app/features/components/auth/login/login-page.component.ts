@@ -6,6 +6,7 @@ import { AuthApiService } from '../../../../core/services/auth-api.service';
 import { ToolsService } from '../../../../shared/services/tools.service';
 import { Router } from '@angular/router';
 import { LoginDto } from '../../../../shared/models/auth.model';
+import { AuthStateService } from '../../../../core/services/auth-state.service';
 
 @Component({
   selector: 'app-login-page',
@@ -21,6 +22,7 @@ export class LoginPageComponent {
   constructor(
     private readonly validationService: ValidationService,
     private readonly authApiService: AuthApiService,
+    private readonly authStateService: AuthStateService,
     private readonly toolsService: ToolsService,
     private readonly router: Router,
   ) {}
@@ -55,7 +57,7 @@ export class LoginPageComponent {
 
     this.authApiService.login(login).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.token);
+        this.authStateService.setSession(res.token, res.refreshToken);
         this.loading$.next(false);
         this.router.navigate(['/dashboard']);
       },
