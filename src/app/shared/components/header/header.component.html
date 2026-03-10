@@ -2,10 +2,12 @@
   class="w-100 p-2 h-auto border-1 border-bottom d-flex align-items-center justify-content-between align-items-center"
 >
   <h4>{{ title }}</h4>
-  @if (buttonTitle) {
-    <button matButton="outlined" [disabled]="loading$ | async" (click)="buttonClicked()">
-      {{ buttonTitle }}
-    </button>
-  }
-  <app-user-menu></app-user-menu>
+  <div class="d-flex align-items-center gap-2">
+    @if (pageActionService.actionLabel()) {
+      <button matButton="outlined" [disabled]="loading$ | async" (click)="onActionClick()">
+        {{ pageActionService.buttonName }}
+      </button>
+    }
+    <app-user-menu></app-user-menu>
+  </div>
 </div>

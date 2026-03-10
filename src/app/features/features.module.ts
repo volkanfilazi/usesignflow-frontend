@@ -33,7 +33,9 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
 import { RegisterPageComponent } from './components/auth/register/register-page.component';
 import { LoginPageComponent } from './components/auth/login/login-page.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AuthLoadingOverlayComponent } from "../shared/components/loading-overlay/loading-overlay.component";
+import { AuthLoadingOverlayComponent } from '../shared/components/loading-overlay/loading-overlay.component';
+import { LegalComponent } from '../shared/components/legal/legal.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,7 @@ import { AuthLoadingOverlayComponent } from "../shared/components/loading-overla
     GenericFormDetailComponent,
     LandingPageComponent,
     RegisterPageComponent,
-    LoginPageComponent
+    LoginPageComponent,
   ],
   imports: [
     ReactiveFormsModule,
@@ -76,7 +78,8 @@ import { AuthLoadingOverlayComponent } from "../shared/components/loading-overla
     MatSnackBarModule,
     MatRadioModule,
     MatProgressSpinnerModule,
-    AuthLoadingOverlayComponent
-],
+    AuthLoadingOverlayComponent,
+    MatDialogModule,
+  ],
 })
 export class FeaturesModule {}

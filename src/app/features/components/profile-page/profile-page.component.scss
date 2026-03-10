@@ -44,11 +44,11 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #16a34a, #22c55e);
+  background: linear-gradient(135deg, var(--500), #22c55e);
   color: white;
   font-size: 28px;
   font-weight: 800;
-  box-shadow: 0 18px 30px rgba(34, 197, 94, 0.22);
+  box-shadow: var(--shadow-green-md);
   flex-shrink: 0;
 }
 
@@ -70,7 +70,7 @@
 
 .profile-badge.verified {
   background: #dcfce7;
-  color: #166534;
+  color: var(--600);
 }
 
 .profile-badge.soft {
@@ -88,14 +88,14 @@
 .profile-email {
   margin: 8px 0 10px;
   font-size: 15px;
-  color: #166534;
+  color: var(--600);
   font-weight: 600;
 }
 
 .profile-subtitle {
   max-width: 650px;
   margin: 0;
-  color: #4b5563;
+  color: var(--100);
   line-height: 1.7;
 }
 
@@ -111,7 +111,10 @@
   padding: 12px 18px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
 }
 
 .btn:hover {
@@ -120,20 +123,20 @@
 
 .btn-primary {
   color: white;
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  box-shadow: 0 12px 24px rgba(34, 197, 94, 0.22);
+  background: linear-gradient(135deg, var(--500), #22c55e);
+  box-shadow: var(--shadow-green-md);
 }
 
 .btn-secondary {
   background: white;
-  color: #166534;
+  color: var(--600);
   border: 1px solid #bbf7d0;
 }
 
 .btn-danger {
   color: white;
   background: linear-gradient(135deg, #dc2626, #ef4444);
-  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.18);
+  box-shadow: var(--shadow-green-md);
 }
 
 .stats-grid {
@@ -151,7 +154,7 @@
 .stat-label {
   display: block;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--100);
   margin-bottom: 12px;
 }
 
@@ -159,13 +162,13 @@
   display: block;
   font-size: 28px;
   line-height: 1.1;
-  color: #14532d;
+  color: var(--600);
   margin-bottom: 10px;
 }
 
 .stat-meta {
   font-size: 13px;
-  color: #16a34a;
+  color: var(--500);
   font-weight: 600;
 }
 
@@ -195,7 +198,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #16a34a;
+  color: var(--500);
   margin-bottom: 6px;
 }
 
@@ -210,7 +213,7 @@
 .mini-btn {
   border: 0;
   background: #f0fdf4;
-  color: #166534;
+  color: var(--600);
   border-radius: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -240,12 +243,12 @@
 .info-item span {
   display: block;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--100);
   margin-bottom: 6px;
 }
 
 .info-item strong {
-  color: #111827;
+  color: var(--400);
   font-size: 15px;
 }
 
@@ -273,12 +276,12 @@
 .summary-item strong {
   display: block;
   margin-bottom: 4px;
-  color: #111827;
+  color: var(--400);
 }
 
 .summary-item p {
   margin: 0;
-  color: #6b7280;
+  color: var(--100);
   line-height: 1.6;
   font-size: 14px;
 }
@@ -294,7 +297,7 @@
 
 .pill.success {
   background: #dcfce7;
-  color: #166534;
+  color: var(--600);
 }
 
 .danger-card {
@@ -314,7 +317,7 @@
 .danger-card p {
   max-width: 760px;
   margin: 8px 0 0;
-  color: #6b7280;
+  color: var(--100);
   line-height: 1.7;
 }
 

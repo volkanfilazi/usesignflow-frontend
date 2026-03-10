@@ -21,7 +21,7 @@
   border: 1px solid rgba(146, 227, 169, 0.2);
   border-radius: 30px;
   padding: 32px;
-  box-shadow: 0 24px 60px rgba(17, 24, 39, 0.08);
+  box-shadow: var(--shadow-lg);
   backdrop-filter: blur(8px);
 }
 
@@ -29,14 +29,14 @@
   display: inline-flex;
   align-items: center;
   text-decoration: none;
-  color: #4b5563;
+  color: var(--100);
   font-weight: 600;
   margin-bottom: 20px;
   transition: color 0.2s ease;
 }
 
 .back-link:hover {
-  color: #111827;
+  color: var(--400);
 }
 
 .verify-icon-wrap {
@@ -54,7 +54,7 @@
   font-size: 2rem;
   background: linear-gradient(135deg, #92e3a9, #6dd58c);
   color: #0f172a;
-  box-shadow: 0 18px 36px rgba(109, 213, 140, 0.28);
+  box-shadow: var(--shadow-green-md);
 }
 
 .verify-content {
@@ -79,13 +79,13 @@
   font-size: clamp(2rem, 4vw, 2.8rem);
   line-height: 1.1;
   font-weight: 800;
-  color: #111827;
+  color: var(--400);
 }
 
 .verify-text {
   margin: 0 auto 24px;
   max-width: 500px;
-  color: #6b7280;
+  color: var(--100);
   line-height: 1.75;
   font-size: 1rem;
 }
@@ -101,12 +101,12 @@
   span {
     display: block;
     margin-bottom: 6px;
-    color: #6b7280;
+    color: var(--100);
     font-size: 0.92rem;
   }
 
   strong {
-    color: #111827;
+    color: var(--400);
     font-size: 1rem;
     word-break: break-word;
   }
@@ -125,13 +125,13 @@
 .tips-title {
   margin: 0 0 10px;
   font-weight: 800;
-  color: #111827;
+  color: var(--400);
 }
 
 .tips-box ul {
   margin: 0;
   padding-left: 18px;
-  color: #4b5563;
+  color: var(--100);
   line-height: 1.7;
 }
 
@@ -172,22 +172,22 @@
 .btn-primary {
   background: linear-gradient(135deg, #92e3a9, #6dd58c);
   color: #0f172a;
-  box-shadow: 0 14px 30px rgba(109, 213, 140, 0.28);
+  box-shadow: var(--shadow-green-md);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 18px 34px rgba(109, 213, 140, 0.34);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn-ghost {
   background: rgba(255, 255, 255, 0.92);
-  color: #111827;
+  color: var(--400);
   border: 1px solid rgba(17, 24, 39, 0.08);
 }
 
 .btn-ghost:hover {
   background: #ffffff;
-  color: #111827;
+  color: var(--400);
 }
 
 @media (max-width: 576px) {

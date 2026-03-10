@@ -2,8 +2,7 @@
   <mat-icon>spinner</mat-icon>
 }
 
-<app-header [title]="form?.formName"></app-header>
-
+<div>{{ form?.formName }}</div>
 @if (!loading && myGroup) {
   <div class="dynamic-form-grid mt-2">
     @for (item of form?.fields; track item.fieldId) {
@@ -47,7 +46,6 @@
 
         @if (item.type === 'SignaturePad') {
           <app-signature-pad
-            class="full-width-field"
             [formGroup]="myGroup"
             [label]="item.label"
             [controlName]="item.fieldId"

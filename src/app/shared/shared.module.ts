@@ -21,7 +21,9 @@ import { ValidationComponent } from './components/validation/validation.componen
 import { SignaturePadComponent } from './components/signature-pad/signature-pad.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SpinnerComponent } from './components/spinner/spinner.component';
-import { UserMenuComponent } from "./components/user-menu/user-menu.component";
+import { UserMenuComponent } from './components/user-menu/user-menu.component';
+import { LegalComponent } from './components/legal/legal.component';
+import { PrivacyComponent } from './components/privacy/privacy.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import { UserMenuComponent } from "./components/user-menu/user-menu.component";
     HeaderComponent,
     ValidationComponent,
     SignaturePadComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    LegalComponent,
+    PrivacyComponent,
   ],
   imports: [
     CommonModule,
@@ -54,8 +58,8 @@ import { UserMenuComponent } from "./components/user-menu/user-menu.component";
     MatIcon,
     MatButtonModule,
     MatProgressSpinnerModule,
-    UserMenuComponent
-],
+    UserMenuComponent,
+  ],
   exports: [
     TextInputComponent,
     PrimaryButtonComponent,
@@ -66,7 +70,9 @@ import { UserMenuComponent } from "./components/user-menu/user-menu.component";
     HeaderComponent,
     ValidationComponent,
     SignaturePadComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    LegalComponent,
+    PrivacyComponent,
   ],
 })
 export class SharedModule {}

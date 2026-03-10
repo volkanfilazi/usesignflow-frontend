@@ -1,85 +1,145 @@
-<div class="d-flex align-items-center gap-2 mt-2" [formGroup]="myGroup">
-  <app-text-input
-    [isRequired]="true"
-    [label]="'Dynamic Form Name'"
-    [formGroup]="myGroup"
-    [controlName]="'formName'"
-  >
-  </app-text-input>
-  <app-text-input
-    [isRequired]="true"
-    [label]="'Version'"
-    [formGroup]="myGroup"
-    [controlName]="'version'"
-  >
-  </app-text-input>
-  <app-checkbox
-    [formGroup]="myGroup"
-    [controlName]="'expanded'"
-    [checkboxName]="'expanded'"
-  ></app-checkbox>
-  <app-primary-button
-    (buttonClick)="createNewControl()"
-    [buttonName]="'Create new group'"
-  ></app-primary-button>
-</div>
+<div class="builder-page" [formGroup]="myGroup">
+  <section class="builder-hero">
+    <div class="builder-hero-content">
+      <span class="builder-kicker">Dynamic form builder</span>
+      <h1>Create your form structure</h1>
+      <p>Define the form name, version, and build reusable field groups for your dynamic form.</p>
+    </div>
 
-<div
-  cdkDropList
-  [cdkDropListData]="dynamicFormIds"
-  (cdkDropListDropped)="drop($event)"
-  class="d-flex flex-column gap-1 mt-2"
->
-  <ng-container *ngFor="let id of dynamicFormIds; let i = index">
-    <div
-      class="border-1 border p-3 mt-1 d-flex flex-row justify-content-between align-items-center group-container"
-      cdkDrag
-      [formGroup]="myGroup"
-    >
-      <div class="d-flex flex-row align-items-center gap-2">
+    <div class="builder-top-form">
+      <div class="builder-input builder-input-wide">
         <app-text-input
-          [label]="'Element label'"
           [isRequired]="true"
+          [label]="'Dynamic Form Name'"
           [formGroup]="myGroup"
-          [controlName]="FormElementsEnum.DynamicFormLabel + id"
-        ></app-text-input>
-        <app-combobox
+          [controlName]="'formName'"
+        >
+        </app-text-input>
+      </div>
+
+      <div class="builder-input builder-input-sm">
+        <app-text-input
+          [isRequired]="true"
+          [label]="'Version'"
           [formGroup]="myGroup"
-          [controlName]="FormElementsEnum.DynamicFormType + id"
-          [options]="options"
-          (typeChanged)="comboboxChanged(id, $event)"
-        ></app-combobox>
-        @if (myGroup.get(FormElementsEnum.DynamicFormSelectOptions + id)) {
-          <app-chips-input
-            [formGroup]="myGroup"
-            [controlName]="FormElementsEnum.DynamicFormSelectOptions + id"
-          ></app-chips-input>
-        }
-        <div class="d-flex flex-column">
-          <label class="text-center" [id]="FormElementsEnum.DynamicFormColSpan + id">Colspan</label>
-          <mat-radio-group
-            [formControlName]="FormElementsEnum.DynamicFormColSpan + id"
-            [name]="FormElementsEnum.DynamicFormColSpan + id"
-          >
-            <mat-radio-button id="radio_1" value="4">100%</mat-radio-button>
-            <mat-radio-button id="radio_2" value="3">75%</mat-radio-button>
-            <mat-radio-button id="radio_3" value="2">50%</mat-radio-button>
-            <mat-radio-button id="radio_4" value="1">25%</mat-radio-button>
-          </mat-radio-group>
-        </div>
+          [controlName]="'version'"
+        >
+        </app-text-input>
+      </div>
+
+      <div class="builder-toggle">
         <app-checkbox
           [formGroup]="myGroup"
-          [controlName]="FormElementsEnum.DynamicFormRequired + id"
-          [checkboxName]="'required'"
+          [controlName]="'expanded'"
+          [checkboxName]="'expanded'"
         ></app-checkbox>
       </div>
-      <div class="drag-handle" cdkDragHandle>
-        <mat-icon>drag_indicator</mat-icon>
+
+      <div class="builder-action">
+        <app-primary-button
+          (buttonClick)="createNewControl()"
+          [buttonName]="'Create new group'"
+        ></app-primary-button>
       </div>
     </div>
-  </ng-container>
+  </section>
+
+  <section class="builder-list-section">
+    <div class="section-head">
+      <div>
+        <span class="section-kicker">Form fields</span>
+        <h2>Field groups</h2>
+      </div>
+
+      <div class="section-meta">
+        <span>{{ dynamicFormIds.length }} items</span>
+      </div>
+    </div>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="dynamicFormIds"
+      (cdkDropListDropped)="drop($event)"
+      class="builder-list"
+    >
+      <ng-container *ngFor="let id of dynamicFormIds; let i = index">
+        <div class="group-card" cdkDrag [formGroup]="myGroup">
+          <div class="group-card-header">
+            <div class="group-index">
+              <span>#{{ i + 1 }}</span>
+            </div>
+
+            <div class="group-title-wrap">
+              <h3>Field group</h3>
+              <p>Configure label, type, layout, and validation.</p>
+            </div>
+
+            <div class="drag-handle" cdkDragHandle>
+              <mat-icon>drag_indicator</mat-icon>
+            </div>
+          </div>
+
+          <div class="group-card-body">
+            <div class="field-grid">
+              <div class="field-item field-item-lg">
+                <app-text-input
+                  [label]="'Element label'"
+                  [isRequired]="true"
+                  [formGroup]="myGroup"
+                  [controlName]="FormElementsEnum.DynamicFormLabel + id"
+                ></app-text-input>
+              </div>
+
+              <div class="field-item field-item-md">
+                <app-combobox
+                  [formGroup]="myGroup"
+                  [controlName]="FormElementsEnum.DynamicFormType + id"
+                  [options]="options"
+                  (typeChanged)="comboboxChanged(id, $event)"
+                ></app-combobox>
+              </div>
+
+              @if (myGroup.get(FormElementsEnum.DynamicFormSelectOptions + id)) {
+                <div class="field-item field-item-full">
+                  <app-chips-input
+                    [formGroup]="myGroup"
+                    [controlName]="FormElementsEnum.DynamicFormSelectOptions + id"
+                  ></app-chips-input>
+                </div>
+              }
+
+              <div class="field-item field-item-md colspan-card">
+                <label class="field-label" [id]="FormElementsEnum.DynamicFormColSpan + id">
+                  Column width
+                </label>
+
+                <mat-radio-group
+                  class="colspan-group"
+                  [formControlName]="FormElementsEnum.DynamicFormColSpan + id"
+                  [name]="FormElementsEnum.DynamicFormColSpan + id"
+                >
+                  <mat-radio-button id="radio_1" value="4">100%</mat-radio-button>
+                  <mat-radio-button id="radio_2" value="3">75%</mat-radio-button>
+                  <mat-radio-button id="radio_3" value="2">50%</mat-radio-button>
+                  <mat-radio-button id="radio_4" value="1">25%</mat-radio-button>
+                </mat-radio-group>
+              </div>
+
+              <div class="field-item field-item-xs required-box">
+                <app-checkbox
+                  [formGroup]="myGroup"
+                  [controlName]="FormElementsEnum.DynamicFormRequired + id"
+                  [checkboxName]="'required'"
+                ></app-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </section>
+
+  @if (validationErrors) {
+    <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>
+  }
 </div>
-<button matButton="outlined" [disabled]="loading$ | async" (click)="create()">Create</button>
-@if (validationErrors) {
-  <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>
-}

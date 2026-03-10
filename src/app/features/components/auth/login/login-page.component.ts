@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { ValidationService } from '../../../../shared/services/validation.service';
-import { AuthApiService } from '../../../../shared/services/auth-api.service';
+import { AuthApiService } from '../../../../core/services/auth-api.service';
 import { ToolsService } from '../../../../shared/services/tools.service';
 import { Router } from '@angular/router';
 import { LoginDto } from '../../../../shared/models/auth.model';

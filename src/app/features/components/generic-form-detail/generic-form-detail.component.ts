@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FormDefinitionDto } from '../../../shared/models/form-generator.mode';
 import { options } from '../../../shared/models/formType';
 import { FormControl, FormGroup } from '@angular/forms';
+import { PageActionService } from '../../../shared/services/page-action.service';
 
 @Component({
   selector: 'app-generic-form-detail',
@@ -21,9 +22,11 @@ export class GenericFormDetailComponent {
     private readonly formApiService: FormsApiService,
     private readonly route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
+    private readonly pageActionService: PageActionService
   ) {}
 
   ngOnInit() {
+    this.pageActionService.setAction('Save UI', 'Create', () => this.create());
     this.myGroup = new FormGroup({});
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
@@ -45,5 +48,9 @@ export class GenericFormDetailComponent {
         }
       }
     });
+  }
+
+  create() {
+    
   }
 }

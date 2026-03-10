@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { PageActionService } from '../../services/page-action.service';
 
 @Component({
   selector: 'app-header',
@@ -12,7 +13,9 @@ export class HeaderComponent {
   @Input() title?: string;
   @Input() buttonTitle?: string;
 
-  buttonClicked() {
-    this.buttonActionEmitter.emit();
+  constructor(protected pageActionService: PageActionService) {}
+
+  onActionClick() {
+    this.pageActionService.runAction();
   }
 }

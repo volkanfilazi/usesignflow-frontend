@@ -64,6 +64,24 @@
             formControlName="passwordConfirm"
             placeholder="••••••••"
           />
+          <div class="d-flex align-items-center mt-3 gap-2">
+            <span class="terms-link" (click)="openTerms()">Terms of Service</span>
+            <span> | </span>
+            <span class="terms-link" (click)="openPrivacy()">Privacy Policy</span>
+          </div>
+          <div class="d-flex align-items-center">
+            <span>I agree to the</span>
+            <app-checkbox
+              [formGroup]="formGroup"
+              controlName="termsAccepted"
+              checkboxName="Terms of Service"
+            ></app-checkbox>
+            <app-checkbox
+              [formGroup]="formGroup"
+              controlName="privacyAccepted"
+              checkboxName="Privacy Policy"
+            ></app-checkbox>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary w-100" (click)="register()">

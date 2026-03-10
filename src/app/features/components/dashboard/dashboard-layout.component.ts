@@ -6,7 +6,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { SharedModule } from '../../../shared/shared.module';
-import { AuthStateService } from '../../../core/auth/auth-state.service';
+import { AuthStateService } from '../../../core/services/auth-state.service';
 
 @Component({
   selector: 'app-dashboard-laylout',
