@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../../../environments/environment';
+import { take } from 'rxjs/operators';
 
 type VerifyStatus = 'loading' | 'success' | 'error';
 
@@ -21,11 +23,11 @@ export class VerificationProcessComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
+    this.route.queryParamMap.pipe(take(1)).subscribe((params) => {
       const token = params.get('token');
       const email = params.get('email');
 
@@ -34,8 +36,7 @@ export class VerificationProcessComponent implements OnInit {
       if (!token || !email) {
         this.status = 'error';
         this.title = 'Invalid verification link';
-        this.message =
-          'The verification link is incomplete or invalid. Redirecting to login...';
+        this.message = 'The verification link is incomplete or invalid. Redirecting to login...';
 
         setTimeout(() => {
           this.router.navigate(['/login'], {
@@ -48,14 +49,14 @@ export class VerificationProcessComponent implements OnInit {
 
       this.http
         .get(
-          `https://localhost:7169/api/auth/verify-email?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`
+          `${environment.apiBaseUrl}/auth/verify-email?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`,
         )
+        .pipe(take(1))
         .subscribe({
           next: () => {
             this.status = 'success';
             this.title = 'Email verified successfully';
-            this.message =
-              'Your account is now active. Redirecting you to the login page...';
+            this.message = 'Your account is now active. Redirecting you to the login page...';
 
             setTimeout(() => {
               this.router.navigate(['/login'], {
@@ -63,7 +64,9 @@ export class VerificationProcessComponent implements OnInit {
               });
             }, 1400);
           },
-          error: () => {
+          error: (err) => {
+            console.error('Verify error:', err);
+
             this.status = 'error';
             this.title = 'Verification failed';
             this.message =
