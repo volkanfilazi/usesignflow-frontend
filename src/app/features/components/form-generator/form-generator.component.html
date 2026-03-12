@@ -34,13 +34,6 @@
           [checkboxName]="'expanded'"
         ></app-checkbox>
       </div>
-
-      <div class="builder-action">
-        <app-primary-button
-          (buttonClick)="createNewControl()"
-          [buttonName]="'Create new group'"
-        ></app-primary-button>
-      </div>
     </div>
   </section>
 
@@ -94,7 +87,7 @@
                 <app-combobox
                   [formGroup]="myGroup"
                   [controlName]="FormElementsEnum.DynamicFormType + id"
-                  [options]="options"
+                  [options]="fieldOptions"
                   (typeChanged)="comboboxChanged(id, $event)"
                 ></app-combobox>
               </div>
@@ -132,6 +125,61 @@
                   [checkboxName]="'required'"
                 ></app-checkbox>
               </div>
+              @if (myGroup.get(FormElementsEnum.DynamicFormType + id)?.value === 'text') {
+                <div class="field-item field-item-full optional-rules-card">
+                  <div class="optional-rules-head">
+                    <span class="optional-rules-badge">Optional</span>
+                    <h4>Validation rules</h4>
+                    <p>Control text length for this field.</p>
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-1">
+                    <div class="field-item">
+                      <app-text-input
+                        [label]="'Min length'"
+                        [formGroup]="myGroup"
+                        [controlName]="'minLength' + id"
+                      ></app-text-input>
+                    </div>
+
+                    <div class="field-item">
+                      <app-text-input
+                        [label]="'Max length'"
+                        [formGroup]="myGroup"
+                        [controlName]="'maxLength' + id"
+                      ></app-text-input>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              @if (myGroup.get(FormElementsEnum.DynamicFormType + id)?.value === 'number') {
+                <div class="field-item field-item-full optional-rules-card">
+                  <div class="optional-rules-head">
+                    <span class="optional-rules-badge">Optional</span>
+                    <h4>Validation rules</h4>
+                    <p>Set value boundaries for numeric input.</p>
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-1">
+                    <div class="field-item">
+                      <app-text-input
+                        [label]="'Min value'"
+                        [formGroup]="myGroup"
+                        [controlName]="'min' + id"
+                      ></app-text-input>
+                    </div>
+
+                    <div class="field-item">
+                      <app-text-input
+                        [label]="'Max value'"
+                        [formGroup]="myGroup"
+                        [controlName]="'max' + id"
+                      ></app-text-input>
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
           </div>
         </div>

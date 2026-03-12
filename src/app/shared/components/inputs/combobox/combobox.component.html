@@ -2,7 +2,13 @@
   <mat-form-field class="w-100" [formGroup]="formGroup">
     <mat-label>Choose an element type</mat-label>
     <div class="d-flex flex-row align-items-center justify-content-end">
-      <input matInput [id]="controlName" [formControlName]="controlName" [matAutocomplete]="auto" />
+      <input
+        matInput
+        [required]="isRequired"
+        [id]="controlName"
+        [formControlName]="controlName"
+        [matAutocomplete]="auto"
+      />
       <mat-icon>arrow_drop_down</mat-icon>
     </div>
     <mat-autocomplete #auto="matAutocomplete">

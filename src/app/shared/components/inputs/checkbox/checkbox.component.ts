@@ -8,6 +8,7 @@ import { FormGroup } from "@angular/forms";
 })
 export class CheckboxComponent {
   @Input() formGroup!: FormGroup;
+  @Input() isRequired: boolean = false;
   @Input() controlName: string | undefined;
   @Input() checkboxName: string | undefined;
 }

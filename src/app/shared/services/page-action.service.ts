@@ -1,23 +1,25 @@
 import { Injectable, signal } from '@angular/core';
 
+export interface PageAction {
+  id: string;
+  text: string;
+  handler: () => void;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PageActionService {
-  buttonName = '';
-  actionLabel = signal<string | null>(null);
-  actionHandler: (() => void) | null = null;
+  actions = signal<PageAction[]>([]);
 
-  setAction(label: string, name: string, handler: () => void) {
-    this.buttonName = name;
-    this.actionLabel.set(label);
-    this.actionHandler = handler;
+  addAction(action: PageAction) {
+    this.actions.update((prev) => [...prev, action]);
   }
 
-  clearAction() {
-    this.actionLabel.set(null);
-    this.actionHandler = null;
+  clearActions() {
+    this.actions.set([]);
   }
 
-  runAction() {
-    this.actionHandler?.();
+  runAction(id: string) {
+    const action = this.actions().find((x) => x.id === id);
+    action?.handler();
   }
 }
