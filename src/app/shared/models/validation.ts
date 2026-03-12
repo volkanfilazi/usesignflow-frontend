@@ -3,4 +3,5 @@ interface ValidationIssue {
   message: string;
   controlName?: string;
   elementId?: string;
+  label?: string;
 }

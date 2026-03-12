@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormsApiService } from '../../../shared/services/form-api.service';
-import { FormDefinitionDto } from '../../../shared/models/form-generator.mode';
 import { Router } from '@angular/router';
+import { FormDefinition } from '../../../shared/models/form-generator.mode';
 
 @Component({
   selector: 'app-generic-form-list',
@@ -14,7 +14,7 @@ export class GenericFormListComponent implements OnInit {
   @Input() formNameChanged: string | undefined;
   @Input() myGroup: FormGroup | undefined;
 
-  forms: FormDefinitionDto[] = [];
+  forms: FormDefinition[] = [];
 
   constructor(
     private readonly formApiService: FormsApiService,
@@ -33,7 +33,7 @@ export class GenericFormListComponent implements OnInit {
     }
   }
 
-  onFormClick(formDef: FormDefinitionDto) {
+  onFormClick(formDef: FormDefinition) {
     this.router.navigate(['/dashboard/forms', formDef.id]);
   }
 }

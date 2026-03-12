@@ -15,7 +15,7 @@ export class HeaderComponent {
 
   constructor(protected pageActionService: PageActionService) {}
 
-  onActionClick() {
-    this.pageActionService.runAction();
+  onActionClick(id: string) {
+    this.pageActionService.runAction(id);
   }
 }

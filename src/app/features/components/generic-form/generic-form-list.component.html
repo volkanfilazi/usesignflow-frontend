@@ -1,21 +1,19 @@
-<div class="forms-grid">
-  @if (forms && forms.length > 0) {
-    @for (item of forms; track item.id ?? $index) {
-      <mat-card
-        class="form-card"
-        appearance="outlined"
-        (click)="onFormClick(item)"
-      >
-        <mat-card-header>
-          <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title>{{ item.formName }}</mat-card-title>
-          <mat-card-subtitle>{{ item.version }}</mat-card-subtitle>
-        </mat-card-header>
+<div class="builder-page">
+  <div class="forms-grid">
+    @if (forms && forms.length > 0) {
+      @for (item of forms; track item.id ?? $index) {
+        <mat-card class="form-card" appearance="outlined" (click)="onFormClick(item)">
+          <mat-card-header>
+            <div mat-card-avatar class="example-header-image"></div>
+            <mat-card-title>{{ item.formName }}</mat-card-title>
+            <mat-card-subtitle>{{ item.version }}</mat-card-subtitle>
+          </mat-card-header>
 
-        <mat-card-actions class="d-flex justify-content-end">
-          <button matButton (click)="$event.stopPropagation()">Delete</button>
-        </mat-card-actions>
-      </mat-card>
+          <mat-card-actions class="d-flex justify-content-end">
+            <button matButton (click)="$event.stopPropagation()">Delete</button>
+          </mat-card-actions>
+        </mat-card>
+      }
     }
-  }
+  </div>
 </div>

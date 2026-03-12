@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { FormFieldType } from '../../../models/form-generator.mode';
 
 @Component({
   selector: 'app-combobox',
@@ -11,6 +12,7 @@ import { Subscription } from 'rxjs';
 export class ComboboxComponent {
   @Input() formGroup!: FormGroup;
   @Input() controlName: string | undefined;
+  @Input() isRequired: boolean = false;
   @Input() options: string[] = [];
   @Output() typeChanged = new EventEmitter<string>();
 

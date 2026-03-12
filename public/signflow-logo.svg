@@ -1,0 +1,21 @@
+
+      <svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#92E3A9;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#6DD58C;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="100" height="100" rx="15" fill="url(#grad)"/>
+        <g transform="translate(50, 50)" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Document bottom -->
+          <path d="M -15 10 v 3 a 2 2 0 0 0 2 2 h 26 a 2 2 0 0 0 2 -2 v -3" />
+          <!-- Arrow down -->
+          <polyline points="-5,-2 0,5 5,-2" />
+          <!-- Vertical line -->
+          <line x1="0" y1="-18" x2="0" y2="5" />
+          <!-- Document top -->
+          <path d="M 10 -8 L 6 -12 L -6 -12 L -10 -8" />
+        </g>
+      </svg>
+    

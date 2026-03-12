@@ -1,15 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
-import { FormElementsEnum, options } from '../../../shared/models/formType';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { FormDefinitionDto } from '../../../shared/models/form-generator.mode';
 import { FormsApiService } from '../../../shared/services/form-api.service';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { ValidationService } from '../../../shared/services/validation.service';
 import { PageActionService } from '../../../shared/services/page-action.service';
+import {
+  CreateFormDefinitionRequest,
+  FormElementsEnum,
+  FormFieldType,
+  options,
+} from '../../../shared/models/form-generator.mode';
 
 @Component({
   selector: 'app-form-generator',
@@ -17,11 +21,11 @@ import { PageActionService } from '../../../shared/services/page-action.service'
   styleUrls: ['./form-generator.component.scss'],
   standalone: false,
 })
-export class FormGeneratorComponent {
+export class FormGeneratorComponent implements OnDestroy {
   loading$ = new BehaviorSubject<boolean>(false);
   myGroup: FormGroup;
   FormElementsEnum = FormElementsEnum;
-  options = options;
+  fieldOptions: FormFieldType[] = [...options];
   dynamicFormIds: string[] = [];
   validationErrors: ValidationIssue[] | undefined;
 
@@ -30,7 +34,7 @@ export class FormGeneratorComponent {
     private readonly router: Router,
     private readonly toolsService: ToolsService,
     private readonly validationService: ValidationService,
-    private readonly pageActionService: PageActionService
+    private readonly pageActionService: PageActionService,
   ) {
     this.myGroup = new FormGroup({
       formName: new FormControl(),
@@ -39,7 +43,19 @@ export class FormGeneratorComponent {
     });
 
     this.myGroup.get('formName')?.valueChanges.subscribe((value) => {});
-    this.pageActionService.setAction('Save UI', 'Create', () => this.create());
+    this.pageActionService.clearActions();
+
+    this.pageActionService.addAction({
+      id: 'add',
+      text: 'Add new element',
+      handler: () => this.createNewControl(),
+    });
+
+    this.pageActionService.addAction({
+      id: 'save-ui',
+      text: 'Create',
+      handler: () => this.create(),
+    });
   }
 
   createNewControl() {
@@ -49,8 +65,12 @@ export class FormGeneratorComponent {
     this.myGroup.addControl(FormElementsEnum.DynamicFormRequired + uniqueId, new FormControl());
     this.myGroup.addControl(
       FormElementsEnum.DynamicFormType + uniqueId,
-      new FormControl(this.options[0]),
+      new FormControl(this.fieldOptions[0]),
     );
+    this.myGroup.addControl('min' + uniqueId, new FormControl());
+    this.myGroup.addControl('max' + uniqueId, new FormControl());
+    this.myGroup.addControl('minLength' + uniqueId, new FormControl());
+    this.myGroup.addControl('maxLength' + uniqueId, new FormControl());
     this.myGroup.addControl(FormElementsEnum.DynamicFormLabel + uniqueId, new FormControl());
     this.myGroup.addControl(FormElementsEnum.DynamicFormColSpan + uniqueId, new FormControl('4'));
   }
@@ -94,6 +114,10 @@ export class FormGeneratorComponent {
     }
   }
 
+  returnFormValue(formName: string) {
+    return this.myGroup.get(formName)?.value;
+  }
+
   create() {
     this.validationErrors = [];
 
@@ -104,18 +128,26 @@ export class FormGeneratorComponent {
       return;
     }
 
+    if (this.dynamicFormIds.length == 0) {
+      this.toolsService.showSnackbar('Please enter at least one form element.', 'success-snackbar');
+
+      return;
+    }
+
     this.loading$.next(true);
 
-    const formDefinition: FormDefinitionDto = {
-      id: '',
+    const formDefinition: CreateFormDefinitionRequest = {
       formName: this.myGroup.get('formName')?.value,
       version: this.myGroup.get('version')?.value,
       expanded: this.myGroup.get('expanded')?.value ?? false,
-      ownerUserId: '',
       fields: this.dynamicFormIds.map((id) => ({
         fieldId: id,
         label: this.myGroup.get(FormElementsEnum.DynamicFormLabel + id)?.value,
         type: this.myGroup.get(FormElementsEnum.DynamicFormType + id)?.value,
+        min: this.returnFormValue('min' + id),
+        max: this.returnFormValue('max' + id),
+        minLength: this.returnFormValue('minLength' + id),
+        maxLength: this.returnFormValue('maxLength' + id),
         required: this.myGroup.get(FormElementsEnum.DynamicFormRequired + id)?.value ?? false,
         colSpan: this.myGroup.get(FormElementsEnum.DynamicFormColSpan + id)?.value,
         options: this.myGroup.get(FormElementsEnum.DynamicFormSelectOptions + id)?.value,
@@ -137,5 +169,9 @@ export class FormGeneratorComponent {
         });
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.pageActionService.clearActions();
   }
 }

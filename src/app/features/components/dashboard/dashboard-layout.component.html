@@ -1,39 +1,68 @@
 @if (!isDesktop) {
-  <div class="position-fixed top-0 end-0 m-3 z-3">
-    <button mat-icon-button (click)="isMobile = !isMobile">
+  <div class="mobile-menu-trigger">
+    <button class="mobile-menu-btn" mat-icon-button (click)="isMobile = !isMobile">
       <mat-icon>{{ isMobile ? 'close' : 'menu' }}</mat-icon>
     </button>
   </div>
 }
-<mat-sidenav-container class="layout h-100">
+
+<mat-sidenav-container class="dashboard-layout">
   <mat-sidenav
+    class="dashboard-sidenav"
     [mode]="isDesktop ? 'side' : 'over'"
     [opened]="isDesktop || isMobile"
-    [style.width]="isMobile ? '100vw' : '260px'"
+    [style.width]="isMobile ? '100vw' : '280px'"
   >
-    <mat-nav-list>
-      <a
-        mat-list-item
-        routerLink="/dashboard/form-generator"
-        (click)="isMobile ? (isMobile = !isMobile) : null"
-        routerLinkActive="selected"
-      >
-        Generate new form
-      </a>
+    <div class="sidenav-shell">
+      <div class="sidenav-brand">
+        <div class="brand-icon">
+          <img src="signflow-logo.svg" alt="SignFlow logo" />
+        </div>
 
-      <a
-        mat-list-item
-        routerLink="/dashboard/forms"
-        (click)="isMobile ? (isMobile = !isMobile) : null"
-        routerLinkActive="selected"
-      >
-        Generic form list
-      </a>
-    </mat-nav-list>
+        <div class="brand-text">
+          <h2>SignFlow</h2>
+          <span>Dashboard</span>
+        </div>
+      </div>
+
+      <div class="sidenav-section">
+        <span class="sidenav-section-title">Workspace</span>
+
+        <mat-nav-list class="sidenav-nav">
+          <a
+            mat-list-item
+            class="sidenav-link"
+            routerLink="/dashboard/form-generator"
+            (click)="isMobile ? (isMobile = !isMobile) : null"
+            routerLinkActive="selected"
+          >
+            <div class="d-flex align-items-center gap-1">
+              <mat-icon>edit_note</mat-icon>
+              <span>Generate new form</span>
+            </div>
+          </a>
+
+          <a
+            mat-list-item
+            class="sidenav-link"
+            routerLink="/dashboard/forms"
+            (click)="isMobile ? (isMobile = !isMobile) : null"
+            routerLinkActive="selected"
+          >
+            <div class="d-flex align-items-center gap-1">
+              <mat-icon>description</mat-icon>
+              <span>Generic form list</span>
+            </div>
+          </a>
+        </mat-nav-list>
+      </div>
+    </div>
   </mat-sidenav>
 
-  <mat-sidenav-content class="px-3">
+  <mat-sidenav-content class="dashboard-content">
     <app-header></app-header>
-    <router-outlet></router-outlet>
+    <div class="dashboard-router-shell">
+      <router-outlet></router-outlet>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

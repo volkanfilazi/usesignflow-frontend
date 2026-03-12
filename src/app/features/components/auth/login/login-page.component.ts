@@ -7,6 +7,8 @@ import { ToolsService } from '../../../../shared/services/tools.service';
 import { Router } from '@angular/router';
 import { LoginDto } from '../../../../shared/models/auth.model';
 import { AuthStateService } from '../../../../core/services/auth-state.service';
+import { getApiErrorMessage } from '../../../../shared/utility/helper/response-error-helper';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login-page',
@@ -61,14 +63,15 @@ export class LoginPageComponent {
         this.loading$.next(false);
         this.router.navigate(['/dashboard']);
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         this.loading$.next(false);
 
         if (error.status === 403) {
           this.toolsService.showSnackbar('Account is not yet verified', 'error-snackbar');
-        } else {
-          this.toolsService.showSnackbar(error.error, 'error-snackbar');
+          return;
         }
+
+        this.toolsService.showSnackbar(getApiErrorMessage(error), 'error-snackbar');
       },
     });
   }

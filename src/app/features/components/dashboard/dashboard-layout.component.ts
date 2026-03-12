@@ -11,6 +11,7 @@ import { AuthStateService } from '../../../core/services/auth-state.service';
 @Component({
   selector: 'app-dashboard-laylout',
   templateUrl: './dashboard-layout.component.html',
+  styleUrl: './dashboard.component.scss',
   imports: [
     RouterOutlet,
     MatFormFieldModule,
