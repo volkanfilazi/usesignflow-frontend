@@ -12,12 +12,12 @@ export class AuthStateService {
     localStorage.setItem('refreshToken', refreshToken);
   }
 
-  getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
-  }
-
   getToken(): string | null {
     return localStorage.getItem('token');
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
   }
 
   private getPayload(): JwtPayloadModel | null {
@@ -31,7 +31,7 @@ export class AuthStateService {
     }
   }
 
-  isLoggedIn(): boolean {
+  hasValidAccessToken(): boolean {
     const payload = this.getPayload();
     if (!payload?.exp) return false;
 
@@ -39,9 +39,13 @@ export class AuthStateService {
     return payload.exp > nowInSeconds;
   }
 
+  hasSession(): boolean {
+    return !!this.getRefreshToken();
+  }
+
   getFullName(): string | null {
     const payload = this.getPayload();
-    return payload?.fullName ?? null;
+    return payload?.name ?? null;
   }
 
   getEmail(): string | null {
@@ -51,7 +55,7 @@ export class AuthStateService {
 
   getUserId(): string | null {
     const payload = this.getPayload();
-    return payload?.nameid ?? null;
+    return payload?.sub ?? null;
   }
 
   clearSession(): void {

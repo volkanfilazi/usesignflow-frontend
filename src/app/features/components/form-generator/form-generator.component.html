@@ -37,155 +37,196 @@
     </div>
   </section>
 
-  <section class="builder-list-section">
-    <div class="section-head">
-      <div>
-        <span class="section-kicker">Form fields</span>
-        <h2>Field groups</h2>
-      </div>
-
-      <div class="section-meta">
-        <span>{{ dynamicFormIds.length }} items</span>
-      </div>
-    </div>
-
-    <div
-      cdkDropList
-      [cdkDropListData]="dynamicFormIds"
-      (cdkDropListDropped)="drop($event)"
-      class="builder-list"
-    >
-      <ng-container *ngFor="let id of dynamicFormIds; let i = index">
-        <div class="group-card" cdkDrag [formGroup]="myGroup">
-          <div class="group-card-header">
-            <div class="group-index">
-              <span>#{{ i + 1 }}</span>
-            </div>
-
-            <div class="group-title-wrap">
-              <h3>Field group</h3>
-              <p>Configure label, type, layout, and validation.</p>
-            </div>
-
-            <div class="drag-handle" cdkDragHandle>
-              <mat-icon>drag_indicator</mat-icon>
-            </div>
-          </div>
-
-          <div class="group-card-body">
-            <div class="field-grid">
-              <div class="field-item field-item-lg">
-                <app-text-input
-                  [label]="'Element label'"
-                  [isRequired]="true"
-                  [formGroup]="myGroup"
-                  [controlName]="FormElementsEnum.DynamicFormLabel + id"
-                ></app-text-input>
+  <div
+    cdkDropList
+    [cdkDropListData]="builderItems"
+    (cdkDropListDropped)="drop($event)"
+    class="builder-list"
+  >
+    @for (item of builderItems; track item.id; let i = $index) {
+      <div class="group-card" cdkDrag [attr.data-field-id]="item.id" [formGroup]="myGroup">
+        @if (item.type === 'field') {
+          <div>
+            <div class="group-card-header">
+              <div class="group-index">
+                <span>#{{ i + 1 }}</span>
               </div>
 
-              <div class="field-item field-item-md">
-                <app-combobox
-                  [formGroup]="myGroup"
-                  [controlName]="FormElementsEnum.DynamicFormType + id"
-                  [options]="fieldOptions"
-                  (typeChanged)="comboboxChanged(id, $event)"
-                ></app-combobox>
+              <div class="group-title-wrap">
+                <h3>Field group</h3>
+                <p>Configure label, type, layout, and validation.</p>
               </div>
 
-              @if (myGroup.get(FormElementsEnum.DynamicFormSelectOptions + id)) {
-                <div class="field-item field-item-full">
-                  <app-chips-input
+              <div class="drag-handle" (click)="duplicateElement(item.id)">
+                <mat-icon>content_copy</mat-icon>
+              </div>
+
+              <div class="drag-handle" cdkDragHandle>
+                <mat-icon>drag_indicator</mat-icon>
+              </div>
+
+              <div class="drag-handle" (click)="removeElement(item.id)">
+                <mat-icon>close</mat-icon>
+              </div>
+            </div>
+
+            <div class="group-card-body">
+              <div class="field-grid">
+                <div class="field-item field-item-lg">
+                  <app-text-input
+                    [label]="'Element label'"
+                    [isRequired]="true"
                     [formGroup]="myGroup"
-                    [controlName]="FormElementsEnum.DynamicFormSelectOptions + id"
-                  ></app-chips-input>
+                    [controlName]="FormElementsEnum.Label + item.id"
+                  ></app-text-input>
                 </div>
-              }
 
-              <div class="field-item field-item-md colspan-card">
-                <label class="field-label" [id]="FormElementsEnum.DynamicFormColSpan + id">
-                  Column width
-                </label>
+                <div class="d-flex flex-column gap-2">
+                  <div class="field-item field-item-md">
+                    <app-combobox
+                      [formGroup]="myGroup"
+                      [controlName]="FormElementsEnum.Type + item.id"
+                      [label]="'Choose an element type'"
+                      [options]="fieldOptions"
+                      (typeChanged)="comboboxChanged(item.id, $event)"
+                    ></app-combobox>
+                  </div>
 
-                <mat-radio-group
-                  class="colspan-group"
-                  [formControlName]="FormElementsEnum.DynamicFormColSpan + id"
-                  [name]="FormElementsEnum.DynamicFormColSpan + id"
-                >
-                  <mat-radio-button id="radio_1" value="4">100%</mat-radio-button>
-                  <mat-radio-button id="radio_2" value="3">75%</mat-radio-button>
-                  <mat-radio-button id="radio_3" value="2">50%</mat-radio-button>
-                  <mat-radio-button id="radio_4" value="1">25%</mat-radio-button>
-                </mat-radio-group>
+                  <div class="field-item field-item-md">
+                    <app-combobox
+                      [formGroup]="myGroup"
+                      [controlName]="FormElementsEnum.AssignedTo + item.id"
+                      [label]="'Assigned to who'"
+                      [options]="assignedToOptions"
+                      (typeChanged)="assignedToComboboxChanged(item.id, $event)"
+                    ></app-combobox>
+                  </div>
+                </div>
+
+                @if (myGroup.get(FormElementsEnum.SelectOptions + item.id)) {
+                  <div class="field-item field-item-full">
+                    <app-chips-input
+                      [formGroup]="myGroup"
+                      [controlName]="FormElementsEnum.SelectOptions + item.id"
+                    ></app-chips-input>
+                  </div>
+                }
+
+                <div class="field-item field-item-md colspan-card">
+                  <label class="field-label" [id]="FormElementsEnum.ColSpan + item.id">
+                    Column width
+                  </label>
+
+                  <mat-radio-group
+                    class="colspan-group"
+                    [formControlName]="FormElementsEnum.ColSpan + item.id"
+                    [name]="FormElementsEnum.ColSpan + item.id"
+                  >
+                    <mat-radio-button id="radio_1" value="4">100%</mat-radio-button>
+                    <mat-radio-button id="radio_2" value="3">75%</mat-radio-button>
+                    <mat-radio-button id="radio_3" value="2">50%</mat-radio-button>
+                    <mat-radio-button id="radio_4" value="1">25%</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+
+                <div class="field-item field-item-xs required-box">
+                  <app-checkbox
+                    [formGroup]="myGroup"
+                    [controlName]="FormElementsEnum.Required + item.id"
+                    [checkboxName]="requiredCheckboxLabel"
+                  ></app-checkbox>
+                </div>
+
+                @if (myGroup.get(FormElementsEnum.Type + item.id)?.value === 'text') {
+                  <div class="field-item field-item-full optional-rules-card">
+                    <div class="optional-rules-head">
+                      <span class="optional-rules-badge">Optional</span>
+                      <h4>Validation rules</h4>
+                      <p>Control text length for this field.</p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-1">
+                      <div class="field-item">
+                        <app-text-input
+                          [label]="'Min length'"
+                          [formGroup]="myGroup"
+                          [controlName]="FormElementsEnum.ValidationMinLength + item.id"
+                        ></app-text-input>
+                      </div>
+
+                      <div class="field-item">
+                        <app-text-input
+                          [label]="'Max length'"
+                          [formGroup]="myGroup"
+                          [controlName]="FormElementsEnum.ValidationMaxLength + item.id"
+                        ></app-text-input>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (myGroup.get(FormElementsEnum.Type + item.id)?.value === 'number') {
+                  <div class="field-item field-item-full optional-rules-card">
+                    <div class="optional-rules-head">
+                      <span class="optional-rules-badge">Optional</span>
+                      <h4>Validation rules</h4>
+                      <p>Set value boundaries for numeric input.</p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-1">
+                      <div class="field-item">
+                        <app-text-input
+                          [label]="'Min value'"
+                          [formGroup]="myGroup"
+                          [controlName]="FormElementsEnum.ValidationMin + item.id"
+                        ></app-text-input>
+                      </div>
+
+                      <div class="field-item">
+                        <app-text-input
+                          [label]="'Max value'"
+                          [formGroup]="myGroup"
+                          [controlName]="FormElementsEnum.ValidationMax + item.id"
+                        ></app-text-input>
+                      </div>
+                    </div>
+                  </div>
+                }
               </div>
-
-              <div class="field-item field-item-xs required-box">
-                <app-checkbox
-                  [formGroup]="myGroup"
-                  [controlName]="FormElementsEnum.DynamicFormRequired + id"
-                  [checkboxName]="'required'"
-                ></app-checkbox>
-              </div>
-              @if (myGroup.get(FormElementsEnum.DynamicFormType + id)?.value === 'text') {
-                <div class="field-item field-item-full optional-rules-card">
-                  <div class="optional-rules-head">
-                    <span class="optional-rules-badge">Optional</span>
-                    <h4>Validation rules</h4>
-                    <p>Control text length for this field.</p>
-                  </div>
-
-                  <div class="d-flex flex-wrap gap-1">
-                    <div class="field-item">
-                      <app-text-input
-                        [label]="'Min length'"
-                        [formGroup]="myGroup"
-                        [controlName]="'minLength' + id"
-                      ></app-text-input>
-                    </div>
-
-                    <div class="field-item">
-                      <app-text-input
-                        [label]="'Max length'"
-                        [formGroup]="myGroup"
-                        [controlName]="'maxLength' + id"
-                      ></app-text-input>
-                    </div>
-                  </div>
-                </div>
-              }
-
-              @if (myGroup.get(FormElementsEnum.DynamicFormType + id)?.value === 'number') {
-                <div class="field-item field-item-full optional-rules-card">
-                  <div class="optional-rules-head">
-                    <span class="optional-rules-badge">Optional</span>
-                    <h4>Validation rules</h4>
-                    <p>Set value boundaries for numeric input.</p>
-                  </div>
-
-                  <div class="d-flex flex-wrap gap-1">
-                    <div class="field-item">
-                      <app-text-input
-                        [label]="'Min value'"
-                        [formGroup]="myGroup"
-                        [controlName]="'min' + id"
-                      ></app-text-input>
-                    </div>
-
-                    <div class="field-item">
-                      <app-text-input
-                        [label]="'Max value'"
-                        [formGroup]="myGroup"
-                        [controlName]="'max' + id"
-                      ></app-text-input>
-                    </div>
-                  </div>
-                </div>
-              }
             </div>
           </div>
-        </div>
-      </ng-container>
-    </div>
-  </section>
+        }
+
+        @if (item.type === 'agreement') {
+          <div>
+            <div class="group-card-header">
+              <div class="group-index">
+                <span>#{{ i + 1 }}</span>
+              </div>
+
+              <div class="group-title-wrap">
+                <h3>Agreement</h3>
+                <p>External user should accept this agreement.</p>
+              </div>
+
+              <div class="drag-handle" (click)="removeAgreement(item.id)">
+                <mat-icon>close</mat-icon>
+              </div>
+
+              <div class="drag-handle" cdkDragHandle>
+                <mat-icon>drag_indicator</mat-icon>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column gap-1 mt-1">
+              <div>{{ item.agreement.title }}</div>
+              <div>{{ item.agreement.content }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
 
   @if (validationErrors) {
     <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>

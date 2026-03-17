@@ -1,8 +1,15 @@
-<label>{{ label }}</label>
-<div class="signature-container" [formGroup]="formGroup">
-  <canvas #signatureCanvas [id]="controlName" class="signature-canvas"></canvas>
-
-  <div class="actions">
-    <button type="button" (click)="clear()">Clear</button>
+<div class="position-relative">
+  <label>{{ label }}</label>
+  <div
+    [ngClass]="disabled ? 'signature-disabled' : ''"
+    class="signature-container"
+    [formGroup]="formGroup"
+  >
+    <canvas #signatureCanvas [id]="controlName" class="signature-canvas"></canvas>
   </div>
+  @if (!disabled) {
+    <div class="actions">
+      <button type="button" (click)="clear()">Clear</button>
+    </div>
+  }
 </div>

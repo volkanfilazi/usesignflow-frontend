@@ -11,6 +11,7 @@ export class TextInputComponent {
   @Input() formGroup!: FormGroup;
   @Input() controlName: string | undefined;
   @Input() isRequired: boolean = false;
+  @Input() disabled: boolean = false;
   @Input() label: string = "";
   @Input() type: 'email' | 'number' | 'text' = "text";
 }

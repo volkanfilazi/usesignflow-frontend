@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, Input, Output, EventEmitter } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AuthStateService } from '../../services/auth-state.service';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { AuthStateService } from '../../../core/services/auth-state.service';
 
 export interface UserMenuItem {
   label: string;

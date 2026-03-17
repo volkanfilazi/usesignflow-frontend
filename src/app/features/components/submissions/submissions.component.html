@@ -1,0 +1,9 @@
+<div>
+  <app-table
+    [loading$]="loading$"
+    [columns]="columns"
+    [dataSource]="submissions"
+    (rowClick)="onRowClick($event)"
+    (buttonClick)="navigteToFormList()"
+  ></app-table>
+</div>

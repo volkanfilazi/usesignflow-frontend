@@ -38,7 +38,7 @@
           >
             <div class="d-flex align-items-center gap-1">
               <mat-icon>edit_note</mat-icon>
-              <span>Generate new form</span>
+              <span>New Flow</span>
             </div>
           </a>
 
@@ -51,7 +51,20 @@
           >
             <div class="d-flex align-items-center gap-1">
               <mat-icon>description</mat-icon>
-              <span>Generic form list</span>
+              <span>My Flows</span>
+            </div>
+          </a>
+
+          <a
+            mat-list-item
+            class="sidenav-link"
+            routerLink="/dashboard/submissions"
+            (click)="isMobile ? (isMobile = !isMobile) : null"
+            routerLinkActive="selected"
+          >
+            <div class="d-flex align-items-center gap-1">
+              <mat-icon>description</mat-icon>
+              <span>Submissions</span>
             </div>
           </a>
         </mat-nav-list>

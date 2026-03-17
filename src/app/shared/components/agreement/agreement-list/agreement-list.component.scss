@@ -1,0 +1,31 @@
+.dialog-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dialog-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  height: 8%;
+  background: white;
+  border-bottom: 1px solid #eee;
+}
+
+.dialog-body {
+  flex: 1;
+  overflow-y: auto;
+  height: 84%;
+  min-height: 0;
+}
+
+.dialog-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 8%;
+  background: white;
+  border-top: 1px solid #eee;
+}

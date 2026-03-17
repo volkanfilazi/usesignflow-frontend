@@ -1,25 +1,36 @@
-import { HttpErrorResponse, HttpInterceptorFn, HttpRequest, HttpHandlerFn } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpInterceptorFn,
+  HttpRequest,
+  HttpHandlerFn,
+} from '@angular/common/http';
 import { inject } from '@angular/core';
+import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { AuthStateService } from '../services/auth-state.service';
 import { AuthApiService } from '../services/auth-api.service';
-import { catchError, switchMap, throwError } from 'rxjs';
+
+let isRefreshing = false;
+let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 function addToken(request: HttpRequest<unknown>, token: string | null): HttpRequest<unknown> {
+  console.log('token', token)
   if (!token) return request;
 
   return request.clone({
     setHeaders: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 }
 
 function isAuthEndpoint(url: string): boolean {
-  return url.includes('/auth/login')
-    || url.includes('/auth/register')
-    || url.includes('/auth/refresh')
-    || url.includes('/auth/verify-email')
-    || url.includes('/auth/resend-verification');
+  return (
+    url.includes('/auth/login') ||
+    url.includes('/auth/register') ||
+    url.includes('/auth/refresh') ||
+    url.includes('/auth/verify-email') ||
+    url.includes('/auth/resend-verification')
+  );
 }
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -28,16 +39,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const accessToken = authState.getToken();
 
-  const authReq = isAuthEndpoint(req.url)
-    ? req
-    : addToken(req, accessToken);
+  const authReq = isAuthEndpoint(req.url) ? req : addToken(req, accessToken);
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (
-        error.status !== 401 ||
-        isAuthEndpoint(req.url)
-      ) {
+      if (error.status !== 401 || isAuthEndpoint(req.url)) {
         return throwError(() => error);
       }
 
@@ -49,21 +55,36 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      return authApi.refreshToken({
-        email,
-        refreshToken
-      }).pipe(
-        switchMap((response) => {
-          authState.setSession(response.token, response.refreshToken);
+      if (!isRefreshing) {
+        isRefreshing = true;
+        refreshTokenSubject.next(null);
 
-          const retryReq = addToken(req, response.token);
+        return authApi.refreshToken({ email, refreshToken }).pipe(
+          switchMap((response) => {
+            isRefreshing = false;
+
+            authState.setSession(response.token, response.refreshToken);
+            refreshTokenSubject.next(response.token);
+
+            const retryReq = addToken(req, response.token);
+            return next(retryReq);
+          }),
+          catchError((refreshError) => {
+            isRefreshing = false;
+            authState.logout();
+            return throwError(() => refreshError);
+          }),
+        );
+      }
+
+      return refreshTokenSubject.pipe(
+        filter((token): token is string => token !== null),
+        take(1),
+        switchMap((token) => {
+          const retryReq = addToken(req, token);
           return next(retryReq);
         }),
-        catchError((refreshError) => {
-          authState.logout();
-          return throwError(() => refreshError);
-        })
       );
-    })
+    }),
   );
 };

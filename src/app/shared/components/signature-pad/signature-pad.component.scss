@@ -18,3 +18,21 @@
   display: flex;
   gap: 8px;
 }
+
+.signature-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  background-color: rgb(211, 211, 211);
+}
+
+.signature-disabled::after {
+  content: 'Waiting for external signer';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.6);
+}

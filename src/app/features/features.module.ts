@@ -34,8 +34,8 @@ import { RegisterPageComponent } from './components/auth/register/register-page.
 import { LoginPageComponent } from './components/auth/login/login-page.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthLoadingOverlayComponent } from '../shared/components/loading-overlay/loading-overlay.component';
-import { LegalComponent } from '../shared/components/legal/legal.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { SubmissionsComponent } from './components/submissions/submissions.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +46,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     LandingPageComponent,
     RegisterPageComponent,
     LoginPageComponent,
+    SubmissionsComponent,
   ],
   imports: [
     ReactiveFormsModule,

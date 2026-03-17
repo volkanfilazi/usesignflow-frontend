@@ -24,10 +24,10 @@ export class ValidationService {
     return null;
   }
 
-  buildValidators(field: any): ValidatorFn[] {
+  buildValidators(field: any, includeRequired = true): ValidatorFn[] {
     const validators: ValidatorFn[] = [];
 
-    if (field.required) {
+    if (field.required && includeRequired) {
       validators.push(Validators.required);
     }
 

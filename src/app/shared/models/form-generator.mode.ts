@@ -1,15 +1,30 @@
+import { EditMode } from './auth.model';
+
 export enum FormElementsEnum {
-  DynamicFormRequired = 'dynamicFormRequired',
-  DynamicFormType = 'dynamicFormType',
-  DynamicFormLabel = 'dynamicFormLabel',
-  DynamicFormSelectOptions = 'dynamicFormSelectOptions',
-  DynamicFormColSpan = 'dynamicFormColSpan',
+  ColSpan = 'dynamicFormColSpan',
+  Required = 'dynamicFormRequired',
+  Type = 'dynamicFormType',
+  Label = 'dynamicFormLabel',
+  SelectOptions = 'dynamicFormSelectOptions',
+  AssignedTo = 'dynamicFormAssignedTo',
+  ValidationMin = 'validationMin',
+  ValidationMax = 'validationMax',
+  ValidationMinLength = 'validationMinLength',
+  ValidationMaxLength = 'validationMaxLength',
 }
 
-export const options = ['text', 'number', 'checkbox', 'select', 'email', 'signaturePad'] as const;
+export const AssignedToOptions = ['Owner', 'External'] as const;
+export type AssignedTo = 'Owner' | 'External';
+export type FormAssignedTo = (typeof AssignedToOptions)[number];
+export const options = ['text', 'number', 'checkbox', 'select', 'email', 'signaturePad', 'agreement'] as const;
 export type FormFieldType = (typeof options)[number];
-
 export type FieldType = (typeof options)[number];
+
+export interface Agreements {
+  id?: string;
+  title: string;
+  content: string;
+}
 
 export interface FieldDefinition {
   fieldId: string;
@@ -20,8 +35,10 @@ export interface FieldDefinition {
   max?: number;
   minLength?: number;
   maxLength?: number;
+  assignedTo: AssignedTo;
   pattern?: string;
   options?: string[] | [];
+  agreement?: Agreements;
   colSpan: number;
 }
 
@@ -36,12 +53,10 @@ export interface FormDefinition {
   fields: FieldDefinition[];
 }
 
-/**
- * Kullanıcının formu doldurup kaydettiği gerçek kayıt
- */
 export interface FormSubmission {
   id?: string;
   formId: string;
+  formName: string;
   formVersion: string;
   createdByUserId: string;
   status: SubmissionStatus;
@@ -50,6 +65,7 @@ export interface FormSubmission {
   rowVersion: number;
   answers: FormAnswer[];
   signatures: FormSignature[];
+  fieldsSnapshot: FieldDefinition[];
 }
 
 export interface CreateFormDefinitionRequest {
@@ -59,17 +75,11 @@ export interface CreateFormDefinitionRequest {
   fields: FieldDefinition[];
 }
 
-/**
- * Normal field cevapları
- */
 export interface FormAnswer {
   fieldId: string;
   value: string | null;
 }
 
-/**
- * Signature alanlarının ayrı tutulması daha temiz
- */
 export interface FormSignature {
   fieldId: string;
   signedByUserId?: string | null;
@@ -78,9 +88,6 @@ export interface FormSignature {
   signedAtUtc?: string | null;
 }
 
-/**
- * Formun workflow durumu
- */
 export enum SubmissionStatus {
   Draft = 'Draft',
   PendingSignature = 'PendingSignature',
@@ -90,41 +97,100 @@ export enum SubmissionStatus {
   Expired = 'Expired',
 }
 
-/**
- * İlk kayıt için request modeli
- */
+export interface AgreementTemplate {
+  id?: string;
+  ownerUserId?: string;
+  name: string;
+  title: string;
+  content: string;
+  createdAtUtc?: string;
+  updatedAtUtc?: string | null;
+}
+
+export function isSubmissionEditable(row: FormSubmission) {
+  switch (row.status) {
+    case SubmissionStatus.Draft:
+    case SubmissionStatus.PendingSignature:
+    case SubmissionStatus.PartiallySigned:
+      return true;
+
+    case SubmissionStatus.Completed:
+    case SubmissionStatus.Cancelled:
+    case SubmissionStatus.Expired:
+    default:
+      return false;
+  }
+}
+
+export function getSubmissionStatusColors(row: FormSubmission) {
+  switch (row.status) {
+    case SubmissionStatus.Draft:
+    case SubmissionStatus.PendingSignature:
+    case SubmissionStatus.PartiallySigned:
+      return 'status-yellow';
+
+    case SubmissionStatus.Completed:
+      return 'status-green';
+
+    case SubmissionStatus.Cancelled:
+    case SubmissionStatus.Expired:
+    default:
+      return 'status-red';
+  }
+}
+
+export function getSubmissionMode(row: FormSubmission): EditMode {
+  switch (row.status) {
+    case SubmissionStatus.Draft:
+    case SubmissionStatus.PendingSignature:
+    case SubmissionStatus.PartiallySigned:
+      return EditMode.EDIT;
+
+    case SubmissionStatus.Completed:
+    case SubmissionStatus.Cancelled:
+    case SubmissionStatus.Expired:
+    default:
+      return EditMode.VIEW;
+  }
+}
+
 export interface CreateFormSubmissionRequest {
   formId: string;
   answers: FormAnswer[];
 }
 
-/**
- * Edit/save için request modeli
- */
 export interface UpdateFormSubmissionRequest {
   answers: FormAnswer[];
   rowVersion: number;
 }
 
-/**
- * İmzaya gönderirken kullanılacak model
- */
-export interface SendForSignatureRequest {
-  recipientEmail: string;
-  signatureFieldId: string;
+export interface UpdateSubmissionByAccessTokenRequest {
+  token: string;
+  rowVersion: number;
+  answers: FormAnswer[];
 }
 
-/**
- * Mail ile gelen kişi imza attığında kullanılacak model
- */
+export interface SendForSignatureRequest {
+  signatureFieldId: string;
+  email: string;
+}
+
 export interface SignSubmissionRequest {
   signatureDataBase64: string;
   signedByEmail?: string | null;
 }
 
-/**
- * İmza isteği kaydı
- */
+export interface ResolveSubmissionAccessRequest {
+  token: string;
+}
+
+export interface ResolveSubmissionAccessResponse {
+  submissionId: string;
+  email: string;
+  isAuthenticated: boolean;
+  isEmailMatch: boolean;
+}
+
 export interface SignatureRequest {
   id?: string;
   submissionId: string;

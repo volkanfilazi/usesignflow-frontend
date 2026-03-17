@@ -1,19 +1,71 @@
 <div class="builder-page">
-  <div class="forms-grid">
+  @if (this.loading$ | async) {
+    <app-loading-overlay
+      [visible]="this.loading$.value"
+      [title]="'Loading...'"
+      [message]="'Please wait while load all datas'"
+    >
+    </app-loading-overlay>
+  } @else {
     @if (forms && forms.length > 0) {
-      @for (item of forms; track item.id ?? $index) {
-        <mat-card class="form-card" appearance="outlined" (click)="onFormClick(item)">
-          <mat-card-header>
-            <div mat-card-avatar class="example-header-image"></div>
-            <mat-card-title>{{ item.formName }}</mat-card-title>
-            <mat-card-subtitle>{{ item.version }}</mat-card-subtitle>
-          </mat-card-header>
+      <div class="forms-grid">
+        @for (item of forms; track item.id ?? $index) {
+          <mat-card class="form-card" appearance="outlined" (click)="onFormClick(item)">
+            <div class="form-card-top">
+              <div class="form-card-icon">
+                <mat-icon>description</mat-icon>
+              </div>
 
-          <mat-card-actions class="d-flex justify-content-end">
-            <button matButton (click)="$event.stopPropagation()">Delete</button>
-          </mat-card-actions>
-        </mat-card>
-      }
+              <div class="form-card-meta">
+                <span class="form-badge">Dynamic form</span>
+                <h3>{{ item.formName }}</h3>
+                <p>Version {{ item.version }}</p>
+              </div>
+            </div>
+
+            <div class="form-card-body">
+              <div class="form-info-row">
+                <span class="info-label">Status</span>
+                <span class="info-value success">Ready</span>
+              </div>
+
+              <div class="form-info-row">
+                <span class="info-label">Type</span>
+                <span class="info-value">Reusable template</span>
+              </div>
+            </div>
+
+            <mat-card-actions class="form-card-actions">
+              <button
+                mat-stroked-button
+                class="card-btn card-btn-ghost"
+                (click)="$event.stopPropagation(); onFormClick(item)"
+              >
+                Preview
+              </button>
+
+              <button
+                mat-flat-button
+                class="card-btn card-btn-danger"
+                (click)="$event.stopPropagation(); deleteFormitem(item.id ?? '')"
+              >
+                Delete
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <app-empty-state
+        [kicker]="'Form library'"
+        [title]="'No forms created yet'"
+        [description]="
+          'You have not created any dynamic forms yet. Start by building your first form template and manage it from here.'
+        "
+        [buttonText]="'Create your first form'"
+        [imageSrc]="'Documents-pana.svg'"
+        (action)="goToCreateForm()"
+      ></app-empty-state>
     }
-  </div>
+  }
 </div>

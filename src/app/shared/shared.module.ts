@@ -24,6 +24,14 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { LegalComponent } from './components/legal/legal.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
+import { EmptyStateComponent } from './components/empty-state/empty-state.component';
+import { AuthLoadingOverlayComponent } from './components/loading-overlay/loading-overlay.component';
+import { AgreementListComponent } from './components/agreement/agreement-list/agreement-list.component';
+import { MatCard, MatCardActions } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogActions, MatDialogContent } from "@angular/material/dialog";
+import { IconButtonComponent } from './components/buttons/icon-button/icon-button.component';
+import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +46,10 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
     SpinnerComponent,
     LegalComponent,
     PrivacyComponent,
+    EmptyStateComponent,
+    AgreementListComponent,
+    IconButtonComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     CommonModule,
@@ -59,7 +71,13 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
     MatButtonModule,
     MatProgressSpinnerModule,
     UserMenuComponent,
-  ],
+    AuthLoadingOverlayComponent,
+    MatCard,
+    MatCardActions,
+    MatExpansionModule,
+    MatDialogActions,
+    MatDialogContent
+],
   exports: [
     TextInputComponent,
     PrimaryButtonComponent,
@@ -73,6 +91,8 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
     SpinnerComponent,
     LegalComponent,
     PrivacyComponent,
+    EmptyStateComponent,
+    IconButtonComponent
   ],
 })
 export class SharedModule {}

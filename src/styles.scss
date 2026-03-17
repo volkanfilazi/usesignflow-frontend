@@ -6,7 +6,7 @@
 @use '@angular/material' as mat;
 
 :root {
-  --shadow-sm: 0 6px 14px rgba(17, 24, 39, 0.06);
+  --shadow-sm: 0 3px 7px rgba(17, 24, 39, 0.06);
   --shadow-md: 0 12px 28px rgba(17, 24, 39, 0.08);
   --shadow-lg: 0 18px 40px rgba(17, 24, 39, 0.12);
 
@@ -16,6 +16,7 @@
   --shadow-focus-error: 0 0 0 3px rgba(239, 68, 68, 0.18);
   --shadow-focus-success: 0 0 0 4px rgba(109, 213, 140, 0.16);
 
+  --0: #e2e2e6;
   --100: #6b7280;
 
   --400: #111827;
@@ -132,6 +133,10 @@ body {
   max-width: 760px;
   color: var(--100);
   line-height: 1.7;
+}
+
+.dialog-container {
+  padding: 5px;
 }
 
 @media (max-width: 768px) {
