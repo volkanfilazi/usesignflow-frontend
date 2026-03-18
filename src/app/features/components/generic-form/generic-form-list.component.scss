@@ -13,3 +13,159 @@
   flex-direction: column;
   justify-content: space-between;
 }
+
+.forms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.form-card {
+  border-radius: 24px !important;
+  padding: 18px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(34, 197, 94, 0.12) !important;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+  overflow: hidden;
+}
+
+.form-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(34, 197, 94, 0.2) !important;
+  box-shadow: var(--shadow-md), var(--shadow-green-sm);
+  background: rgba(255, 255, 255, 0.96) !important;
+}
+
+.form-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.form-card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--500), #22c55e);
+  color: #fff;
+  box-shadow: var(--shadow-green-md);
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.form-card-meta {
+  min-width: 0;
+  flex: 1;
+
+  h3 {
+    margin: 8px 0 4px;
+    font-size: 18px;
+    line-height: 1.3;
+    color: var(--400);
+    font-weight: 800;
+    word-break: break-word;
+  }
+
+  p {
+    margin: 0;
+    color: var(--100);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+.form-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #f0fdf4;
+  color: var(--600);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0 16px;
+  border-top: 1px solid rgba(34, 197, 94, 0.08);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.08);
+}
+
+.form-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.info-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--100);
+}
+
+.info-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--400);
+}
+
+.info-value.success {
+  color: var(--600);
+}
+
+.form-card-actions {
+  display: flex !important;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 0 0 !important;
+  margin: 0 !important;
+}
+
+.card-btn {
+  min-height: 40px;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  padding: 0 14px !important;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.card-btn:hover {
+  transform: translateY(-1px);
+}
+
+.card-btn-ghost {
+  border-color: rgba(34, 197, 94, 0.16) !important;
+  color: var(--600) !important;
+  background: #ffffff !important;
+}
+
+.card-btn-danger {
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: #dc2626 !important;
+  box-shadow: none !important;
+  z-index: 9999;
+}

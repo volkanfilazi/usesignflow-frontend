@@ -1,0 +1,41 @@
+@if (formGroup) {
+  <div
+    class="dialog-container"
+    [class.danger]="data.variant === 'danger'"
+    [class.success]="data.variant === 'success'"
+  >
+    <div>
+      <div class="d-flex align-items-center justify-content-center">
+        <mat-icon>{{ icon }}</mat-icon>
+      </div>
+    </div>
+
+    <div class="dialog-content">
+      <h2 mat-dialog-title>{{ data.title || 'Are you sure?' }}</h2>
+
+      <mat-dialog-content>
+        <p>
+          {{ data.message || 'Please confirm that you want to continue with this action.' }}
+        </p>
+        <app-text-input
+          [isRequired]="true"
+          [label]="'Recipient email address'"
+          type="email"
+          [formGroup]="formGroup"
+          [controlName]="'recipient'"
+        >
+        </app-text-input>
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end" class="dialog-actions">
+        <button mat-stroked-button (click)="close()">
+          {{ data.cancelText || 'Cancel' }}
+        </button>
+
+        <button mat-flat-button (click)="onConfirm()">
+          {{ data.confirmText || 'Confirm' }}
+        </button>
+      </mat-dialog-actions>
+    </div>
+  </div>
+}

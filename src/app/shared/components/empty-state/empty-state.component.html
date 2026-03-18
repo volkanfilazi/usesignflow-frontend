@@ -1,0 +1,17 @@
+<div class="empty-state">
+  <div class="empty-state-visual">
+    <img [src]="imageSrc" [alt]="title" />
+  </div>
+
+  <div class="empty-state-content">
+    <span class="empty-state-kicker">{{ kicker }}</span>
+    <h2>{{ title }}</h2>
+    <p>{{ description }}</p>
+
+    @if (buttonText && action) {
+      <button class="empty-state-btn" mat-flat-button (click)="action.emit()">
+        {{ buttonText }}
+      </button>
+    }
+  </div>
+</div>

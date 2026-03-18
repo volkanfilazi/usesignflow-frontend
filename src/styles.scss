@@ -6,7 +6,7 @@
 @use '@angular/material' as mat;
 
 :root {
-  --shadow-sm: 0 6px 14px rgba(17, 24, 39, 0.06);
+  --shadow-sm: 0 3px 7px rgba(17, 24, 39, 0.06);
   --shadow-md: 0 12px 28px rgba(17, 24, 39, 0.08);
   --shadow-lg: 0 18px 40px rgba(17, 24, 39, 0.12);
 
@@ -16,12 +16,21 @@
   --shadow-focus-error: 0 0 0 3px rgba(239, 68, 68, 0.18);
   --shadow-focus-success: 0 0 0 4px rgba(109, 213, 140, 0.16);
 
+  --0: #e2e2e6;
   --100: #6b7280;
 
   --400: #111827;
 
   --500: #16a34a;
   --600: #14532d;
+  --G700: #d8f1df;
+  --G800: #f0fdf4;
+  --G1000: #dcfce7;
+
+  --R700: #531b14;
+  --R800: #f1ddd8;
+  --R900: #fdf5f0;
+  --R1000: #fce9dc;
 }
 
 html {
@@ -117,7 +126,7 @@ body {
 .builder-hero {
   border-radius: 28px;
   padding: 28px;
-  margin-bottom: 22px;
+  margin-bottom: 10px;
 }
 
 .builder-hero-content h1 {
@@ -132,6 +141,48 @@ body {
   max-width: 760px;
   color: var(--100);
   line-height: 1.7;
+}
+
+.dialog-container {
+  padding: 5px;
+}
+
+.dialog-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dialog-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 8%;
+  background: white;
+  border-bottom: 1px solid #eee;
+}
+
+.dialog-body {
+  flex: 1;
+  overflow-y: auto;
+  height: 84%;
+  min-height: 0;
+}
+
+.dialog-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: end !important;
+  height: 8%;
+  width: 100%;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.mdc-dialog__content {
+  max-height: none !important;
 }
 
 @media (max-width: 768px) {

@@ -26,8 +26,14 @@ export interface RefreshTokenRequest {
 }
 
 export interface JwtPayloadModel {
-  nameid: string;
+  sub: string;
   email: string;
-  fullName: string;
+  name: string;
   exp: number;
+}
+
+export enum EditMode {
+  VIEW = 'View',
+  EDIT = 'Edit',
+  CREATE = 'Create',
 }

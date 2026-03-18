@@ -1,0 +1,33 @@
+.dynamic-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  align-items: start;
+}
+
+.field-wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+.agreement-content {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .dynamic-form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .field-wrapper {
+    grid-column: 1 / -1 !important;
+  }
+}

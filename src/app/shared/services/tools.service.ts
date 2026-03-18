@@ -7,7 +7,7 @@ export class ToolsService {
 
   showSnackbar(message: string, panelClass: string) {
     this.snackBar.open(message, 'Close', {
-      duration: 3000,
+      duration: 10000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
       panelClass: [panelClass],

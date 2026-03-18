@@ -1,0 +1,49 @@
+.delete-button {
+  cursor: grab;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--R900);
+  color: var(--R700);
+  border: 1px solid var(--R800);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+  flex-shrink: 0;
+}
+
+.delete-button:hover {
+  transform: translateY(-1px);
+  background: var(--R1000);
+  box-shadow: var(--shadow-focus-error);
+}
+
+.success-button {
+  cursor: grab;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--G800);
+  color: var(--600);
+  border: 1px solid var(--G700);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+  flex-shrink: 0;
+}
+
+.success-button:hover {
+  transform: translateY(-1px);
+  background: var(--G1000);
+  box-shadow: var(--shadow-green-sm);
+}
+
+.success-button {
+  cursor: pointer;
+}

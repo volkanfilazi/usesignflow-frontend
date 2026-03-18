@@ -1,0 +1,141 @@
+<div class="px-3 py-1 dialog-wrapper">
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="closeDialog()"></app-icon-button>
+  </div>
+  @if (this.loading$ | async) {
+    <app-loading-overlay
+      [visible]="this.loading$.value"
+      [title]="'Loading agreements...'"
+      [message]="'Please wait while your agreement library is being loaded.'"
+    >
+    </app-loading-overlay>
+  } @else {
+    @if (mode === 'list') {
+      <div class="dialog-body">
+        @if (agreements && agreements.length > 0) {
+          <div class="d-flex flex-column gap-1 mt-1">
+            @for (item of agreements; track item.id ?? $index) {
+              <mat-card class="p-2" appearance="outlined">
+                <div class="form-card-top">
+                  <div class="d-flex justify-content-between align-items-center gap-1">
+                    <div class="d-flex align-items-center gap-1">
+                      <mat-icon>gavel</mat-icon>
+                      <span class="form-badge">Agreement</span>
+                    </div>
+                    <h6 class="text-break">{{ item.name }}</h6>
+                  </div>
+
+                  <div>
+                    <p class="text-break">{{ item.title }}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <div>
+                    <span class="text-break">
+                      {{
+                        item.content.length > 100
+                          ? (item.content | slice: 0 : 100) + '...'
+                          : item.content
+                      }}
+                    </span>
+                  </div>
+                </div>
+
+                <mat-card-actions class="d-flex align-items-center justify-content-end gap-1">
+                  <app-primary-button
+                    (click)="$event.stopPropagation(); useAgreement(item)"
+                    [buttonName]="'Use'"
+                  ></app-primary-button>
+                  <app-primary-button
+                    (click)="$event.stopPropagation(); deleteAgreement(item)"
+                    [buttonName]="'Delete'"
+                    color="warn"
+                  ></app-primary-button>
+                </mat-card-actions>
+              </mat-card>
+            }
+          </div>
+        } @else {
+          <app-empty-state
+            [kicker]="'Agreement library'"
+            [title]="'No agreements yet'"
+            [description]="
+              'Create your first agreement to reuse it in your flows. Once added, you can pick it from your library and embed it into any flow.'
+            "
+            [buttonText]="'Create your first agreement'"
+            [imageSrc]="'Documents-pana.svg'"
+            (action)="openAgreementCreate()"
+          ></app-empty-state>
+        }
+      </div>
+      <div class="dialog-footer">
+        <div class="d-flex justify-content-start">
+          <app-primary-button
+            (click)="$event.stopPropagation(); openAgreementCreate()"
+            [buttonName]="'Create new agreement'"
+          ></app-primary-button>
+        </div>
+      </div>
+    }
+
+    @if (mode === 'create') {
+      <mat-card appearance="outlined" class="dialog-body p-2">
+        <div class="">
+          <div class="d-flex align-items-center gap-1">
+            <mat-icon>note_add</mat-icon>
+            <span class="form-badge">New agreement</span>
+          </div>
+
+          <div>
+            <h3>Create agreement</h3>
+            <p>Add a reusable agreement to your library</p>
+          </div>
+        </div>
+
+        @if (agreementForm) {
+          <div class="dialog-body">
+            <form [formGroup]="agreementForm" class="d-flex flex-column gap-3">
+              <app-text-input
+                [isRequired]="true"
+                [label]="'Name'"
+                [formGroup]="agreementForm"
+                [controlName]="'name'"
+              >
+              </app-text-input>
+              <app-text-input
+                [isRequired]="true"
+                [label]="'title'"
+                [formGroup]="agreementForm"
+                [controlName]="'title'"
+              >
+              </app-text-input>
+              <mat-form-field appearance="outline">
+                <mat-label>Agreement content</mat-label>
+                <textarea required matInput rows="8" formControlName="content"></textarea>
+              </mat-form-field>
+            </form>
+          </div>
+        }
+      </mat-card>
+
+      <div class="dialog-footer">
+        <div class="d-flex align-items-center justify-content-end gap-1">
+          <button mat-stroked-button class="card-btn card-btn-ghost" (click)="backToLibrary()">
+            Back
+          </button>
+          <app-primary-button
+            (buttonClick)="createAgreement()"
+            [buttonName]="'Save agreement'"
+          ></app-primary-button>
+        </div>
+      </div>
+    }
+  }
+  @if (validationErrors) {
+    <app-validation
+      [validationMessages]="validationErrors"
+      [myGroup]="agreementForm"
+    ></app-validation>
+  }
+</div>

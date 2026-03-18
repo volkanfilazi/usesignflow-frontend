@@ -1,0 +1,13 @@
+<div class="dialog-wrapper px-3 py-1">
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="closeDialog()"></app-icon-button>
+  </div>
+    <mat-dialog-content class="h-100 dialog-body">
+      @if (!(loading$ | async) && formDefinition) {
+        <app-dynamic-form-renderer [previewForm]="formDefinition"></app-dynamic-form-renderer>
+      }
+    </mat-dialog-content>
+  <mat-dialog-actions class="dialog-footer">
+    <app-primary-button [buttonName]="'Close'" (buttonClick)="closeDialog()"></app-primary-button>
+  </mat-dialog-actions>
+</div>

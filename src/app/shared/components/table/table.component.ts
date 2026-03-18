@@ -1,31 +1,87 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-const ELEMENT_DATA: any[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
+export interface TableCellBadge {
+  type: 'badge';
+  text: string;
+  className: string;
+}
+
+export interface TableAction<T = any> {
+  id: string;
+  label: string;
+  icon?: string;
+  handler?: (row: T) => void;
+  hidden?: (row: T) => boolean;
+  disabled?: (row: T) => boolean;
+}
+
+export interface TableColumn<T = any> {
+  key: string;
+  label: string;
+  formatter?: (row: T) => string | number | TableCellBadge | null;
+}
+
+export interface TableActionColumn<T = any> {
+  key: 'actions';
+  label: string;
+  actions: TableAction<T>[];
+}
+
+export type TableColumnDefinition<T = any> = TableColumn<T> | TableActionColumn<T>;
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  standalone: false
+  styleUrl: './table.component.scss',
+  standalone: false,
 })
-export class TableComponent implements OnInit {
-  @Input() columns: string[] = [];
-  @Input() dataSource: any[] = ELEMENT_DATA;
+export class TableComponent<T> {
+  @Input() columns: TableColumnDefinition<T>[] = [];
+  @Input() dataSource: T[] = [];
+  @Input() loading$!: any;
 
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  @Output() rowClick = new EventEmitter<T>();
+  @Output() buttonClick = new EventEmitter<void>();
+  @Output() actionClick = new EventEmitter<{ actionId: string; row: T }>();
 
-  constructor() { }
-
-  ngOnInit(): void {
+  get displayedColumns(): string[] {
+    return this.columns.map((c) => c.key);
   }
-}   
+
+  navigateClick() {
+    this.buttonClick.emit();
+  }
+
+  getCellValue(column: TableColumn<T>, element: T) {
+    return column.formatter ? column.formatter(element) : (element as any)[column.key];
+  }
+
+  isBadge(value: any): value is TableCellBadge {
+    return value?.type === 'badge';
+  }
+
+  isActionColumn(column: TableColumnDefinition<T>): column is TableActionColumn<T> {
+    return column.key === 'actions';
+  }
+
+  isStatus(column: TableColumnDefinition<T>): column is TableActionColumn<T> {
+    return column.key === 'actions';
+  }
+
+  onRowClick(row: T) {
+    this.rowClick.emit(row);
+  }
+
+  onActionClick(event: MouseEvent, action: TableAction<T>, row: T): void {
+    event.stopPropagation();
+
+    if (action.disabled?.(row)) return;
+
+    if (action.handler) {
+      action.handler(row);
+      return;
+    }
+
+    this.actionClick.emit({ actionId: action.id, row });
+  }
+}

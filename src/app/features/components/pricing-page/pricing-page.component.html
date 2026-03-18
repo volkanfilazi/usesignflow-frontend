@@ -1,0 +1,177 @@
+<div class="pricing-page">
+  <section class="pricing-hero">
+    <span class="pricing-badge">Simple pricing</span>
+    <h1>Pricing for freelancers, consultants, and small agencies</h1>
+    <p>
+      Start free, send your first client flow, and upgrade when you need more submissions,
+      templates, and automation tools.
+    </p>
+
+    <div class="billing-toggle">
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.active]="billingCycle === 'monthly'"
+        (click)="setBillingCycle('monthly')"
+      >
+        Monthly
+      </button>
+
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.active]="billingCycle === 'yearly'"
+        (click)="setBillingCycle('yearly')"
+      >
+        Yearly
+        <span class="save-badge">Save 20%</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="pricing-grid">
+    <article class="pricing-card pricing-card-free">
+      <div class="plan-label">Free</div>
+      <h2>Free</h2>
+      <p class="plan-desc">
+        Perfect for testing SignFlow and sending your first client onboarding flow.
+      </p>
+
+      <div class="price-row">
+        <span class="price">$0</span>
+        <span class="price-note">/ forever</span>
+      </div>
+
+      <a routerLink="/register" class="btn btn-ghost full-width">Start Free</a>
+
+      <ul class="feature-list">
+        <li>1 active flow</li>
+        <li>3 completed submissions / month</li>
+        <li>Client intake fields</li>
+        <li>Agreement checkbox</li>
+        <li>Signature collection</li>
+        <li>Email delivery</li>
+        <li>Signed PDF export</li>
+        <li>SignFlow branding</li>
+      </ul>
+    </article>
+
+    <article class="pricing-card pricing-card-pro featured">
+      <div class="featured-badge">Most Popular</div>
+      <div class="plan-label">Pro</div>
+      <h2>Pro</h2>
+      <p class="plan-desc">
+        For freelancers and consultants who regularly onboard clients and collect signatures.
+      </p>
+
+      <div class="price-row">
+        <span class="price">{{ proPrice }}</span>
+        <span class="price-note">{{ proPriceNote }}</span>
+      </div>
+
+      <div class="price-subnote">
+        {{ proSavingsText }}
+      </div>
+
+      <a routerLink="/register" class="btn btn-primary full-width">
+        {{ proCtaText }}
+      </a>
+
+      <ul class="feature-list">
+        <li>10 active flows</li>
+        <li>50 completed submissions / month</li>
+        <li>Everything in Free</li>
+        <li>Reusable templates</li>
+        <li>Custom agreement sections</li>
+        <li>Reminder emails</li>
+        <li>Expiration date</li>
+        <li>Advanced status tracking</li>
+        <li>Remove SignFlow branding</li>
+        <li>Priority email support</li>
+      </ul>
+    </article>
+
+    <article class="pricing-card pricing-card-business">
+      <div class="plan-label">Business</div>
+      <h2>Business</h2>
+      <p class="plan-desc">
+        For small agencies and teams managing higher client volume and multiple onboarding flows.
+      </p>
+
+      <div class="price-row">
+        <span class="price">{{ businessPrice }}</span>
+        <span class="price-note">{{ businessPriceNote }}</span>
+      </div>
+
+      <div class="price-subnote">
+        {{ businessSavingsText }}
+      </div>
+
+      <a routerLink="/register" class="btn btn-ghost full-width">
+        Start Business
+      </a>
+
+      <ul class="feature-list">
+        <li>Unlimited active flows</li>
+        <li>200 completed submissions / month</li>
+        <li>Everything in Pro</li>
+        <li>Template library</li>
+        <li>Higher submission limits</li>
+        <li>Advanced workflow visibility</li>
+        <li>Business-ready scaling</li>
+        <li>Priority support</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="pricing-note">
+    <div class="note-card">
+      <h3>Simple and transparent</h3>
+      <p>
+        Start for free, upgrade only when you need more submissions and templates, and switch
+        between monthly and yearly billing anytime.
+      </p>
+    </div>
+  </section>
+
+  <section class="faq-section">
+    <div class="section-heading">
+      <span>FAQ</span>
+      <h3>Questions about pricing</h3>
+    </div>
+
+    <div class="faq-grid">
+      <div class="faq-card">
+        <h4>Can I start with the free plan?</h4>
+        <p>
+          Yes. The free plan is designed to help you test SignFlow and send your first client flow
+          before upgrading.
+        </p>
+      </div>
+
+      <div class="faq-card">
+        <h4>Can I cancel anytime?</h4>
+        <p>
+          Yes. You can cancel whenever you want, and your paid plan will stay active until the end
+          of your billing period.
+        </p>
+      </div>
+
+      <div class="faq-card">
+        <h4>What counts as a completed submission?</h4>
+        <p>
+          A completed submission is a client flow that has been filled, accepted, and signed
+          successfully.
+        </p>
+      </div>
+
+      <div class="faq-card">
+        <h4>Will more business features be added later?</h4>
+        <p>
+          Yes. Team features, branding controls, and more advanced workflow tools can be added as
+          SignFlow grows.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>

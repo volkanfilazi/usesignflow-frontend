@@ -24,6 +24,19 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { LegalComponent } from './components/legal/legal.component';
 import { PrivacyComponent } from './components/privacy/privacy.component';
+import { EmptyStateComponent } from './components/empty-state/empty-state.component';
+import { AuthLoadingOverlayComponent } from './components/loading-overlay/loading-overlay.component';
+import { AgreementListComponent } from './components/agreement/agreement-list/agreement-list.component';
+import { MatCard, MatCardActions } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogActions, MatDialogContent } from "@angular/material/dialog";
+import { IconButtonComponent } from './components/buttons/icon-button/icon-button.component';
+import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
+import { DynamicFormRendererComponent } from './components/dynamicFormRenderer/dynamic-form-renderer.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatRadioModule } from '@angular/material/radio';
+import { AsyncPipe } from '@angular/common';
+import { FormPreviewDialogComponent } from './components/dialogs/form-preview-dialog/form-preview-dialog.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +51,12 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
     SpinnerComponent,
     LegalComponent,
     PrivacyComponent,
+    EmptyStateComponent,
+    AgreementListComponent,
+    IconButtonComponent,
+    ConfirmDialogComponent,
+    DynamicFormRendererComponent,
+    FormPreviewDialogComponent
   ],
   imports: [
     CommonModule,
@@ -59,7 +78,16 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
     MatButtonModule,
     MatProgressSpinnerModule,
     UserMenuComponent,
-  ],
+    AuthLoadingOverlayComponent,
+    MatCard,
+    MatCardActions,
+    MatExpansionModule,
+    MatDialogActions,
+    MatDialogContent,
+    DragDropModule,
+    MatRadioModule,
+    AsyncPipe
+],
   exports: [
     TextInputComponent,
     PrimaryButtonComponent,
@@ -73,6 +101,9 @@ import { PrivacyComponent } from './components/privacy/privacy.component';
     SpinnerComponent,
     LegalComponent,
     PrivacyComponent,
+    EmptyStateComponent,
+    IconButtonComponent,
+    DynamicFormRendererComponent
   ],
 })
 export class SharedModule {}

@@ -1,0 +1,25 @@
+<div class="submission-completed-page">
+  <div class="completed-card">
+    <div class="completed-icon-wrap">
+      <div class="completed-icon">
+        <mat-icon>task_alt</mat-icon>
+      </div>
+    </div>
+
+    <div class="completed-content">
+      <span class="completed-kicker">Submission completed</span>
+      <h1>Document completed successfully</h1>
+      <p>
+        The form has been submitted and the document has been completed successfully.
+        You can now download the generated PDF file below.
+      </p>
+
+      <div class="completed-actions">
+        <button mat-flat-button class="download-btn" (click)="downloadPdf()">
+          <mat-icon>download</mat-icon>
+          <span>Download PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

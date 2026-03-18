@@ -1,0 +1,35 @@
+<div
+  class="dialog-container"
+  [class.danger]="data.variant === 'danger'"
+  [class.success]="data.variant === 'success'"
+>
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="close(false)"></app-icon-button>
+  </div>
+  <div class="dialog-content">
+    <mat-dialog-content>
+      <div class="d-flex align-items-center gap-2">
+        <div>
+          <mat-icon color="warn">{{ icon }}</mat-icon>
+        </div>
+        <div>
+          <h6 mat-dialog-title>{{ data.title || 'Are you sure?' }}</h6>
+        </div>
+      </div>
+      <p>
+        {{ data.message }}
+      </p>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="d-flex align-items-center gap-1">
+      <button mat-stroked-button class="dialog-btn dialog-cancel" (click)="close(false)">
+        {{ data.cancelText || 'Cancel' }}
+      </button>
+      <app-primary-button
+        (click)="close(true)"
+        [buttonName]="data.confirmText || 'Confirm'"
+        color="warn"
+      ></app-primary-button>
+    </mat-dialog-actions>
+  </div>
+</div>
