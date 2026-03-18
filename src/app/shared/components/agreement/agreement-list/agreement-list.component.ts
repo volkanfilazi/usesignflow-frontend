@@ -11,7 +11,6 @@ import { ConfirmDialogComponent } from '../../dialogs/confirm-dialog/confirm-dia
 @Component({
   selector: 'app-agreement-list',
   templateUrl: './agreement-list.component.html',
-  styleUrl: './agreement-list.component.scss',
   standalone: false,
 })
 export class AgreementListComponent implements OnInit {

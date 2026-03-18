@@ -75,6 +75,13 @@ export class FormsApiService {
     return this.http.put<void>(`${this.baseUrl}/submissions/${id}`, request);
   }
 
+  cancelSubmission(submissionId: string) {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/submissions/${submissionId}/cancel`,
+      {},
+    );
+  }
+
   updateSubmissionByAccessToken(
     submissionId: string,
     request: UpdateSubmissionByAccessTokenRequest,

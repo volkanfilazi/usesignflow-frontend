@@ -2,7 +2,7 @@
   class="w-100 bg-white sticky-top p-2 h-auto border-1 border-bottom d-flex align-items-center justify-content-between align-items-center"
 >
   <h4>{{ title }}</h4>
-  <div class="d-flex align-items-center gap-2">
+  <div class="d-flex align-items-sm-center gap-2 flex-column flex-sm-row w-100 justify-content-start justify-content-sm-end">
     @for (action of pageActionService.actions(); track action.id) {
       <button
         matButton="outlined"

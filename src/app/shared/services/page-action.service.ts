@@ -4,6 +4,7 @@ export interface PageAction {
   id: string;
   text: string;
   handler: () => void;
+  owner?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -16,6 +17,10 @@ export class PageActionService {
 
   clearActions() {
     this.actions.set([]);
+  }
+
+  clearActionsByOwner(owner: string) {
+    this.actions.update((prev) => prev.filter((x) => x.owner !== owner));
   }
 
   runAction(id: string) {

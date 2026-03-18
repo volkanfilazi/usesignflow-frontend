@@ -13,7 +13,6 @@ let isRefreshing = false;
 let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 function addToken(request: HttpRequest<unknown>, token: string | null): HttpRequest<unknown> {
-  console.log('token', token)
   if (!token) return request;
 
   return request.clone({

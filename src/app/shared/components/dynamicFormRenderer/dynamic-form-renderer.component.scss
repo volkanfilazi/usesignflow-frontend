@@ -17,4 +17,17 @@
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .dynamic-form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .field-wrapper {
+    grid-column: 1 / -1 !important;
+  }
 }

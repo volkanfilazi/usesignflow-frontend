@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsApiService } from '../../../../shared/services/form-api.service';
 import { ToolsService } from '../../../../shared/services/tools.service';
 import { Subject, takeUntil } from 'rxjs';
-import { getSubmissionMode } from '../../../../shared/models/form-generator.mode';
 import { EditMode } from '../../../../shared/models/auth.model';
 
 @Component({
@@ -18,7 +17,7 @@ export class SubmissionAccessComponent implements OnInit {
     private readonly formApiService: FormsApiService,
     private readonly toolsService: ToolsService,
     private readonly route: ActivatedRoute,
-    private readonly router: Router,
+    private readonly router: Router
   ) {}
 
   ngOnInit() {
@@ -48,11 +47,8 @@ export class SubmissionAccessComponent implements OnInit {
             queryParams: { token },
           });
         },
-        error: () => {
-          this.toolsService.showSnackbar(
-            'Submission access could not be resolved.',
-            'error-snackbar',
-          );
+        error: (error: any) => {
+     
         },
       });
   }

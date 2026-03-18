@@ -3,8 +3,8 @@
   [class.danger]="data.variant === 'danger'"
   [class.success]="data.variant === 'success'"
 >
- <div class="d-flex justify-content-end">
-    <app-icon-button (buttonClick)="close(false)"></app-icon-button>
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="close(false)"></app-icon-button>
   </div>
   <div class="dialog-content">
     <mat-dialog-content>

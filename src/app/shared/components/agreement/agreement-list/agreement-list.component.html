@@ -1,6 +1,6 @@
 <div class="px-3 py-1 dialog-wrapper">
   <div class="dialog-header">
-    <app-icon-button (buttonClick)="closeDialog()"></app-icon-button>
+    <app-icon-button class="delete-button" (buttonClick)="closeDialog()"></app-icon-button>
   </div>
   @if (this.loading$ | async) {
     <app-loading-overlay

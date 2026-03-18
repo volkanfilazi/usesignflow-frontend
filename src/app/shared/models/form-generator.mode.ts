@@ -13,10 +13,58 @@ export enum FormElementsEnum {
   ValidationMaxLength = 'validationMaxLength',
 }
 
+export const FIELD_CONFIG: Record<
+  FieldType,
+  {
+    label: string;
+    colSpan: string;
+    required?: boolean;
+  }
+> = {
+  text: {
+    label: 'Text field',
+    colSpan: '4',
+  },
+  email: {
+    label: 'Email',
+    colSpan: '2',
+    required: true,
+  },
+  number: {
+    label: 'Number',
+    colSpan: '2',
+  },
+  checkbox: {
+    label: 'Checkbox',
+    colSpan: '2',
+  },
+  select: {
+    label: 'Select',
+    colSpan: '4',
+  },
+  signaturePad: {
+    label: 'Signature',
+    colSpan: '2',
+    required: true,
+  },
+  agreement: {
+    label: 'Agreement',
+    colSpan: '4',
+  },
+};
+
 export const AssignedToOptions = ['Owner', 'External'] as const;
 export type AssignedTo = 'Owner' | 'External';
 export type FormAssignedTo = (typeof AssignedToOptions)[number];
-export const options = ['text', 'number', 'checkbox', 'select', 'email', 'signaturePad', 'agreement'] as const;
+export const options = [
+  'text',
+  'number',
+  'checkbox',
+  'select',
+  'email',
+  'signaturePad',
+  'agreement',
+] as const;
 export type FormFieldType = (typeof options)[number];
 export type FieldType = (typeof options)[number];
 
@@ -89,9 +137,7 @@ export interface FormSignature {
 }
 
 export enum SubmissionStatus {
-  Draft = 'Draft',
-  PendingSignature = 'PendingSignature',
-  PartiallySigned = 'PartiallySigned',
+  Pending = 'Pending',
   Completed = 'Completed',
   Cancelled = 'Cancelled',
   Expired = 'Expired',
@@ -109,9 +155,7 @@ export interface AgreementTemplate {
 
 export function isSubmissionEditable(row: FormSubmission) {
   switch (row.status) {
-    case SubmissionStatus.Draft:
-    case SubmissionStatus.PendingSignature:
-    case SubmissionStatus.PartiallySigned:
+    case SubmissionStatus.Pending:
       return true;
 
     case SubmissionStatus.Completed:
@@ -124,9 +168,7 @@ export function isSubmissionEditable(row: FormSubmission) {
 
 export function getSubmissionStatusColors(row: FormSubmission) {
   switch (row.status) {
-    case SubmissionStatus.Draft:
-    case SubmissionStatus.PendingSignature:
-    case SubmissionStatus.PartiallySigned:
+    case SubmissionStatus.Pending:
       return 'status-yellow';
 
     case SubmissionStatus.Completed:
@@ -141,9 +183,7 @@ export function getSubmissionStatusColors(row: FormSubmission) {
 
 export function getSubmissionMode(row: FormSubmission): EditMode {
   switch (row.status) {
-    case SubmissionStatus.Draft:
-    case SubmissionStatus.PendingSignature:
-    case SubmissionStatus.PartiallySigned:
+    case SubmissionStatus.Pending:
       return EditMode.EDIT;
 
     case SubmissionStatus.Completed:
@@ -171,7 +211,6 @@ export interface UpdateSubmissionByAccessTokenRequest {
 }
 
 export interface SendForSignatureRequest {
-  signatureFieldId: string;
   email: string;
 }
 

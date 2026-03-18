@@ -23,6 +23,14 @@
 
   --500: #16a34a;
   --600: #14532d;
+  --G700: #d8f1df;
+  --G800: #f0fdf4;
+  --G1000: #dcfce7;
+
+  --R700: #531b14;
+  --R800: #f1ddd8;
+  --R900: #fdf5f0;
+  --R1000: #fce9dc;
 }
 
 html {
@@ -118,7 +126,7 @@ body {
 .builder-hero {
   border-radius: 28px;
   padding: 28px;
-  margin-bottom: 22px;
+  margin-bottom: 10px;
 }
 
 .builder-hero-content h1 {
@@ -137,6 +145,44 @@ body {
 
 .dialog-container {
   padding: 5px;
+}
+
+.dialog-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dialog-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 8%;
+  background: white;
+  border-bottom: 1px solid #eee;
+}
+
+.dialog-body {
+  flex: 1;
+  overflow-y: auto;
+  height: 84%;
+  min-height: 0;
+}
+
+.dialog-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: end !important;
+  height: 8%;
+  width: 100%;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.mdc-dialog__content {
+  max-height: none !important;
 }
 
 @media (max-width: 768px) {

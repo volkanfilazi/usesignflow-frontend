@@ -63,6 +63,7 @@ const routes: Routes = [
       },
       { path: 'submissions/:submissionId/:mode', component: GenericFormDetailComponent },
       { path: 'forms/:formId', component: GenericFormDetailComponent },
+      { path: 'forms/form/preview', component: GenericFormDetailComponent },
       { path: 'form-generator', component: FormGeneratorComponent },
       { path: 'profile', component: ProfilePageComponent },
       { path: 'settings', component: SettingsPageComponent },

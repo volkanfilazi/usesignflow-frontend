@@ -32,6 +32,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogActions, MatDialogContent } from "@angular/material/dialog";
 import { IconButtonComponent } from './components/buttons/icon-button/icon-button.component';
 import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
+import { DynamicFormRendererComponent } from './components/dynamicFormRenderer/dynamic-form-renderer.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatRadioModule } from '@angular/material/radio';
+import { AsyncPipe } from '@angular/common';
+import { FormPreviewDialogComponent } from './components/dialogs/form-preview-dialog/form-preview-dialog.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +54,9 @@ import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/conf
     EmptyStateComponent,
     AgreementListComponent,
     IconButtonComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    DynamicFormRendererComponent,
+    FormPreviewDialogComponent
   ],
   imports: [
     CommonModule,
@@ -76,7 +83,10 @@ import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/conf
     MatCardActions,
     MatExpansionModule,
     MatDialogActions,
-    MatDialogContent
+    MatDialogContent,
+    DragDropModule,
+    MatRadioModule,
+    AsyncPipe
 ],
   exports: [
     TextInputComponent,
@@ -92,7 +102,8 @@ import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/conf
     LegalComponent,
     PrivacyComponent,
     EmptyStateComponent,
-    IconButtonComponent
+    IconButtonComponent,
+    DynamicFormRendererComponent
   ],
 })
 export class SharedModule {}
