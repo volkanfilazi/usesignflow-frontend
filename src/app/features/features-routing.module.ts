@@ -17,6 +17,7 @@ import { SubmissionsComponent } from './components/submissions/submissions.compo
 import { SubmissionAccessComponent } from './components/auth/submission-access/submission-access.componen';
 import { SubmissionCompletedComponent } from './components/submission-completed/submission-completed.component';
 import { PricingPageComponent } from './components/pricing-page/pricing-page.component';
+import { GoogleCallbackComponent } from './components/googleCallback/google-callback.component';
 
 const routes: Routes = [
   {
@@ -28,6 +29,10 @@ const routes: Routes = [
     path: 'login',
     component: LoginPageComponent,
     canActivate: [guestGuard],
+  },
+  {
+    path: 'auth/google/callback',
+    component: GoogleCallbackComponent,
   },
   {
     path: 'register',

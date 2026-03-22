@@ -65,8 +65,6 @@ export class VerificationProcessComponent implements OnInit {
             }, 1400);
           },
           error: (err) => {
-            console.error('Verify error:', err);
-
             this.status = 'error';
             this.title = 'Verification failed';
             this.message =

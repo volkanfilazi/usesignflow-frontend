@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class IconButtonComponent {
   @Input() iconName: string = 'close';
-  @Input() class: string = '';
+  @Input() class: 'success-button' | 'delete-button' = 'success-button';
   @Output() buttonClick = new EventEmitter<void>();
 
   onClick() {

@@ -53,9 +53,17 @@ export const FIELD_CONFIG: Record<
   },
 };
 
-export const AssignedToOptions = ['Owner', 'External'] as const;
-export type AssignedTo = 'Owner' | 'External';
-export type FormAssignedTo = (typeof AssignedToOptions)[number];
+export enum AssignedToEnum {
+  You = 0,
+  Client = 1,
+}
+
+export const AssignedToOptions = ['You', 'Client'] as const;
+export type AssignedTo = (typeof AssignedToOptions)[number];
+export const assignedToMap: Record<AssignedTo, AssignedToEnum> = {
+  You: AssignedToEnum.You,
+  Client: AssignedToEnum.Client,
+};
 export const options = [
   'text',
   'number',
@@ -83,7 +91,7 @@ export interface FieldDefinition {
   max?: number;
   minLength?: number;
   maxLength?: number;
-  assignedTo: AssignedTo;
+  assignedTo?: AssignedTo;
   pattern?: string;
   options?: string[] | [];
   agreement?: Agreements;
@@ -121,6 +129,10 @@ export interface CreateFormDefinitionRequest {
   expanded?: boolean;
   version?: string;
   fields: FieldDefinition[];
+}
+
+export interface GoogleLoginRequest {
+  credential: string;
 }
 
 export interface FormAnswer {

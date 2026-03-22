@@ -1,0 +1,32 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="close(false)"></app-icon-button>
+  </div>
+  <div class="dialog-content">
+    <mat-dialog-content class="d-flex flex-column gap-2">
+      <h6 class="text-center">{{this.data.title}}</h6>
+      <div class="d-flex align-items-center justify-content-center gap-1">
+        <mat-icon color="warn">{{this.data.icon}}</mat-icon>
+        <span>{{this.data.description}}</span>
+      </div>
+      @if (formGroup) {
+        <app-text-input
+          controlName="reason"
+          label="Reason"
+          type="text"
+          [formGroup]="formGroup"
+        ></app-text-input>
+      }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="d-flex align-items-center gap-1">
+      <button mat-stroked-button class="dialog-btn dialog-cancel" (click)="close(false)">
+        Cancel
+      </button>
+      <app-primary-button
+        (click)="confirm()"
+        [buttonName]="'Confirm'"
+        color="primary"
+      ></app-primary-button>
+    </mat-dialog-actions>
+  </div>
+</div>

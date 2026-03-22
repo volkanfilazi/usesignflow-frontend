@@ -136,17 +136,6 @@
   box-shadow: var(--shadow-green-md);
 }
 
-.mini-btn {
-  border: 0;
-  background: #f0fdf4;
-  color: var(--600);
-  border-radius: 14px;
-  padding: 10px 14px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,0 +1,46 @@
+.segments-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.segments-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--400);
+}
+
+.required {
+  color: #ef4444;
+  margin-left: 4px;
+}
+
+.segments {
+  display: inline-flex;
+  background: rgba(241, 245, 249, 0.9);
+  border-radius: 14px;
+  padding: 4px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.segment-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.segment-btn:hover {
+  color: var(--400);
+}
+
+.segment-btn.active {
+  background: linear-gradient(135deg, #92e3a9, #6dd58c);
+  color: #0f172a;
+  box-shadow: var(--shadow-green-md);
+}

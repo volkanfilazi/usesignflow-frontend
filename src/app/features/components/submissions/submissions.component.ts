@@ -43,7 +43,7 @@ export class SubmissionsComponent {
     },
     {
       key: 'signedOwner',
-      label: 'Owner',
+      label: 'You',
       formatter: (row: FormSubmission) => {
         const result =
           row.signatures
@@ -59,7 +59,7 @@ export class SubmissionsComponent {
     },
     {
       key: 'signedExternal',
-      label: 'External signer',
+      label: 'Client',
       formatter: (row: FormSubmission) => {
         const result =
           row.signatures
@@ -139,7 +139,6 @@ export class SubmissionsComponent {
         this.loading$.next(false);
       },
       error: (error) => {
-        console.error('Error fetching forms:', error);
         this.loading$.next(false);
       },
     });
@@ -220,11 +219,11 @@ export class SubmissionsComponent {
   }
 
   private hasExternalSignature(fields: FieldDefinition[]): boolean {
-    return fields.some((f) => f.type === 'signaturePad' && f.assignedTo === 'External');
+    return fields.some((f) => f.type === 'signaturePad' && f.assignedTo === 'Client');
   }
 
   private hasOwnerSignature(fields: FieldDefinition[]): boolean {
-    return fields.some((f) => f.type === 'signaturePad' && f.assignedTo === 'Owner');
+    return fields.some((f) => f.type === 'signaturePad' && f.assignedTo === 'You');
   }
 
   private sendToSigner(row: FormSubmission): void {

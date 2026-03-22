@@ -12,6 +12,7 @@ export class ComboboxComponent {
   @Input() formGroup!: FormGroup;
   @Input() controlName: string | undefined;
   @Input() label: string | undefined;
+  @Input() badgeName: string | undefined;
   @Input() isRequired: boolean = false;
   @Input() options: string[] = [];
   @Output() typeChanged = new EventEmitter<string>();

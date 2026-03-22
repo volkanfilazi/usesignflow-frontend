@@ -24,6 +24,7 @@ export class SignaturePadComponent implements AfterViewInit, OnChanges, OnDestro
   @Input() controlName!: string;
   @Input() disabled = false;
   @Input() label: string | undefined;
+  @Input() badgeName: string | undefined;
 
   @ViewChild('signatureCanvas', { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -127,12 +128,10 @@ export class SignaturePadComponent implements AfterViewInit, OnChanges, OnDestro
         dataUrl = await this.urlToDataUrl(absoluteUrl);
       }
 
-      // Bu sırada yeni bir çağrı geldiyse eski sonucu uygulama
       if (currentVersion !== this.loadVersion) {
         return;
       }
 
-      // Canvas hazır olduktan sonra yükle
       requestAnimationFrame(() => {
         if (currentVersion !== this.loadVersion) return;
         this.signaturePad.clear();

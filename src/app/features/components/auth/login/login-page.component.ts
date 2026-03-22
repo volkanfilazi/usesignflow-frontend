@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { ValidationService } from '../../../../shared/services/validation.service';
 import { AuthApiService } from '../../../../core/services/auth-api.service';
@@ -9,6 +9,12 @@ import { LoginDto } from '../../../../shared/models/auth.model';
 import { AuthStateService } from '../../../../core/services/auth-state.service';
 import { getApiErrorMessage } from '../../../../shared/utility/helper/response-error-helper';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { TwoFAVerifyDialogComponent } from '../../../../shared/components/dialogs/twoFA-verify-dialog/twoFA-verify-dialog.component';
+import { environment } from '../../../../../environments/environment';
+import { GoogleAuthService } from '../../../../core/services/google-auth.service';
+
+declare const google: any;
 
 @Component({
   selector: 'app-login-page',
@@ -16,7 +22,10 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './login-page.component.scss',
   standalone: false,
 })
-export class LoginPageComponent {
+export class LoginPageComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('googleButton', { static: false })
+  googleButtonRef!: ElementRef<HTMLDivElement>;
+
   formGroup: FormGroup | undefined;
   validationErrors: ValidationIssue[] | undefined;
   loading$ = new BehaviorSubject<boolean>(false);
@@ -27,13 +36,24 @@ export class LoginPageComponent {
     private readonly authStateService: AuthStateService,
     private readonly toolsService: ToolsService,
     private readonly router: Router,
+    private readonly matDialog: MatDialog,
+    private readonly googleAuthService: GoogleAuthService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.formGroup = new FormGroup({
       email: new FormControl(),
       password: new FormControl(),
     });
+  }
+
+  async ngAfterViewInit() {
+    await this.googleAuthService.init();
+
+    const element = this.googleButtonRef?.nativeElement;
+    if (!element) return;
+
+    this.googleAuthService.renderButton(element);
   }
 
   isInvalid(controlName: string): boolean {
@@ -41,7 +61,7 @@ export class LoginPageComponent {
     return !!(control && control.invalid && control.touched);
   }
 
-  login() {
+  login(): void {
     this.validationErrors = [];
     this.loading$.next(true);
 
@@ -59,9 +79,28 @@ export class LoginPageComponent {
 
     this.authApiService.login(login).subscribe({
       next: (res) => {
-        this.authStateService.setSession(res.token, res.refreshToken);
-        this.loading$.next(false);
-        this.router.navigate(['/dashboard']);
+        if (res.requiresTwoFactor) {
+          const dialogRef = this.matDialog.open(TwoFAVerifyDialogComponent, {
+            width: '80vh',
+            data: {
+              twoFactorToken: res.twoFactorToken,
+            },
+          });
+
+          dialogRef.afterClosed().subscribe((item) => {
+            if (item) {
+              this.authStateService.setSession(item.token, item.refreshToken);
+              this.loading$.next(false);
+              this.router.navigate(['/dashboard']);
+            } else {
+              this.loading$.next(false);
+            }
+          });
+        } else {
+          this.authStateService.setSession(res.token, res.refreshToken);
+          this.loading$.next(false);
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (error: HttpErrorResponse) => {
         this.loading$.next(false);
@@ -74,5 +113,8 @@ export class LoginPageComponent {
         this.toolsService.showSnackbar(getApiErrorMessage(error), 'error-snackbar');
       },
     });
+  }
+
+  ngOnDestroy(): void {
   }
 }

@@ -1,0 +1,35 @@
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--400);
+  }
+
+  input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 0.96rem;
+    color: var(--400);
+    background: #fff;
+    outline: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  input:focus {
+    border-color: #6dd58c;
+    box-shadow: var(--shadow-focus-success);
+  }
+}
+
+input.invalid {
+  border: 1px solid #ef4444;
+  box-shadow: var(--shadow-focus-error);
+}

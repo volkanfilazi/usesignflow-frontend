@@ -38,7 +38,7 @@ export class RegisterPageComponent implements OnInit {
         email: new FormControl(),
         password: new FormControl('', [
           Validators.required,
-          Validators.pattern(Constants.passwordRegex),
+          ValidationService.passwordPatternValidator(),
         ]),
         passwordConfirm: new FormControl('', [Validators.required]),
         termsAccepted: new FormControl(false, [Validators.requiredTrue]),

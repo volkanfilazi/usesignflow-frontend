@@ -6,6 +6,12 @@ export interface RegisterDto {
   privacyAccepted: boolean;
 }
 
+export interface MeDto {
+  email: string;
+  fullName: string;
+  twoFactorEnabled: boolean;
+}
+
 export interface LoginDto {
   email: string;
   password: string;
@@ -18,6 +24,18 @@ export interface AuthResponse {
   refreshTokenExpiresAtUtc: string;
   email: string;
   fullName: string;
+  requiresTwoFactor: boolean;
+  twoFactorToken?: string;
+}
+
+export interface DeleteAccountRequest {
+  password: string;
+  reason?: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface RefreshTokenRequest {
@@ -25,11 +43,31 @@ export interface RefreshTokenRequest {
   refreshToken: string;
 }
 
+export interface TwoFASetupResponse {
+  secret: string;
+  otpauthUrl: string;
+}
+
+export interface VerifyTwoFactorRequest {
+  twoFactorToken: string;
+  code: string;
+}
+
+export interface TwoFAEnableRequest {
+  code: string;
+}
+
+export interface DisableTwoFactorRequest {
+  CurrentPassword: string;
+  Code: string;
+}
+
 export interface JwtPayloadModel {
   sub: string;
   email: string;
   name: string;
   exp: number;
+  twoFactorEnabled?: string;
 }
 
 export enum EditMode {

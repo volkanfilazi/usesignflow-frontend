@@ -1,0 +1,26 @@
+<div class="dialog-wrapper px-3 py-1">
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="close()"></app-icon-button>
+  </div>
+  <mat-dialog-content class="h-100 dialog-body">
+    @if (otpauthUrl && manualCode) {
+      <div class="d-flex flex-column align-items-center gap-1">
+        <qrcode [qrdata]="otpauthUrl" [width]="200"></qrcode>
+        <div class="d-flex flex-column align-items-center justify-content-center">
+          <p>Can’t scan the QR code?</p>
+          <div class="d-flex align-items-center gap-1">
+            <span>Enter this key manually:</span>
+            <code>{{ formatSecret(manualCode) }}</code>
+            <app-icon-button (buttonClick)="copySecret()" iconName="content_copy" ></app-icon-button>
+          </div>
+        </div>
+        <app-verification-code-input
+          (codeCompleted)="confirm($event)"
+        ></app-verification-code-input>
+      </div>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="d-flex align-items-center gap-1">
+    <button mat-stroked-button class="dialog-btn dialog-cancel" (click)="close()">Cancel</button>
+  </mat-dialog-actions>
+</div>

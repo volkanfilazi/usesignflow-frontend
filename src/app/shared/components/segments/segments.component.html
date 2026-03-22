@@ -1,0 +1,18 @@
+<div class="segments-wrapper" [formGroup]="formGroup">
+  <label *ngIf="label" class="segments-label">
+    {{ label }}
+    <span *ngIf="isRequired" class="required">*</span>
+  </label>
+
+  <div class="segments">
+    <button
+      *ngFor="let option of options"
+      type="button"
+      class="segment-btn"
+      [class.active]="formGroup.get(controlName!)?.value === option"
+      (click)="formGroup.get(controlName!)?.setValue(option)"
+    >
+      {{ option }}
+    </button>
+  </div>
+</div>

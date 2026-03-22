@@ -10,6 +10,7 @@ import { ValidationService } from '../../../shared/services/validation.service';
 import { AuthStateService } from '../../../core/services/auth-state.service';
 
 import {
+  AssignedToEnum,
   CreateFormSubmissionRequest,
   FieldDefinition,
   FormDefinition,
@@ -57,6 +58,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.authService.getUserId());
     this.currentUserId = this.authService.getUserId() ?? '';
 
     if (this.previewForm) {
@@ -240,10 +242,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
       return field.label;
     }
 
-    const assignedTo = field.assignedTo ?? 'Owner';
-    const reservedFor = assignedTo === 'Owner' ? 'owner' : 'external user';
-
-    return `${field.label} - (Reserved for ${reservedFor})`;
+    return field.label;
   }
 
   isOwnerUser(): boolean {
@@ -261,23 +260,27 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
   }
 
   isFieldAssignedToCurrentUser(field: FieldDefinition): boolean {
-    const assignedToOwner = (field.assignedTo ?? 'Owner') === 'Owner';
+    const assignedToOwner = (field.assignedTo ?? 'You') === 'You';
     return this.isOwnerUser() === assignedToOwner;
   }
 
-  getFormTitle(): string {
-    if (!this.form) return '';
+  getFormTitle(): { title: string; status?: string } {
+    if (!this.form) {
+      return { title: '' };
+    }
 
     if (this.isFormDefinition(this.form)) {
-      return this.form.formName;
+      return { title: this.form.formName };
     }
 
     if (this.isFormSubmission(this.form)) {
-      let status = this.form.status;
-      return `Submission: ${this.submissinTitle}${status ? ' - ' + status : ''}`;
+      return {
+        title: `Submission: ${this.submissinTitle}`,
+        status: this.form.status,
+      };
     }
 
-    return '';
+    return { title: '' };
   }
 
   isDisabled(field: FieldDefinition): boolean {

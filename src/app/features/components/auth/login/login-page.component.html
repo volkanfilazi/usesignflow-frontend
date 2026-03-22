@@ -1,18 +1,16 @@
+<app-loading-overlay
+  [visible]="this.loading$.value"
+  [title]="'Signing you in...'"
+  [message]="'Please wait while we securely log you into your account.'"
+>
+</app-loading-overlay>
+
 <div class="auth-page">
   <div class="auth-card">
-    @if (this.loading$ | async) {
-      <app-loading-overlay
-        [visible]="this.loading$.value"
-        [title]="'Signing you in...'"
-        [message]="'Please wait while we securely log you into your account.'"
-      >
-      </app-loading-overlay>
-    }
-
     <div class="auth-header">
       <div class="brand-badge">F</div>
       <h2>Welcome back</h2>
-      <p>Sign in to continue to FormFlow</p>
+      <p>Sign in to continue to SignFlow</p>
     </div>
 
     @if (formGroup) {
@@ -56,15 +54,26 @@
           }
         </button>
       </form>
-    } @else {
-      <div class="w-100 d-flex align-items-center justify-content-center">
-        <app-spinner [diameter]="50"></app-spinner>
-      </div>
     }
 
     <div class="auth-footer">
-      <span>Don't have an account?</span>
-      <a routerLink="/register">Register</a>
+      <div class="auth-footer-top">
+        <span>Don't have an account?</span>
+        <a routerLink="/register">Register</a>
+      </div>
+
+      <div class="auth-divider">
+        <span>or continue with</span>
+      </div>
+
+      <div class="google-button-shell">
+        <div #googleButton id="googleButton" class="google-button-host"></div>
+      </div>
+
+      <div class="auth-footer-bottom">
+        <span>Did you forget your password?</span>
+        <a routerLink="/forgot-password">Forgot password</a>
+      </div>
     </div>
   </div>
 </div>
