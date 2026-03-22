@@ -10,9 +10,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       const message = error.error?.message || 'Something went wrong. Please try again.';
 
-      snackBar.open(message, 'Close', {
-        duration: 4000,
-      });
+      snackBar.open(message, 'Close');
 
       return throwError(() => error);
     }),

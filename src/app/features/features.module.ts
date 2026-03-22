@@ -36,6 +36,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthLoadingOverlayComponent } from '../shared/components/loading-overlay/loading-overlay.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SubmissionsComponent } from './components/submissions/submissions.component';
+import { AsyncPipe } from '@angular/common';
+import { SettingsPageComponent } from './components/settings-page/settings-page.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +49,7 @@ import { SubmissionsComponent } from './components/submissions/submissions.compo
     RegisterPageComponent,
     LoginPageComponent,
     SubmissionsComponent,
+    SettingsPageComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -81,6 +84,7 @@ import { SubmissionsComponent } from './components/submissions/submissions.compo
     MatProgressSpinnerModule,
     AuthLoadingOverlayComponent,
     MatDialogModule,
+    AsyncPipe
   ],
 })
 export class FeaturesModule {}

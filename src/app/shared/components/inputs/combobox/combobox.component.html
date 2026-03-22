@@ -1,6 +1,11 @@
 @if (controlName && formGroup && formGroup.get(controlName)) {
   <mat-form-field class="w-100" [formGroup]="formGroup">
-    <mat-label>{{label}}</mat-label>
+    <mat-label
+      >{{ label }}
+      @if (badgeName) {
+        <span class="field-badge client">{{ badgeName }}</span>
+      }
+    </mat-label>
     <div class="d-flex flex-row align-items-center justify-content-end">
       <input
         matInput

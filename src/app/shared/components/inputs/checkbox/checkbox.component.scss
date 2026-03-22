@@ -1,0 +1,33 @@
+.checkbox-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #334155;
+}
+
+.field-badge {
+  margin-left: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  border: 1px solid transparent;
+}
+
+.field-badge.client {
+  background: rgba(146, 227, 169, 0.25);
+  color: #1f6f3d;
+  border-color: rgba(146, 227, 169, 0.4);
+}
+
+.field-badge.you {
+  background: rgba(15, 23, 42, 0.06);
+  color: #0f172a;
+  border-color: rgba(15, 23, 42, 0.12);
+}

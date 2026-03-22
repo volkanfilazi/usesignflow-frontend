@@ -6,6 +6,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { Constants } from '../models/constants';
 
 @Injectable({ providedIn: 'root' })
 export class ValidationService {
@@ -22,6 +23,23 @@ export class ValidationService {
     }
 
     return null;
+  }
+
+  static passwordPatternValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+
+      if (!value) return null;
+
+      return Constants.passwordRegex.test(value)
+        ? null
+        : {
+            passwordPattern: {
+              message:
+                'The password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one special character.',
+            },
+          };
+    };
   }
 
   buildValidators(field: any, includeRequired = true): ValidatorFn[] {
@@ -117,6 +135,13 @@ export class ValidationService {
         pushIssue(
           'max',
           `(${label}) must be less than or equal to ${errors['max'].max}. Current value: ${errors['max'].actual}.`,
+        );
+      }
+
+      if (errors['passwordPattern']) {
+        pushIssue(
+          'passwordPattern',
+          errors['passwordPattern'].message || `(${label}) password format is invalid.`,
         );
       }
 

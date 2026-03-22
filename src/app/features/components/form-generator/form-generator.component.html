@@ -143,13 +143,12 @@
                     </div>
 
                     <div class="field-item field-item-md">
-                      <app-combobox
+                      <app-segments
                         [formGroup]="myGroup"
                         [controlName]="FormElementsEnum.AssignedTo + item.id"
-                        [label]="'Assigned to who'"
+                        [label]="'Assigned to'"
                         [options]="assignedToOptions"
-                        (typeChanged)="assignedToComboboxChanged(item.id, $event)"
-                      ></app-combobox>
+                      ></app-segments>
                     </div>
                   </div>
 
@@ -282,7 +281,7 @@
             @if (!isCollapsed(item.id)) {
               <div class="d-flex flex-column gap-1 mt-1">
                 <div>{{ item.agreement.title }}</div>
-                <div>{{ item.agreement.content }}</div>
+                <p class="agreement-content">{{ item.agreement.content }}</p>
               </div>
             }
           </div>

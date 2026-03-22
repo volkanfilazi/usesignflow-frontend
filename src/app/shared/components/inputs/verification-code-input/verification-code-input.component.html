@@ -1,0 +1,21 @@
+<div class="code-input-wrap">
+  <span class="code-kicker">Security verification</span>
+  <h2>Enter 2FA verification code</h2>
+  <p>Please enter the 6-digit 2FA Authenticator Code</p>
+
+  <div class="code-grid">
+    <input
+      #codeInput
+      *ngFor="let item of codeArray; let i = index"
+      class="code-box"
+      type="text"
+      inputmode="numeric"
+      maxlength="1"
+      autocomplete="one-time-code"
+      [value]="code[i]"
+      (input)="onInput($event, i)"
+      (keydown)="onKeyDown($event, i)"
+      (paste)="onPaste($event)"
+    />
+  </div>
+</div>

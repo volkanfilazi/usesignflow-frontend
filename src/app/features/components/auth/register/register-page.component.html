@@ -18,70 +18,63 @@
 
     @if (formGroup) {
       <form class="auth-form" [formGroup]="formGroup">
-        <div class="form-group">
-          <label for="fullName">Full name</label>
-          <input
-            [class.invalid]="isInvalid('fullName')"
-            id="fullName"
-            type="text"
-            formControlName="fullName"
-            required="true"
-            placeholder="John Doe"
-          />
+        <app-text-input
+          [isRequired]="true"
+          [label]="'Full name'"
+          [formGroup]="formGroup"
+          [controlName]="'fullName'"
+          [label]="'fullName'"
+          type="text"
+          placeholder="John Doe"
+        >
+        </app-text-input>
+        <app-text-input
+          [isRequired]="true"
+          [label]="'email'"
+          [formGroup]="formGroup"
+          [controlName]="'email'"
+          [label]="'email'"
+          type="email"
+          placeholder="name@email.com"
+        >
+        </app-text-input>
+        <app-text-input
+          [isRequired]="true"
+          [label]="'password'"
+          [formGroup]="formGroup"
+          [controlName]="'password'"
+          [label]="'password'"
+          type="password"
+          placeholder="••••••••"
+        >
+        </app-text-input>
+        <app-text-input
+          [isRequired]="true"
+          [label]="'passwordConfirm'"
+          [formGroup]="formGroup"
+          [controlName]="'passwordConfirm'"
+          [label]="'passwordConfirm'"
+          type="password"
+          placeholder="••••••••"
+        >
+        </app-text-input>
+        <div class="d-flex align-items-center mt-3 gap-2">
+          <span class="terms-link" (click)="openTerms()">Terms of Service</span>
+          <span> | </span>
+          <span class="terms-link" (click)="openPrivacy()">Privacy Policy</span>
         </div>
-
-        <div class="form-group">
-          <label for="email">Email address</label>
-          <input
-            [class.invalid]="isInvalid('email')"
-            id="email"
-            type="email"
-            formControlName="email"
-            required="true"
-            placeholder="name@email.com"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            [class.invalid]="isInvalid('password')"
-            id="password"
-            type="password"
-            formControlName="password"
-            required="true"
-            placeholder="••••••••"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="confirmPassword">Confirm password</label>
-          <input
-            [class.invalid]="isInvalid('passwordConfirm')"
-            id="passwordConfirm"
-            type="password"
-            required="true"
-            formControlName="passwordConfirm"
-            placeholder="••••••••"
-          />
-          <div class="d-flex align-items-center mt-3 gap-2">
-            <span class="terms-link" (click)="openTerms()">Terms of Service</span>
-            <span> | </span>
-            <span class="terms-link" (click)="openPrivacy()">Privacy Policy</span>
-          </div>
-          <div class="d-flex align-items-center">
-            <span>I agree to the</span>
-            <app-checkbox
-              [formGroup]="formGroup"
-              controlName="termsAccepted"
-              checkboxName="Terms of Service"
-            ></app-checkbox>
-            <app-checkbox
-              [formGroup]="formGroup"
-              controlName="privacyAccepted"
-              checkboxName="Privacy Policy"
-            ></app-checkbox>
-          </div>
+        <div class="d-flex align-items-center">
+          <span>I agree to the</span>
+          <app-checkbox
+            [formGroup]="formGroup"
+            controlName="termsAccepted"
+            checkboxName="Terms of Service"
+          ></app-checkbox>
+          <app-checkbox
+            [formGroup]="formGroup"
+            controlName="privacyAccepted"
+            checkboxName="Privacy Policy"
+          ></app-checkbox>
         </div>
 
         <button type="submit" class="btn btn-primary w-100" (click)="register()">

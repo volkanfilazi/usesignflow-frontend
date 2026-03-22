@@ -9,106 +9,140 @@
       </app-loading-overlay>
     }
 
-    <div class="builder-hero-content">
-      <h4>{{ getFormTitle() }}</h4>
-    </div>
+    <div class="form-shell">
+      <div class="builder-hero-content">
+        <span class="form-kicker">Shared form preview</span>
+        <h4>
+          {{ getFormTitle().title }}
+          @if (getFormTitle().status) {
+            <span
+              class="field-badge client"
+              [ngClass]="{
+                pending: getFormTitle().status === 'Pending',
+                completed: getFormTitle().status === 'Completed',
+                signed: getFormTitle().status === 'Signed',
+              }"
+              >{{ getFormTitle().status }}</span
+            >
+          }
+        </h4>
+        <p class="form-subtitle">
+          Complete the assigned sections and review the remaining fields in one shared flow.
+        </p>
+      </div>
 
-    @if (!(loading$ | async) && !buildingForm && myGroup) {
-      <div class="dynamic-form-grid mt-2">
-        @for (item of getFields(); track item.fieldId) {
-          <div class="field-wrapper" [style.grid-column]="'span ' + item.colSpan">
-            @if (item.type === 'text') {
-              <app-text-input
-                class="full-width-field"
-                [isRequired]="item.required"
-                [formGroup]="myGroup"
-                [type]="item.type"
-                [label]="getFieldLabel(item)"
-                [controlName]="item.fieldId"
-              ></app-text-input>
-            }
+      @if (!(loading$ | async) && !buildingForm && myGroup) {
+        <div class="dynamic-form-grid mt-2">
+          @for (item of getFields(); track item.fieldId) {
+            <div
+              class="field-wrapper"
+              [class.client-field]="isDisabled(item)"
+              [class.signature-field]="item.type === 'signaturePad'"
+              [class.agreement-field]="item.type === 'agreement'"
+              [style.grid-column]="'span ' + item.colSpan"
+            >
+              @if (item.type === 'text') {
+                <app-text-input
+                  class="full-width-field"
+                  [isRequired]="item.required"
+                  [formGroup]="myGroup"
+                  [type]="item.type"
+                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [label]="getFieldLabel(item)"
+                  [controlName]="item.fieldId"
+                ></app-text-input>
+              }
 
-            @if (item.type === 'number') {
-              <app-text-input
-                class="full-width-field"
-                [isRequired]="item.required"
-                [formGroup]="myGroup"
-                [type]="item.type"
-                [label]="item.label"
-                [controlName]="item.fieldId"
-              ></app-text-input>
-            }
+              @if (item.type === 'number') {
+                <app-text-input
+                  class="full-width-field"
+                  [isRequired]="item.required"
+                  [formGroup]="myGroup"
+                  [type]="item.type"
+                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [label]="item.label"
+                  [controlName]="item.fieldId"
+                ></app-text-input>
+              }
 
-            @if (item.type === 'email') {
-              <app-text-input
-                class="full-width-field"
-                [isRequired]="item.required"
-                [formGroup]="myGroup"
-                [type]="item.type"
-                [label]="getFieldLabel(item)"
-                [controlName]="item.fieldId"
-              ></app-text-input>
-            }
+              @if (item.type === 'email') {
+                <app-text-input
+                  class="full-width-field"
+                  [isRequired]="item.required"
+                  [formGroup]="myGroup"
+                  [type]="item.type"
+                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [label]="getFieldLabel(item)"
+                  [controlName]="item.fieldId"
+                ></app-text-input>
+              }
 
-            @if (item.type === 'select') {
-              <app-combobox
-                class="full-width-field"
-                [isRequired]="item.required"
-                [formGroup]="myGroup"
-                [label]="getFieldLabel(item)"
-                [controlName]="item.fieldId"
-                [options]="item.options ?? []"
-              ></app-combobox>
-            }
+              @if (item.type === 'select') {
+                <app-combobox
+                  class="full-width-field"
+                  [isRequired]="item.required"
+                  [formGroup]="myGroup"
+                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [label]="getFieldLabel(item)"
+                  [controlName]="item.fieldId"
+                  [options]="item.options ?? []"
+                ></app-combobox>
+              }
 
-            @if (item.type === 'checkbox') {
-              <app-checkbox
-                class="full-width-field"
-                [isRequired]="item.required"
-                [formGroup]="myGroup"
-                [label]="getFieldLabel(item)"
-                [controlName]="item.fieldId"
-                [checkboxName]="item.label"
-              ></app-checkbox>
-            }
-
-            @if (item.type === 'agreement') {
-              <div class="agreement-block">
-                <div class="agreement-content">
-                  <h3>{{ item.agreement?.title }}</h3>
-                  <p>{{ item.agreement?.content }}</p>
-                </div>
+              @if (item.type === 'checkbox') {
                 <app-checkbox
                   class="full-width-field"
+                  [isRequired]="item.required"
                   [formGroup]="myGroup"
                   [label]="getFieldLabel(item)"
                   [controlName]="item.fieldId"
-                  [checkboxName]="'I accept this agreement'"
+                  [checkboxName]="item.label"
                 ></app-checkbox>
-              </div>
-            }
+              }
 
-            @if (item.type === 'signaturePad') {
-              <app-signature-pad
-                [formGroup]="myGroup"
-                [label]="getFieldLabel(item)"
-                [disabled]="isSignaturePadDisabled || isDisabled(item)"
-                [controlName]="item.fieldId"
-              ></app-signature-pad>
-            }
+              @if (item.type === 'agreement') {
+                <div class="agreement-block">
+                  <div class="agreement-content">
+                    <h3>{{ item.agreement?.title }}</h3>
+                    <p>{{ item.agreement?.content }}</p>
+                  </div>
+                  <app-checkbox
+                    class="full-width-field"
+                    [formGroup]="myGroup"
+                    [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                    [label]="getFieldLabel(item)"
+                    [controlName]="item.fieldId"
+                    [checkboxName]="'I accept this agreement'"
+                  ></app-checkbox>
+                </div>
+              }
+
+              @if (item.type === 'signaturePad') {
+                <app-signature-pad
+                  [formGroup]="myGroup"
+                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [label]="getFieldLabel(item)"
+                  [disabled]="isSignaturePadDisabled || isDisabled(item)"
+                  [controlName]="item.fieldId"
+                ></app-signature-pad>
+              }
+            </div>
+          }
+        </div>
+
+        @if (!isSignaturePadDisabled && externalUserToken) {
+          <div class="form-actions">
+            <button class="primary-action" (click)="update()">Save and continue</button>
           </div>
         }
-        @if (!isSignaturePadDisabled && externalUserToken) {
-          <button (click)="update()">External user save</button>
-        }
-      </div>
 
-      @if (validationErrors) {
-        <app-validation
-          [validationMessages]="validationErrors"
-          [myGroup]="myGroup"
-        ></app-validation>
+        @if (validationErrors) {
+          <app-validation
+            [validationMessages]="validationErrors"
+            [myGroup]="myGroup"
+          ></app-validation>
+        }
       }
-    }
+    </div>
   </section>
 </div>

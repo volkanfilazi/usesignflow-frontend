@@ -24,27 +24,24 @@
             <strong>Change password</strong>
             <p>Update your password regularly to keep your account secure.</p>
           </div>
-          <button class="mini-btn">Update</button>
+          <app-primary-button
+            buttonName="Update"
+            (buttonClick)="changePassword()"
+          ></app-primary-button>
         </div>
 
-        <div class="setting-row">
-          <div>
-            <strong>Two-factor authentication</strong>
-            <p>Add an extra security layer to your account.</p>
+        @if (!(loading$ | async) && formGroup) {
+          <div [formGroup]="formGroup" class="setting-row">
+            <div>
+              <strong>Two-factor authentication</strong>
+              <p>Add an extra security layer to your account.</p>
+            </div>
+            <label for="twoFactorEnabled" class="switch">
+              <input formControlName="twoFactorEnabled" id="twoFactorEnabled" type="checkbox" />
+              <span class="slider"></span>
+            </label>
           </div>
-          <label class="switch">
-            <input type="checkbox" />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-row">
-          <div>
-            <strong>Logout all devices</strong>
-            <p>Sign out from all active sessions on other devices.</p>
-          </div>
-          <button class="mini-btn">Logout all</button>
-        </div>
+        }
       </div>
     </section>
 
@@ -61,28 +58,6 @@
           <div>
             <strong>Document signed notifications</strong>
             <p>Receive an email when a contract or form is completed.</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-row">
-          <div>
-            <strong>Weekly summary</strong>
-            <p>Get a weekly overview of your forms, activity, and progress.</p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-row">
-          <div>
-            <strong>Product updates</strong>
-            <p>Receive occasional updates about improvements and new features.</p>
           </div>
           <label class="switch">
             <input type="checkbox" checked />
@@ -144,23 +119,23 @@
       <div class="settings-list">
         <div class="setting-row">
           <div>
-            <strong>Download my data</strong>
-            <p>Request a copy of your account-related personal data.</p>
-          </div>
-          <button class="mini-btn">Request export</button>
-        </div>
-
-        <div class="setting-row">
-          <div>
             <strong>Delete account</strong>
             <p>
               Remove your personal account information. Signed documents may be retained anonymously
               for a limited period.
             </p>
           </div>
-          <button class="btn btn-danger">Delete account</button>
+          <button class="btn btn-danger" (click)="deleteAccount()">Delete account</button>
         </div>
       </div>
     </section>
   </div>
 </div>
+@if (loading$ | async) {
+  <app-loading-overlay
+    [visible]="loading$.value"
+    [title]="'Loading...'"
+    [message]="'Please wait while load all datas'"
+  >
+  </app-loading-overlay>
+}

@@ -8,40 +8,68 @@ export function getApiErrorMessage(error: unknown): string {
   const payload = error.error;
 
   if (!payload) {
-    return 'An unexpected error occurred.';
+    return getDefaultStatusMessage(error.status);
   }
 
   if (typeof payload === 'string') {
     return payload;
   }
 
-  if (payload.message && typeof payload.message === 'string') {
-    return payload.message;
-  }
+  if (payload && typeof payload === 'object') {
+    if (typeof payload.code === 'string') {
+      switch (payload.code) {
+        case 'VALIDATION_ERROR':
+          return 'Email and password are required.';
 
-  if (payload.title && typeof payload.title === 'string' && !payload.errors) {
-    return payload.title;
-  }
+        case 'INVALID_CREDENTIALS':
+          return 'Invalid email or password.';
 
-  if (payload.errors && typeof payload.errors === 'object') {
-    const messages: string[] = [];
+        case 'PASSWORD_LOGIN_NOT_AVAILABLE':
+          return 'This account cannot be used with password login. Please use one of your linked sign-in methods or set a password first.';
 
-    for (const key of Object.keys(payload.errors)) {
-      const value = payload.errors[key];
+        case 'USE_EXTERNAL_LOGIN':
+          return 'Please sign in with one of your linked providers or set a password first.';
 
-      if (Array.isArray(value)) {
-        messages.push(...value);
-      } else if (typeof value === 'string') {
-        messages.push(value);
+        case 'EMAIL_NOT_VERIFIED':
+          return 'Please verify your email before logging in.';
+
+        default:
+          break;
       }
     }
 
-    if (messages.length > 0) {
-      return messages.join(' ');
+    if (payload.errors && typeof payload.errors === 'object') {
+      const messages: string[] = [];
+
+      for (const key of Object.keys(payload.errors)) {
+        const value = payload.errors[key];
+
+        if (Array.isArray(value)) {
+          messages.push(...value.filter((x) => typeof x === 'string'));
+        } else if (typeof value === 'string') {
+          messages.push(value);
+        }
+      }
+
+      if (messages.length > 0) {
+        return messages.join(' ');
+      }
+    }
+
+    if (payload.title && typeof payload.title === 'string' && !payload.errors) {
+      return payload.title;
+    }
+
+    if (payload.message && typeof payload.message === 'string') {
+      return payload.message;
     }
   }
 
-  switch (error.status) {
+  return getDefaultStatusMessage(error.status);
+}
+
+function getDefaultStatusMessage(status: number): string {
+  switch (status) {
     case 0:
       return 'Server is unreachable.';
     case 400:

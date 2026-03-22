@@ -45,12 +45,19 @@ export class AuthStateService {
 
   getFullName(): string | null {
     const payload = this.getPayload();
+    
     return payload?.name ?? null;
   }
 
   getEmail(): string | null {
     const payload = this.getPayload();
     return payload?.email ?? null;
+  }
+
+  getIsTwoFactorEnabled(): boolean {
+    const payload = this.getPayload();
+
+    return payload?.twoFactorEnabled?.toLowerCase() === 'true';
   }
 
   getUserId(): string | null {

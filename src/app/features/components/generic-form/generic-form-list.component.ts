@@ -41,7 +41,6 @@ export class GenericFormListComponent implements OnInit {
         this.loading$.next(false);
       },
       error: (error) => {
-        console.error('Error fetching forms:', error);
         this.loading$.next(false);
       },
     });

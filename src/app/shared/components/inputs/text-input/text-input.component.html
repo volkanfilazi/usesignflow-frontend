@@ -1,14 +1,19 @@
 @if (formGroup && controlName) {
-  <mat-form-field class="w-100"  [formGroup]="formGroup" appearance="outline">
-    <mat-label>{{ label }}</mat-label>
+  <div [formGroup]="formGroup" class="form-group w-100">
+    <label [for]="controlName"
+      >{{ label }}
+      @if (badgeName) {
+        <span class="field-badge client">{{ badgeName }}</span>
+      }
+    </label>
     <input
-      matInput
+      [class.invalid]="isInvalid(controlName)"
       [formControlName]="controlName"
       [id]="controlName"
       [required]="isRequired"
       [readonly]="disabled"
+      [placeholder]="placeholder"
       [type]="type"
-      placeholder="Enter your {{ label }}"
     />
-  </mat-form-field>
+  </div>
 }

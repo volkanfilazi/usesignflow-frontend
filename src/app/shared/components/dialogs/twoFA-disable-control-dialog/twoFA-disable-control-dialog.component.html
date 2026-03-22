@@ -1,0 +1,41 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="close(false)"></app-icon-button>
+  </div>
+  <div class="dialog-content">
+    <mat-dialog-content>
+      @if (formGroup) {
+        @if (!currentPasswordCompleted) {
+          <app-text-input
+            controlName="currentPassword"
+            label="Current password"
+            [isRequired]="true"
+            placeholder="••••••••"
+            type="password"
+            [formGroup]="formGroup"
+          ></app-text-input>
+        } @else {
+          <app-verification-code-input
+            (codeCompleted)="codeCompleted($event)"
+          ></app-verification-code-input>
+        }
+      }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="d-flex align-items-center gap-1">
+      <button mat-stroked-button class="dialog-btn dialog-cancel" (click)="close(false)">
+        Cancel
+      </button>
+      @if (!currentPasswordCompleted) {
+        <app-primary-button
+          (click)="confirm()"
+          [disabled]="this.loading$.value"
+          [buttonName]="'Confirm'"
+          color="primary"
+        ></app-primary-button>
+      }
+    </mat-dialog-actions>
+  </div>
+  @if (validationErrors) {
+    <app-validation [validationMessages]="validationErrors" [myGroup]="formGroup"></app-validation>
+  }
+</div>

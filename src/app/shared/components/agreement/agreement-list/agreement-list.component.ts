@@ -142,7 +142,6 @@ export class AgreementListComponent implements OnInit {
         this.mode = 'list';
       },
       error: (error) => {
-        console.error('Error fetching agreements:', error);
         this.loading$.next(false);
       },
     });

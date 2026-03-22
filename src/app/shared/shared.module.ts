@@ -37,6 +37,15 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatRadioModule } from '@angular/material/radio';
 import { AsyncPipe } from '@angular/common';
 import { FormPreviewDialogComponent } from './components/dialogs/form-preview-dialog/form-preview-dialog.component';
+import { ChangePasswordDialogComponent } from './components/dialogs/change-password-dialog/change-password-dialog.component';
+import { VerificationCodeInputComponent } from './components/inputs/verification-code-input/verification-code-input.component';
+import { TwoFAVerifyDialogComponent } from './components/dialogs/twoFA-verify-dialog/twoFA-verify-dialog.component';
+import { TwoFADisableControlDialogComponent } from './components/dialogs/twoFA-disable-control-dialog/twoFA-disable-control-dialog.component';
+import { TwoFAEnableControlDialogComponent } from './components/dialogs/twoFA-enable-control-dialog/twoFAEnableControlDialog.component';
+import { QRCodeComponent } from 'angularx-qrcode';
+import { DeleteDialogComponent } from './components/dialogs/delete-dialog/delete-dialog.component';
+import { PasswordDialogCOmponent } from './components/dialogs/password-dialog/password-dialog.component';
+import { SegmentsComponent } from './components/segments/segments.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +65,15 @@ import { FormPreviewDialogComponent } from './components/dialogs/form-preview-di
     IconButtonComponent,
     ConfirmDialogComponent,
     DynamicFormRendererComponent,
-    FormPreviewDialogComponent
+    FormPreviewDialogComponent,
+    ChangePasswordDialogComponent,
+    VerificationCodeInputComponent,
+    TwoFAVerifyDialogComponent,
+    TwoFADisableControlDialogComponent,
+    TwoFAEnableControlDialogComponent,
+    DeleteDialogComponent,
+    PasswordDialogCOmponent,
+    SegmentsComponent
   ],
   imports: [
     CommonModule,
@@ -86,7 +103,8 @@ import { FormPreviewDialogComponent } from './components/dialogs/form-preview-di
     MatDialogContent,
     DragDropModule,
     MatRadioModule,
-    AsyncPipe
+    AsyncPipe,
+    QRCodeComponent
 ],
   exports: [
     TextInputComponent,
@@ -103,7 +121,8 @@ import { FormPreviewDialogComponent } from './components/dialogs/form-preview-di
     PrivacyComponent,
     EmptyStateComponent,
     IconButtonComponent,
-    DynamicFormRendererComponent
+    DynamicFormRendererComponent,
+    SegmentsComponent
   ],
 })
 export class SharedModule {}

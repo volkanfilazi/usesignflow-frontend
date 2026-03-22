@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FormsApiService } from '../../../shared/services/form-api.service';
@@ -11,12 +11,12 @@ import { PageActionService } from '../../../shared/services/page-action.service'
 import {
   Agreements,
   AssignedTo,
+  assignedToMap,
   AssignedToOptions,
   CreateFormDefinitionRequest,
   FIELD_CONFIG,
   FieldDefinition,
   FieldType,
-  FormAssignedTo,
   FormElementsEnum,
   FormFieldType,
   options,
@@ -39,7 +39,7 @@ export class FormGeneratorComponent implements OnDestroy {
   myGroup: FormGroup;
   FormElementsEnum = FormElementsEnum;
   fieldOptions: FormFieldType[] = [...options];
-  assignedToOptions: FormAssignedTo[] = [...AssignedToOptions];
+  assignedToOptions: AssignedTo[] = [...AssignedToOptions];
   validationErrors: ValidationIssue[] | undefined;
   requiredCheckboxLabel = 'Required';
   pageOwner = 'form-generator';
@@ -159,7 +159,10 @@ export class FormGeneratorComponent implements OnDestroy {
     this.myGroup.addControl(FormElementsEnum.ValidationMinLength + uniqueId, new FormControl());
     this.myGroup.addControl(FormElementsEnum.ValidationMaxLength + uniqueId, new FormControl());
 
-    this.myGroup.addControl(FormElementsEnum.Label + uniqueId, new FormControl(config.label));
+    this.myGroup.addControl(
+      FormElementsEnum.Label + uniqueId,
+      new FormControl(config.label, [Validators.required]),
+    );
 
     this.myGroup.addControl(FormElementsEnum.ColSpan + uniqueId, new FormControl(config.colSpan));
 
@@ -309,14 +312,6 @@ export class FormGeneratorComponent implements OnDestroy {
     }
   }
 
-  assignedToComboboxChanged(id: string, value: string) {
-    if (value === 'external') {
-      this.requiredCheckboxLabel = 'Required for external user';
-    } else {
-      this.requiredCheckboxLabel = 'Required';
-    }
-  }
-
   returnFormValue(formName: string) {
     return this.myGroup.get(formName)?.value;
   }
@@ -364,6 +359,8 @@ export class FormGeneratorComponent implements OnDestroy {
         if (item.type === 'field') {
           const id = item.id;
           const type = this.myGroup.get(FormElementsEnum.Type + id)?.value;
+          const assignedToValue = this.myGroup.get(FormElementsEnum.AssignedTo + id)
+            ?.value as AssignedTo;
 
           return {
             fieldId: id,
@@ -373,7 +370,7 @@ export class FormGeneratorComponent implements OnDestroy {
             max: this.returnFormValue(FormElementsEnum.ValidationMax + id),
             minLength: this.returnFormValue(FormElementsEnum.ValidationMaxLength + id),
             maxLength: this.returnFormValue(FormElementsEnum.ValidationMinLength + id),
-            assignedTo: this.myGroup.get(FormElementsEnum.AssignedTo + id)?.value ?? false,
+            assignedTo: assignedToValue ?? 'You',
             required: this.myGroup.get(FormElementsEnum.Required + id)?.value ?? false,
             colSpan: Number(this.myGroup.get(FormElementsEnum.ColSpan + id)?.value),
             options: this.myGroup.get(FormElementsEnum.SelectOptions + id)?.value,
@@ -386,7 +383,7 @@ export class FormGeneratorComponent implements OnDestroy {
             label: item.agreement.title,
             type: 'agreement',
             required: true,
-            assignedTo: 'external' as AssignedTo,
+            assignedTo: 'client' as AssignedTo,
             colSpan: 4,
             agreement: item.agreement,
           } as FieldDefinition;

@@ -1,5 +1,10 @@
 <div class="position-relative">
-  <label>{{ label }}</label>
+  <label
+    >{{ label }}
+    @if (badgeName) {
+      <span class="field-badge client">{{ badgeName }}</span>
+    }
+  </label>
   <div
     [ngClass]="disabled ? 'signature-disabled' : ''"
     class="signature-container"
@@ -9,7 +14,7 @@
   </div>
   @if (!disabled) {
     <div class="actions">
-      <button type="button" (click)="clear()">Clear</button>
+      <app-icon-button (buttonClick)="clear()" iconName="delete"></app-icon-button>
     </div>
   }
 </div>
