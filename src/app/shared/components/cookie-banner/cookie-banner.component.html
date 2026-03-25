@@ -1,0 +1,35 @@
+@if (visible()) {
+  <div
+    style="background-color: #ecfcf1; opacity: 0.9"
+    class="position-fixed bottom-0 w-100 border-1 border-black border-top"
+  >
+    <div class="mx-auto w-full max-w-4xl rounded-2xl bg-neutral-900 p-5 text-black shadow-2xl">
+      <p class="mb-4 text-sm leading-6">
+        In addition to essential cookies, we also use analytical cookies on our website. Analytical
+        cookies will only be activated if you give your consent.
+      </p>
+
+      <div class="d-flex flex-wrap gap-3">
+        <button
+          type="button"
+          (click)="accept()"
+          class="rounded-xl bg-white px-4 py-2 text-sm font-medium text-black"
+        >
+          Accept
+        </button>
+
+        <button
+          type="button"
+          (click)="reject()"
+          class="rounded-xl px-4 py-2 text-sm font-medium text-black"
+        >
+          Reject
+        </button>
+
+        <a href="/cookie-policy" class="px-2 py-2 text-sm underline underline-offset-4">
+          Examine the details.
+        </a>
+      </div>
+    </div>
+  </div>
+}

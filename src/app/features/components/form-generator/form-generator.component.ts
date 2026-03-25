@@ -1,22 +1,22 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FormsApiService } from '../../../shared/services/form-api.service';
-import { BehaviorSubject } from 'rxjs';
-import { Router } from '@angular/router';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { ValidationService } from '../../../shared/services/validation.service';
 import { PageActionService } from '../../../shared/services/page-action.service';
 import {
   Agreements,
   AssignedTo,
-  assignedToMap,
+  AssignedToEnum,
   AssignedToOptions,
-  CreateFormDefinitionRequest,
   FIELD_CONFIG,
   FieldDefinition,
   FieldType,
+  FormDefinition,
   FormElementsEnum,
   FormFieldType,
   options,
@@ -24,19 +24,33 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { AgreementListComponent } from '../../../shared/components/agreement/agreement-list/agreement-list.component';
 import { FormPreviewDialogComponent } from '../../../shared/components/dialogs/form-preview-dialog/form-preview-dialog.component';
+import { BillingApiService } from '../../../shared/services/billing-api-service';
+import { EditMode } from '../../../shared/models/auth.model';
+
 type BuilderItem =
-  | { type: 'field'; id: string }
-  | { type: 'agreement'; id: string; agreement: Agreements };
+  | { type: 'Field'; id: string }
+  | { type: 'Agreement'; id: string; agreement: Agreements };
+
 @Component({
   selector: 'app-form-generator',
   templateUrl: './form-generator.component.html',
   styleUrls: ['./form-generator.component.scss'],
   standalone: false,
 })
-export class FormGeneratorComponent implements OnDestroy {
+export class FormGeneratorComponent implements OnDestroy, OnInit {
+  private readonly destroy$ = new Subject<void>();
+  private initialFormValue:
+    | {
+        form: Record<string, any>;
+        builderItems: BuilderItem[];
+      }
+    | undefined;
+
+  editMode = EditMode.CREATE;
+  formById: FormDefinition | undefined;
   loading$ = new BehaviorSubject<boolean>(false);
   builderItems: BuilderItem[] = [];
-  myGroup: FormGroup;
+  myGroup!: FormGroup;
   FormElementsEnum = FormElementsEnum;
   fieldOptions: FormFieldType[] = [...options];
   assignedToOptions: AssignedTo[] = [...AssignedToOptions];
@@ -44,41 +58,15 @@ export class FormGeneratorComponent implements OnDestroy {
   requiredCheckboxLabel = 'Required';
   pageOwner = 'form-generator';
   collapsedMap: Record<string, boolean> = {};
-  toolbarItems: {
-    icon: string;
-    name: string;
-    type: FieldType;
-  }[] = [
-    {
-      icon: 'short_text',
-      name: 'Text',
-      type: 'text',
-    },
-    {
-      icon: 'alternate_email',
-      name: 'Email',
-      type: 'email',
-    },
-    {
-      icon: 'tag',
-      name: 'Number',
-      type: 'number',
-    },
-    {
-      icon: 'arrow_drop_down_circle',
-      name: 'Select',
-      type: 'select',
-    },
-    {
-      icon: 'check_box',
-      name: 'Checkbox',
-      type: 'checkbox',
-    },
-    {
-      icon: 'draw',
-      name: 'Signature',
-      type: 'signaturePad',
-    },
+
+  toolbarItems: { icon: string; name: string; type: FieldType }[] = [
+    { icon: 'short_text', name: 'ShortText', type: 'ShortText' },
+    { icon: 'notes', name: 'LongText', type: 'LongText' },
+    { icon: 'alternate_email', name: 'Email', type: 'Email' },
+    { icon: 'tag', name: 'Number', type: 'Number' },
+    { icon: 'arrow_drop_down_circle', name: 'Dropdown', type: 'Dropdown' },
+    { icon: 'check_box', name: 'Checkbox', type: 'Checkbox' },
+    { icon: 'draw', name: 'Signature', type: 'Signature' },
   ];
 
   constructor(
@@ -88,91 +76,170 @@ export class FormGeneratorComponent implements OnDestroy {
     private readonly validationService: ValidationService,
     private readonly pageActionService: PageActionService,
     private readonly matDialog: MatDialog,
-  ) {
-    this.myGroup = new FormGroup({
-      formName: new FormControl(),
-      expanded: new FormControl(),
-      version: new FormControl(),
-    });
+    private readonly billingApi: BillingApiService,
+    private readonly route: ActivatedRoute,
+  ) {}
 
-    this.myGroup.get('formName')?.valueChanges.subscribe((value) => {});
+  ngOnInit() {
+    this.buildForm();
     this.pageActionService.clearActions();
+    this.setActions();
 
-    this.pageActionService.addAction({
-      id: 'add',
-      text: 'Add new element',
-      owner: this.pageOwner,
-      handler: () => this.createNewControl(),
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const formId = params.get('formId');
+      const mode = params.get('mode') as EditMode;
+
+      if (!formId) {
+        this.myGroup.enable({ emitEvent: false });
+        this.captureInitialFormValue();
+
+        return;
+      }
+
+      if (mode) {
+        this.editMode = mode;
+        this.pageActionService.clearActions();
+        this.setActions(this.editMode);
+      }
+
+      this.formApiService.getFormById(formId).subscribe({
+        next: (response: any) => {
+          this.formById = response;
+
+          this.resetDynamicFields();
+
+          const normalizedFields = response?.fields ?? response?.Fields ?? [];
+          const normalizedFormName = response?.formName ?? response?.FormName ?? '';
+          const normalizedExpanded = response?.expanded ?? response?.Expanded ?? false;
+          const normalizedVersion = response?.version ?? response?.Version ?? '';
+          const normalizedAgreementContentHtml = response?.agreementContentHtml;
+
+          this.loadFieldsFromApi(normalizedFields);
+
+          this.myGroup.patchValue({
+            formName: normalizedFormName,
+            expanded: normalizedExpanded,
+            version: normalizedVersion,
+            agreementContentHtml: normalizedAgreementContentHtml,
+          });
+
+          if (this.myGroup) {
+            console.log('1', this.myGroup.value);
+          }
+
+          if (this.editMode === EditMode.VIEW) {
+            this.myGroup.disable({ emitEvent: false });
+          } else {
+            this.myGroup.enable({ emitEvent: false });
+          }
+
+          this.captureInitialFormValue();
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
     });
+  }
 
-    this.pageActionService.addAction({
-      id: 'add-agreement',
-      text: 'Add agreement',
-      owner: this.pageOwner,
-      handler: () => this.addAgreement(),
+  private buildForm() {
+    this.myGroup = new FormGroup({
+      formName: new FormControl(''),
+      expanded: new FormControl(false),
+      version: new FormControl(''),
+      agreementContentHtml: new FormControl(''),
     });
+  }
 
-    this.pageActionService.addAction({
-      id: 'show-preview',
-      text: 'Show preview',
-      owner: this.pageOwner,
-      handler: () => this.previewForm(),
+  private resetDynamicFields() {
+    this.builderItems = [];
+    this.collapsedMap = {};
+
+    Object.keys(this.myGroup.controls).forEach((key) => {
+      const isBaseControl = ['formName', 'expanded', 'version', 'agreementContentHtml'].includes(key);
+      if (!isBaseControl) {
+        this.myGroup.removeControl(key);
+      }
     });
+  }
 
-    this.pageActionService.addAction({
-      id: 'save-ui',
-      text: 'Create',
-      owner: this.pageOwner,
-      handler: () => this.create(),
+  isDisabled() {
+    return this.editMode !== EditMode.CREATE && this.editMode !== EditMode.EDIT;
+  }
+
+  private setActions(editMode: EditMode = EditMode.CREATE) {
+    if (editMode !== EditMode.VIEW) {
+      this.pageActionService.addAction({
+        id: 'show-preview',
+        iconName: 'visibility',
+        iconTooltip: 'preview before create or update',
+        owner: this.pageOwner,
+        handler: () => this.previewForm(),
+      });
+
+      if (editMode === EditMode.CREATE) {
+        this.pageActionService.addAction({
+          id: 'save-ui',
+          iconName: 'add',
+          iconTooltip: 'create',
+          owner: this.pageOwner,
+          handler: () => this.create(),
+        });
+      } else {
+        this.pageActionService.addAction({
+          id: 'save-ui',
+          text: 'Update',
+          owner: this.pageOwner,
+          handler: () => this.update(),
+        });
+      }
+    } else {
+      this.pageActionService.addAction({
+        id: 'save-ui',
+        text: 'Edit',
+        owner: this.pageOwner,
+        handler: () => this.edit(),
+      });
+    }
+  }
+
+  private loadFieldsFromApi(fields: any[], disabled = false) {
+    if (!Array.isArray(fields) || !fields.length) return;
+
+    fields.forEach((field: any) => {
+      const id = field?.fieldId ?? field?.FieldId;
+      const type = (field?.type ?? field?.Type) as FieldType;
+
+      if (!id || !type) {
+        return;
+      }
+
+      if (type === 'Agreement') {
+        const agreement = field?.agreement ?? field?.Agreement;
+
+        this.builderItems.push({
+          type: 'Agreement',
+          id,
+          agreement,
+        });
+
+        this.collapsedMap[id] = false;
+        return;
+      }
+
+      this.addDynamicField(id, type, field, false, disabled);
     });
   }
 
   get dynamicFormIds(): string[] {
     return this.builderItems
-      .filter((item): item is { type: 'field'; id: string } => item.type === 'field')
+      .filter((item): item is { type: 'Field'; id: string } => item.type === 'Field')
       .map((item) => item.id);
   }
 
-  createNewControl(type: FieldType = 'text') {
+  createNewControl(type: FieldType = 'ShortText') {
     const uniqueId = uuidv4();
-    const config = FIELD_CONFIG[type];
-
-    this.builderItems.push({
-      type: 'field',
-      id: uniqueId,
-    });
-
-    this.myGroup.addControl(
-      FormElementsEnum.Required + uniqueId,
-      new FormControl(config.required ?? false),
-    );
-
-    this.myGroup.addControl(FormElementsEnum.Type + uniqueId, new FormControl(type));
-
-    this.myGroup.addControl(
-      FormElementsEnum.AssignedTo + uniqueId,
-      new FormControl(this.assignedToOptions[0]),
-    );
-
-    this.myGroup.addControl(FormElementsEnum.ValidationMin + uniqueId, new FormControl());
-    this.myGroup.addControl(FormElementsEnum.ValidationMax + uniqueId, new FormControl());
-    this.myGroup.addControl(FormElementsEnum.ValidationMinLength + uniqueId, new FormControl());
-    this.myGroup.addControl(FormElementsEnum.ValidationMaxLength + uniqueId, new FormControl());
-
-    this.myGroup.addControl(
-      FormElementsEnum.Label + uniqueId,
-      new FormControl(config.label, [Validators.required]),
-    );
-
-    this.myGroup.addControl(FormElementsEnum.ColSpan + uniqueId, new FormControl(config.colSpan));
-
-    if (type === 'select') {
-      this.myGroup.addControl(FormElementsEnum.SelectOptions + uniqueId, new FormControl([]));
-    }
-
-    this.collapsedMap[uniqueId] = false;
-
-    this.scrollToTheElement(uniqueId);
+    this.addDynamicField(uniqueId, type, undefined, true);
   }
 
   addAgreement() {
@@ -182,18 +249,23 @@ export class FormGeneratorComponent implements OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
-        const randomID = uuidv4();
-        this.builderItems.push({
-          type: 'agreement',
-          id: randomID,
-          agreement: confirmed,
-        });
+      if (!confirmed) return;
 
-        this.collapsedMap[randomID] = false;
-        this.scrollToTheElement(randomID);
-      }
+      const randomID = uuidv4();
+
+      this.builderItems.push({
+        type: 'Agreement',
+        id: randomID,
+        agreement: confirmed,
+      });
+
+      this.collapsedMap[randomID] = false;
+      this.scrollToTheElement(randomID);
     });
+  }
+
+  getDynamicControlName(prefix: FormElementsEnum, id: string): string {
+    return `${prefix}${id}`;
   }
 
   removeElement(id: string) {
@@ -202,7 +274,7 @@ export class FormGeneratorComponent implements OnDestroy {
       .forEach((controlName) => this.myGroup.removeControl(controlName));
 
     this.builderItems = this.builderItems.filter(
-      (item) => !(item.type === 'field' && item.id === id),
+      (item) => !(item.type === 'Field' && item.id === id),
     );
 
     delete this.collapsedMap[id];
@@ -210,7 +282,7 @@ export class FormGeneratorComponent implements OnDestroy {
 
   removeAgreement(id: string) {
     this.builderItems = this.builderItems.filter(
-      (item) => !(item.type === 'agreement' && item.id === id),
+      (item) => !(item.type === 'Agreement' && item.id === id),
     );
 
     delete this.collapsedMap[id];
@@ -234,7 +306,6 @@ export class FormGeneratorComponent implements OnDestroy {
     controlsToCopy.forEach((key) => {
       const oldControl = this.myGroup.get(key + id);
       const oldValue = oldControl?.value ?? null;
-
       this.myGroup.addControl(key + uniqueId, new FormControl(oldValue));
     });
 
@@ -248,11 +319,11 @@ export class FormGeneratorComponent implements OnDestroy {
     }
 
     const currentIndex = this.builderItems.findIndex(
-      (item) => item.type === 'field' && item.id === id,
+      (item) => item.type === 'Field' && item.id === id,
     );
 
     this.builderItems.splice(currentIndex + 1, 0, {
-      type: 'field',
+      type: 'Field',
       id: uniqueId,
     });
 
@@ -270,27 +341,7 @@ export class FormGeneratorComponent implements OnDestroy {
   }
 
   addSelectOptionsConrol(id: string) {
-    this.myGroup.addControl(FormElementsEnum.SelectOptions + id, new FormControl());
-  }
-
-  formExtractor(formName: string) {
-    if (formName.includes(FormElementsEnum.Required)) {
-      return FormElementsEnum.Required;
-    }
-
-    if (formName.includes(FormElementsEnum.Type)) {
-      return FormElementsEnum.Type;
-    }
-
-    if (formName.includes(FormElementsEnum.Label)) {
-      return FormElementsEnum.Label;
-    }
-
-    if (formName.includes(FormElementsEnum.ColSpan)) {
-      return FormElementsEnum.ColSpan;
-    }
-
-    return '';
+    this.myGroup.addControl(FormElementsEnum.SelectOptions + id, new FormControl([]));
   }
 
   drop(event: CdkDragDrop<BuilderItem[]>) {
@@ -299,11 +350,10 @@ export class FormGeneratorComponent implements OnDestroy {
   }
 
   comboboxChanged(id: string, value: string) {
-    if (value === 'select') {
+    if (value === 'Dropdown') {
       if (!this.myGroup.get(FormElementsEnum.SelectOptions + id)) {
         this.addSelectOptionsConrol(id);
       }
-
       return;
     }
 
@@ -316,29 +366,57 @@ export class FormGeneratorComponent implements OnDestroy {
     return this.myGroup.get(formName)?.value;
   }
 
-  create() {
-    this.validationErrors = [];
-
-    if (this.myGroup.invalid) {
-      this.myGroup.markAllAsTouched();
-      this.validationErrors = this.validationService.collectValidationIssues(this.myGroup);
-
-      return;
+  edit() {
+    if (this.formById && this.formById.id) {
+      this.myGroup.enable({ emitEvent: false });
+      this.router.navigate(['/dashboard/form-generator/', this.formById.id, EditMode.EDIT]);
     }
+  }
 
-    if (this.builderItems.length == 0) {
-      this.toolsService.showSnackbar('Please enter at least one form element.', 'success-snackbar');
+  update() {
+    const valid = this.isValid();
 
+    if (!valid || !this.formById?.id) {
       return;
     }
 
     this.loading$.next(true);
 
-    const formDefinition = this.buildFieldDefinition();
+    const formDefinition = this.buildFormPayload();
+
+    this.formApiService.updateForm(this.formById.id, formDefinition).subscribe({
+      next: () => {
+        setTimeout(() => {
+          this.billingApi.loadOverview();
+          this.loading$.next(false);
+          this.toolsService.showSnackbar('Form updated successfully.', 'success-snackbar');
+          this.router.navigate(['/dashboard/forms']);
+        });
+      },
+      error: () => {
+        setTimeout(() => {
+          this.loading$.next(false);
+          this.toolsService.showSnackbar('Form could not be updated.', 'error-snackbar');
+        });
+      },
+    });
+  }
+
+  create() {
+    const valid = this.isValid();
+
+    if (!valid) {
+      return;
+    }
+
+    this.loading$.next(true);
+
+    const formDefinition = this.buildFormPayload();
 
     this.formApiService.createForm(formDefinition).subscribe({
       next: () => {
         setTimeout(() => {
+          this.billingApi.loadOverview();
           this.loading$.next(false);
           this.toolsService.showSnackbar('Form created successfully.', 'success-snackbar');
           this.router.navigate(['/dashboard/forms']);
@@ -353,12 +431,12 @@ export class FormGeneratorComponent implements OnDestroy {
     });
   }
 
-  private buildFieldDefinition() {
+  private buildFormPayload(): FormDefinition {
     const fields: FieldDefinition[] = this.builderItems
       .map((item) => {
-        if (item.type === 'field') {
+        if (item.type === 'Field') {
           const id = item.id;
-          const type = this.myGroup.get(FormElementsEnum.Type + id)?.value;
+          const type = this.myGroup.get(FormElementsEnum.Type + id)?.value as FieldType;
           const assignedToValue = this.myGroup.get(FormElementsEnum.AssignedTo + id)
             ?.value as AssignedTo;
 
@@ -368,22 +446,22 @@ export class FormGeneratorComponent implements OnDestroy {
             type,
             min: this.returnFormValue(FormElementsEnum.ValidationMin + id),
             max: this.returnFormValue(FormElementsEnum.ValidationMax + id),
-            minLength: this.returnFormValue(FormElementsEnum.ValidationMaxLength + id),
-            maxLength: this.returnFormValue(FormElementsEnum.ValidationMinLength + id),
+            minLength: this.returnFormValue(FormElementsEnum.ValidationMinLength + id),
+            maxLength: this.returnFormValue(FormElementsEnum.ValidationMaxLength + id),
             assignedTo: assignedToValue ?? 'You',
             required: this.myGroup.get(FormElementsEnum.Required + id)?.value ?? false,
             colSpan: Number(this.myGroup.get(FormElementsEnum.ColSpan + id)?.value),
-            options: this.myGroup.get(FormElementsEnum.SelectOptions + id)?.value,
+            options: this.myGroup.get(FormElementsEnum.SelectOptions + id)?.value ?? null,
           } as FieldDefinition;
         }
 
-        if (item.type === 'agreement') {
+        if (item.type === 'Agreement') {
           return {
             fieldId: item.id,
             label: item.agreement.title,
-            type: 'agreement',
+            type: 'Agreement',
             required: true,
-            assignedTo: 'client' as AssignedTo,
+            assignedTo: 'Client' as AssignedTo,
             colSpan: 4,
             agreement: item.agreement,
           } as FieldDefinition;
@@ -393,33 +471,30 @@ export class FormGeneratorComponent implements OnDestroy {
       })
       .filter((field): field is FieldDefinition => field !== null);
 
-    const formDefinition: CreateFormDefinitionRequest = {
+      console.log('updated', this.myGroup.get('agreementContentHtml')?.value)
+
+    return {
       formName: this.myGroup.get('formName')?.value,
       version: this.myGroup.get('version')?.value,
+      agreementContentHtml: this.myGroup.get('agreementContentHtml')?.value,
       expanded: this.myGroup.get('expanded')?.value ?? false,
       fields,
-    };
-
-    return formDefinition;
+    } as FormDefinition;
   }
 
   expandAll() {
     const newMap: Record<string, boolean> = {};
-
     this.builderItems.forEach((item) => {
       newMap[item.id] = false;
     });
-
     this.collapsedMap = newMap;
   }
 
   collapseAll() {
     const newMap: Record<string, boolean> = {};
-
     this.builderItems.forEach((item) => {
       newMap[item.id] = true;
     });
-
     this.collapsedMap = newMap;
   }
 
@@ -432,10 +507,10 @@ export class FormGeneratorComponent implements OnDestroy {
   }
 
   previewForm() {
-    const previewData = this.buildFieldDefinition();
+    const previewData = this.buildFormPayload();
+
     if (!previewData.fields.length) {
       this.toolsService.showSnackbar('Please enter at least one form element.', 'info-snackbar');
-
       return;
     }
 
@@ -459,7 +534,147 @@ export class FormGeneratorComponent implements OnDestroy {
     this.createNewControl(type);
   }
 
+  private mapAssignedToFromApi(value: number | string | null | undefined): AssignedTo {
+    if (value === AssignedToEnum.Client || value === 'Client' || value === 'client') {
+      return 'Client';
+    }
+
+    return 'You';
+  }
+
+  private addDynamicField(
+    id: string,
+    type: FieldType,
+    field?: any,
+    shouldScroll = false,
+    disabled = false,
+  ) {
+    const config = FIELD_CONFIG[type];
+
+    if (!id || !config) {
+      console.error('Invalid dynamic field:', { id, type, field });
+      return;
+    }
+
+    this.builderItems.push({
+      type: 'Field',
+      id,
+    });
+
+    this.myGroup.addControl(
+      FormElementsEnum.Required + id,
+      new FormControl({
+        value: field?.required ?? field?.Required ?? config.required ?? false,
+        disabled,
+      }),
+    );
+
+    this.myGroup.addControl(
+      FormElementsEnum.Type + id,
+      new FormControl({ value: field?.type ?? field?.Type ?? type, disabled }),
+    );
+
+    this.myGroup.addControl(
+      FormElementsEnum.AssignedTo + id,
+      new FormControl({
+        value: this.mapAssignedToFromApi(field?.assignedTo ?? field?.AssignedTo),
+        disabled,
+      }),
+    );
+
+    this.myGroup.addControl(
+      FormElementsEnum.ValidationMin + id,
+      new FormControl({ value: field?.min ?? field?.Min ?? null, disabled }),
+    );
+
+    this.myGroup.addControl(
+      FormElementsEnum.ValidationMax + id,
+      new FormControl({ value: field?.max ?? field?.Max ?? null, disabled }),
+    );
+
+    this.myGroup.addControl(
+      FormElementsEnum.ValidationMinLength + id,
+      new FormControl({ value: field?.minLength ?? field?.MinLength ?? null, disabled }),
+    );
+
+    this.myGroup.addControl(
+      FormElementsEnum.ValidationMaxLength + id,
+      new FormControl({ value: field?.maxLength ?? field?.MaxLength ?? null, disabled }),
+    );
+
+    this.myGroup.addControl(
+      FormElementsEnum.Label + id,
+      new FormControl({ value: field?.label ?? field?.Label ?? config.label, disabled }, [
+        Validators.required,
+      ]),
+    );
+
+    this.myGroup.addControl(
+      FormElementsEnum.ColSpan + id,
+      new FormControl({
+        value: String(field?.colSpan ?? field?.ColSpan ?? config.colSpan),
+        disabled,
+      }),
+    );
+
+    if (type === 'Dropdown') {
+      this.myGroup.addControl(
+        FormElementsEnum.SelectOptions + id,
+        new FormControl({ value: field?.options ?? field?.Options ?? [], disabled }),
+      );
+    }
+
+    this.collapsedMap[id] = false;
+
+    if (shouldScroll) {
+      this.scrollToTheElement(id);
+    }
+  }
+
+  private isValid() {
+    this.validationErrors = [];
+
+    if (this.myGroup.invalid) {
+      this.myGroup.markAllAsTouched();
+      this.validationErrors = this.validationService.collectValidationIssues(this.myGroup);
+      return false;
+    }
+
+    if (this.builderItems.length === 0) {
+      this.toolsService.showSnackbar('Please enter at least one form element.', 'success-snackbar');
+      return false;
+    }
+
+    if (!this.hasFormChanged()) {
+      this.toolsService.showSnackbar('No changes', 'error-snackbar');
+
+      return false;
+    }
+
+    return true;
+  }
+
+  private hasFormChanged(): boolean {
+    const currentState = {
+      form: this.myGroup.getRawValue(),
+      builderItems: this.builderItems,
+    };
+
+    return JSON.stringify(currentState) !== JSON.stringify(this.initialFormValue);
+  }
+
+  private captureInitialFormValue(): void {
+    this.initialFormValue = {
+      form: this.myGroup.getRawValue(),
+      builderItems: structuredClone(this.builderItems),
+    };
+
+    this.myGroup.markAsPristine();
+  }
+
   ngOnDestroy(): void {
     this.pageActionService.clearActionsByOwner(this.pageOwner);
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

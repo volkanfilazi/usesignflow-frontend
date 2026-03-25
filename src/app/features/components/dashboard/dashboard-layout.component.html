@@ -38,7 +38,16 @@
           >
             <div class="d-flex align-items-center gap-1">
               <mat-icon>edit_note</mat-icon>
-              <span>New Flow</span>
+              <div class="d-flex flex-column w-100">
+                <span>New Flow</span>
+                @if (this.overview() != null) {
+                  <app-usage-progress
+                    [used]="this.overview()?.usage?.activeFlowsUsed ?? 0"
+                    [limit]="this.overview()?.entitlements?.maxActiveFlows ?? 0"
+                    [showText]="true"
+                  ></app-usage-progress>
+                }
+              </div>
             </div>
           </a>
 
@@ -51,7 +60,16 @@
           >
             <div class="d-flex align-items-center gap-1">
               <mat-icon>description</mat-icon>
-              <span>My Flows</span>
+              <div class="d-flex flex-column w-100">
+                <span>Flows</span>
+                @if (this.overview() != null) {
+                  <app-usage-progress
+                    [used]="this.overview()?.usage?.activeFlowsUsed ?? 0"
+                    [limit]="this.overview()?.entitlements?.maxActiveFlows ?? 0"
+                    [showText]="true"
+                  ></app-usage-progress>
+                }
+              </div>
             </div>
           </a>
 
@@ -64,7 +82,52 @@
           >
             <div class="d-flex align-items-center gap-1">
               <mat-icon>description</mat-icon>
-              <span>Submissions</span>
+              <div class="d-flex flex-column w-100">
+                <span>Submissions</span>
+                @if (this.overview() != null) {
+                  <app-usage-progress
+                    [used]="this.overview()?.usage?.submissionsUsedThisMonth ?? 0"
+                    [limit]="this.overview()?.entitlements?.maxSubmissionsPerMonth ?? 0"
+                    [showText]="true"
+                  ></app-usage-progress>
+                }
+              </div>
+            </div>
+          </a>
+
+           <a
+            mat-list-item
+            class="sidenav-link"
+            routerLink="/dashboard/emails"
+            (click)="isMobile ? (isMobile = !isMobile) : null"
+            routerLinkActive="selected"
+          >
+            <div class="d-flex align-items-center gap-1">
+              <mat-icon>description</mat-icon>
+              <div class="d-flex flex-column w-100">
+                <span>Requests</span>
+                @if (this.overview() != null) {
+                  <app-usage-progress
+                    [used]="this.overview()?.usage?.emailsUsedThisMonth ?? 0"
+                    [limit]="this.overview()?.entitlements?.maxEmailPerMonth ?? 0"
+                    [showText]="true"
+                  ></app-usage-progress>
+                }
+              </div>
+            </div>
+          </a>
+
+          <span class="sidenav-section-title mt-3">Account</span>
+          <a
+            mat-list-item
+            class="sidenav-link"
+            routerLink="/dashboard/billing"
+            (click)="isMobile ? (isMobile = !isMobile) : null"
+            routerLinkActive="selected"
+          >
+            <div class="d-flex align-items-center gap-1">
+              <mat-icon>credit_card</mat-icon>
+              <span>Billing</span>
             </div>
           </a>
         </mat-nav-list>

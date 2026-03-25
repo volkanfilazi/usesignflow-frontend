@@ -10,7 +10,8 @@
       type="button"
       class="segment-btn"
       [class.active]="formGroup.get(controlName!)?.value === option"
-      (click)="formGroup.get(controlName!)?.setValue(option)"
+      [disabled]="formGroup.get(controlName!)?.disabled"
+      (click)="onSelect(option)"
     >
       {{ option }}
     </button>

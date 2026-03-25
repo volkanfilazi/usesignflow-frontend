@@ -10,6 +10,18 @@ import { Constants } from '../models/constants';
 
 @Injectable({ providedIn: 'root' })
 export class ValidationService {
+  requiredArrayValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+
+      if (!Array.isArray(value) || value.length === 0) {
+        return { required: true };
+      }
+
+      return null;
+    };
+  }
+
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password')?.value;
     const confirm = control.get('passwordConfirm')?.value;

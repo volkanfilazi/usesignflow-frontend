@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TwoFAVerifyDialogComponent } from '../../../../shared/components/dialogs/twoFA-verify-dialog/twoFA-verify-dialog.component';
 import { environment } from '../../../../../environments/environment';
 import { GoogleAuthService } from '../../../../core/services/google-auth.service';
+import { BillingApiService } from '../../../../shared/services/billing-api-service';
 
 declare const google: any;
 
@@ -37,7 +38,8 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
     private readonly toolsService: ToolsService,
     private readonly router: Router,
     private readonly matDialog: MatDialog,
-    private readonly googleAuthService: GoogleAuthService
+    private readonly googleAuthService: GoogleAuthService,
+    private readonly billingApiService: BillingApiService,
   ) {}
 
   ngOnInit(): void {
@@ -90,6 +92,7 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
           dialogRef.afterClosed().subscribe((item) => {
             if (item) {
               this.authStateService.setSession(item.token, item.refreshToken);
+              this.billingApiService.clearOverviewCache();
               this.loading$.next(false);
               this.router.navigate(['/dashboard']);
             } else {
@@ -115,6 +118,5 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-  }
+  ngOnDestroy(): void {}
 }

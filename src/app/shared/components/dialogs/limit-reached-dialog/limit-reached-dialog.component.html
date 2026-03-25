@@ -1,0 +1,22 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="close()"></app-icon-button>
+  </div>
+  <div class="dialog-content">
+    <mat-dialog-content class="d-flex flex-column gap-2">
+      <h6 class="text-center">Reached limit</h6>
+      <div class="d-flex align-items-center justify-content-center gap-1">
+        <mat-icon color="warn">warning</mat-icon>
+        <span>You have reached your active {{this.data.reason}} limit.</span>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="d-flex align-items-center gap-1">
+      <button mat-stroked-button class="dialog-btn dialog-cancel" (click)="close()">Cancel</button>
+      <app-primary-button
+        (click)="goBilling()"
+        [buttonName]="'Go to the billing page'"
+        color="primary"
+      ></app-primary-button>
+    </mat-dialog-actions>
+  </div>
+</div>

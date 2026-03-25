@@ -38,6 +38,11 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { SubmissionsComponent } from './components/submissions/submissions.component';
 import { AsyncPipe } from '@angular/common';
 import { SettingsPageComponent } from './components/settings-page/settings-page.component';
+import { BillingComponent } from './components/billing/billing.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { EmailComponent } from './components/emails/emails.component';
+import { LandingFooterComponent } from "../shared/components/landing-footer/landing-footer.component";
+import { RichTextEditorComponent } from '../shared/components/reach-text-editor/rich-text-editor.component';
 
 @NgModule({
   declarations: [
@@ -49,8 +54,11 @@ import { SettingsPageComponent } from './components/settings-page/settings-page.
     RegisterPageComponent,
     LoginPageComponent,
     SubmissionsComponent,
-    SettingsPageComponent
+    SettingsPageComponent,
+    BillingComponent,
+    EmailComponent
   ],
+
   imports: [
     ReactiveFormsModule,
     FeaturesRoutingModule,
@@ -84,7 +92,10 @@ import { SettingsPageComponent } from './components/settings-page/settings-page.
     MatProgressSpinnerModule,
     AuthLoadingOverlayComponent,
     MatDialogModule,
-    AsyncPipe
-  ],
+    AsyncPipe,
+    MatTooltipModule,
+    LandingFooterComponent,
+    RichTextEditorComponent
+],
 })
 export class FeaturesModule {}

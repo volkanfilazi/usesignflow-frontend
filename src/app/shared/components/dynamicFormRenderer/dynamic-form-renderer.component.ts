@@ -10,7 +10,6 @@ import { ValidationService } from '../../../shared/services/validation.service';
 import { AuthStateService } from '../../../core/services/auth-state.service';
 
 import {
-  AssignedToEnum,
   CreateFormSubmissionRequest,
   FieldDefinition,
   FormDefinition,
@@ -19,6 +18,8 @@ import {
   options,
   UpdateFormSubmissionRequest,
 } from '../../../shared/models/form-generator.mode';
+import { BillingApiService } from '../../services/billing-api-service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-dynamic-form-renderer',
@@ -42,6 +43,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
   isSignaturePadDisabled = false;
   submissinTitle = '';
   pageOwner = 'dynamic-form-renderer';
+  agreementContentSafeHtml: SafeHtml | null = null;
 
   private initialFormValue: any = null;
   private readonly destroy$ = new Subject<void>();
@@ -55,10 +57,11 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     private readonly validationService: ValidationService,
     private readonly router: Router,
     private readonly authService: AuthStateService,
+    private readonly billingApiService: BillingApiService,
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
-    console.log(this.authService.getUserId());
     this.currentUserId = this.authService.getUserId() ?? '';
 
     if (this.previewForm) {
@@ -124,6 +127,11 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
       });
   }
 
+  setAgreementContent(html: string | null | undefined): void {
+    const normalized = html ?? '';
+    this.agreementContentSafeHtml = this.sanitizer.bypassSecurityTrustHtml(normalized);
+  }
+
   private loadSubmission(submissionId: string, accessToken?: string): void {
     this.formApiService
       .getSubmissionById(submissionId, accessToken ?? undefined)
@@ -131,6 +139,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (submission) => {
           this.form = submission;
+          console.log(this.form?.agreementContentHtml);
           this.buildFormControls(submission, this.getFields(), submission.answers);
           this.finishBuild();
         },
@@ -160,6 +169,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
 
   private finishBuild(): void {
     this.buildingForm = false;
+    this.setAgreementContent(this.form?.agreementContentHtml);
     this.cdr.detectChanges();
   }
 
@@ -171,7 +181,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     fields.forEach((field) => {
       this.fieldLabelMap[field.fieldId] = field.label;
 
-      if (field.type === 'agreement') {
+      if (field.type === 'Agreement') {
         const controlName = field.fieldId;
 
         const rawValue = answers?.find((x) => x.fieldId === field.fieldId)?.value;
@@ -195,7 +205,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
       const rawValue = answers?.find((x) => x.fieldId === field.fieldId)?.value;
 
       const existingValue =
-        field.type === 'checkbox' ? rawValue === true || rawValue === 'true' : (rawValue ?? null);
+        field.type === 'Checkbox' ? rawValue === true || rawValue === 'true' : (rawValue ?? null);
 
       this.isSignaturePadDisabled = (submission && !isSubmissionEditable(submission)) ?? false;
       this.submissinTitle = submission?.formName ?? '';
@@ -313,7 +323,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     this.loading$.next(true);
 
     const fields = this.getFields();
-    const signatureField = fields.find((x) => x.type === 'signaturePad');
+    const signatureField = fields.find((x) => x.type === 'Signature');
     const signatureValue = signatureField ? this.myGroup.get(signatureField.fieldId)?.value : null;
 
     const answers = fields.map((field) => ({
@@ -357,7 +367,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     this.loading$.next(true);
 
     const fields = this.getFields();
-    const signatureField = fields.find((x) => x.type === 'signaturePad');
+    const signatureField = fields.find((x) => x.type === 'Signature');
     const signatureValue = signatureField ? this.myGroup.get(signatureField.fieldId)?.value : null;
 
     const answers = fields.map((field) => ({
@@ -510,6 +520,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.loading$.next(false);
+          this.billingApiService.loadOverview();
           this.toolsService.showSnackbar(
             'Form submission created successfully.',
             'success-snackbar',

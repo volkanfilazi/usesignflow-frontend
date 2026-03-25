@@ -1,0 +1,29 @@
+<label class="reach-label">{{ label }}</label>
+
+<div class="rte" [class.rte--readonly]="readOnly">
+  @if (!readOnly) {
+    <div class="rte__toolbar" role="toolbar">
+      @for (item of toolbar; track $index) {
+        @if (isDivider(item)) {
+          <span class="rte__divider"></span>
+        } @else {
+          <button
+            type="button"
+            class="rte__btn"
+            matTooltipPosition="above"
+            [matTooltip]="item.tooltip"
+            [disabled]="item.disabled ? item.disabled() : false"
+            [class.is-active]="item.active ? item.active() : false"
+            (click)="item.action()"
+          >
+            <mat-icon>{{ item.icon }}</mat-icon>
+          </button>
+        }
+      }
+    </div>
+  }
+
+  <div class="rte__content-shell" [style.min-height]="minHeight" (click)="focus()">
+    <div #editorHost></div>
+  </div>
+</div>

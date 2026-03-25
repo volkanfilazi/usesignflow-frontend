@@ -5,15 +5,22 @@ import {
   FormSubmission,
   getSubmissionMode,
   getSubmissionStatusColors,
+  SendForSignatureRequest,
 } from '../../../shared/models/form-generator.mode';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
-import { TableColumnDefinition } from '../../../shared/components/table/table.component';
+import {
+  TableColumnDefinition,
+  TableEmptyStateMessage,
+} from '../../../shared/components/table/table.component';
 import { Router } from '@angular/router';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SendEmailDialogComponent } from '../../../shared/components/dialogs/send-email-dialog/send-email-dialog.component';
 import { AuthStateService } from '../../../core/services/auth-state.service';
 import { ConfirmDialogComponent } from '../../../shared/components/dialogs/confirm-dialog/confirm-dialog.component';
+import { BillingApiService } from '../../../shared/services/billing-api-service';
+import { BillingOverviewResponse } from '../../../shared/models/payment.model';
+import { LimitReachedDialogComponent } from '../../../shared/components/dialogs/limit-reached-dialog/limit-reached-dialog.component';
 
 @Component({
   selector: 'app-submissions',
@@ -23,97 +30,12 @@ import { ConfirmDialogComponent } from '../../../shared/components/dialogs/confi
 })
 export class SubmissionsComponent {
   private readonly destroy$ = new Subject<void>();
+  private overview: BillingOverviewResponse | null = null;
 
+  tableEmptyStateMessage: TableEmptyStateMessage | undefined;
   submissions: FormSubmission[] = [];
   loading$ = new BehaviorSubject(true);
-  columns: TableColumnDefinition<FormSubmission>[] = [
-    { key: 'formVersion', label: 'Version' },
-    { key: 'formName', label: 'Form name' },
-    {
-      key: 'status',
-      label: 'Status',
-      formatter: (row: any) => {
-        const result = getSubmissionStatusColors(row);
-        return {
-          type: 'badge',
-          text: row.status,
-          className: result,
-        };
-      },
-    },
-    {
-      key: 'signedOwner',
-      label: 'You',
-      formatter: (row: FormSubmission) => {
-        const result =
-          row.signatures
-            ?.filter((sign) => sign.signedByUserId === this.authStateService.getUserId())
-            .map((sign) => sign.signedByEmail) ?? '';
-
-        return result?.length
-          ? result.join(', ')
-          : this.hasOwnerSignature(row.fieldsSnapshot)
-            ? 'Pending'
-            : 'N/A';
-      },
-    },
-    {
-      key: 'signedExternal',
-      label: 'Client',
-      formatter: (row: FormSubmission) => {
-        const result =
-          row.signatures
-            ?.filter((sign) => sign.signedByUserId !== this.authStateService.getUserId())
-            .map((sign) => sign.signedByEmail) ?? '';
-
-        return result?.length
-          ? result.join(', ')
-          : this.hasExternalSignature(row.fieldsSnapshot)
-            ? 'Pending'
-            : 'N/A';
-      },
-    },
-    {
-      key: 'createdAtUtc',
-      label: 'Created At',
-      formatter: (row) => (row.createdAtUtc ? new Date(row.createdAtUtc).toLocaleString() : '-'),
-    },
-    {
-      key: 'updatedAtUtc',
-      label: 'Updated At',
-      formatter: (row) => (row.updatedAtUtc ? new Date(row.updatedAtUtc).toLocaleString() : '-'),
-    },
-    {
-      key: 'actions',
-      label: 'Actions',
-      actions: [
-        {
-          id: 'edit',
-          label: 'Edit',
-          icon: 'edit',
-          handler: (row) => this.editSubmission(row),
-        },
-        {
-          id: 'send-to-signer',
-          label: 'Send to signer',
-          icon: 'outgoing_mail',
-          handler: (row) => this.sendToSigner(row),
-        },
-        {
-          id: 'download',
-          label: 'Download',
-          icon: 'download',
-          handler: (row) => this.download(row),
-        },
-        {
-          id: 'cancel',
-          label: 'Cancel',
-          icon: 'cancel',
-          handler: (row) => this.cancel(row),
-        },
-      ],
-    },
-  ];
+  columns: TableColumnDefinition<FormSubmission>[] = [];
 
   constructor(
     private readonly formApiService: FormsApiService,
@@ -121,10 +43,117 @@ export class SubmissionsComponent {
     private readonly toolsService: ToolsService,
     private readonly matDialog: MatDialog,
     private readonly authStateService: AuthStateService,
+    private readonly billingApiService: BillingApiService,
   ) {}
 
   ngOnInit() {
+    this.setEmptyStateMessage();
+    this.setupColums();
     this.loadSubmissions();
+
+    this.billingApiService
+      .getBilling()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((item) => {
+        this.overview = item;
+        this.setupColums();
+      });
+  }
+
+  setupColums() {
+    this.columns = [
+      { key: 'formVersion', label: 'Version' },
+      { key: 'formName', label: 'Form name' },
+      {
+        key: 'status',
+        label: 'Status',
+        formatter: (row: any) => {
+          const result = getSubmissionStatusColors(row);
+          return {
+            type: 'badge',
+            text: row.status,
+            className: result,
+          };
+        },
+      },
+      {
+        key: 'signedOwner',
+        label: 'You',
+        formatter: (row: FormSubmission) => {
+          const result =
+            row.signatures
+              ?.filter((sign) => sign.signedByUserId === this.authStateService.getUserId())
+              .map((sign) => sign.signedByEmail) ?? '';
+
+          return result?.length
+            ? result.join(', ')
+            : this.hasOwnerSignature(row.fieldsSnapshot)
+              ? 'Pending'
+              : 'N/A';
+        },
+      },
+      {
+        key: 'signedExternal',
+        label: 'Client',
+        formatter: (row: FormSubmission) => {
+          const result =
+            row.signatures
+              ?.filter((sign) => sign.signedByUserId !== this.authStateService.getUserId())
+              .map((sign) => sign.signedByEmail) ?? '';
+
+          return result?.length
+            ? result.join(', ')
+            : this.hasExternalSignature(row.fieldsSnapshot)
+              ? 'Pending'
+              : 'N/A';
+        },
+      },
+      {
+        key: 'createdAtUtc',
+        label: 'Created At',
+        formatter: (row) => (row.createdAtUtc ? new Date(row.createdAtUtc).toLocaleString() : '-'),
+      },
+      {
+        key: 'updatedAtUtc',
+        label: 'Updated At',
+        formatter: (row) => (row.updatedAtUtc ? new Date(row.updatedAtUtc).toLocaleString() : '-'),
+      },
+      {
+        key: 'actions',
+        label: 'Actions',
+        actions: [
+          {
+            id: 'edit',
+            label: 'Edit',
+            icon: 'edit',
+            handler: (row) => this.editSubmission(row),
+          },
+          {
+            id: 'send-to-signer',
+            label: 'Send to signer',
+            icon: 'outgoing_mail',
+            iconColor:
+              (this.overview?.usage?.emailsUsedThisMonth ?? 0) <
+              (this.overview?.entitlements?.maxEmailPerMonth ?? 0)
+                ? 'green'
+                : 'red',
+            handler: (row) => this.sendToSigner(row),
+          },
+          {
+            id: 'download',
+            label: 'Download',
+            icon: 'download',
+            handler: (row) => this.download(row),
+          },
+          {
+            id: 'cancel',
+            label: 'Cancel',
+            icon: 'cancel',
+            handler: (row) => this.cancel(row),
+          },
+        ],
+      },
+    ];
   }
 
   editSubmission(row: FormSubmission): void {
@@ -214,19 +243,51 @@ export class SubmissionsComponent {
     });
   }
 
+  private setEmptyStateMessage() {
+    this.tableEmptyStateMessage = {
+      kicker: 'Submission list',
+      description: 'You have not created any submission yet. Fill a form and submit it.',
+      title: 'No submissions created yet',
+      buttonText: 'Create your first submission',
+      imageSrc: 'Documents-pana.svg',
+      navigationUrl: '/forms',
+    };
+  }
+
   private canCancel(row: FormSubmission): boolean {
     return row.status !== 'Completed' && row.status !== 'Cancelled' && row.status !== 'Expired';
   }
 
   private hasExternalSignature(fields: FieldDefinition[]): boolean {
-    return fields.some((f) => f.type === 'signaturePad' && f.assignedTo === 'Client');
+    return fields.some((f) => f.type === 'Signature' && f.assignedTo === 'Client');
   }
 
   private hasOwnerSignature(fields: FieldDefinition[]): boolean {
-    return fields.some((f) => f.type === 'signaturePad' && f.assignedTo === 'You');
+    return fields.some((f) => f.type === 'Signature' && f.assignedTo === 'You');
   }
 
   private sendToSigner(row: FormSubmission): void {
+    if (
+      this.overview &&
+      this.overview?.usage.emailsUsedThisMonth >= this.overview?.entitlements.maxEmailPerMonth
+    ) {
+      const dialogRef = this.matDialog.open(LimitReachedDialogComponent, {
+        data: {
+          returnUrl: '',
+          reason: '',
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result === 'billing') {
+          this.router.navigate(['/dashboard/billing']);
+        } else {
+          dialogRef.close();
+        }
+      });
+      return;
+    }
+
     const dialogRef = this.matDialog.open(SendEmailDialogComponent, {
       width: '420px',
       panelClass: 'confirm-dialog-panel',
@@ -242,21 +303,19 @@ export class SubmissionsComponent {
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.loading$.next(true);
+        const payload: SendForSignatureRequest = confirmed;
 
-        this.formApiService
-          .sendForSignature(row.id!, {
-            email: confirmed,
-          })
-          .subscribe({
-            next: () => {
-              this.loading$.next(false);
-              this.toolsService.showSnackbar('Access link sent successfully.', 'success-snackbar');
-            },
-            error: () => {
-              this.loading$.next(false);
-              this.toolsService.showSnackbar('Access link could not be sent.', 'error-snackbar');
-            },
-          });
+        this.formApiService.sendForSignature(row.id!, payload).subscribe({
+          next: () => {
+            this.loading$.next(false);
+            this.billingApiService.loadOverview();
+            this.toolsService.showSnackbar('Access link sent successfully.', 'success-snackbar');
+          },
+          error: () => {
+            this.loading$.next(false);
+            this.toolsService.showSnackbar('Access link could not be sent.', 'error-snackbar');
+          },
+        });
       }
     });
   }

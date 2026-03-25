@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
 export interface TableCellBadge {
   type: 'badge';
@@ -6,10 +7,20 @@ export interface TableCellBadge {
   className: string;
 }
 
+export interface TableEmptyStateMessage {
+  kicker: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  imageSrc: string;
+  navigationUrl?: string;
+}
+
 export interface TableAction<T = any> {
   id: string;
   label: string;
   icon?: string;
+  iconColor?: string;
   handler?: (row: T) => void;
   hidden?: (row: T) => boolean;
   disabled?: (row: T) => boolean;
@@ -37,19 +48,24 @@ export type TableColumnDefinition<T = any> = TableColumn<T> | TableActionColumn<
 })
 export class TableComponent<T> {
   @Input() columns: TableColumnDefinition<T>[] = [];
+  @Input() tableEmptyStateMessage: TableEmptyStateMessage | undefined;
   @Input() dataSource: T[] = [];
   @Input() loading$!: any;
 
   @Output() rowClick = new EventEmitter<T>();
-  @Output() buttonClick = new EventEmitter<void>();
   @Output() actionClick = new EventEmitter<{ actionId: string; row: T }>();
+
+  constructor(private readonly router: Router) {}
 
   get displayedColumns(): string[] {
     return this.columns.map((c) => c.key);
   }
 
-  navigateClick() {
-    this.buttonClick.emit();
+  onNavigationClick() {
+    console.log(this.tableEmptyStateMessage);
+    if (this.tableEmptyStateMessage?.navigationUrl) {
+      this.router.navigate([this.tableEmptyStateMessage.navigationUrl]);
+    }
   }
 
   getCellValue(column: TableColumn<T>, element: T) {

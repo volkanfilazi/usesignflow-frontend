@@ -2,10 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { JwtPayloadModel } from '../../shared/models/auth.model';
+import { BillingApiService } from '../../shared/services/billing-api-service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
   private router = inject(Router);
+  private billingApiService = inject(BillingApiService);
 
   setSession(token: string, refreshToken: string): void {
     localStorage.setItem('token', token);
@@ -72,6 +74,7 @@ export class AuthStateService {
 
   logout(): void {
     this.clearSession();
+    this.billingApiService.clearOverviewCache();
     this.router.navigate(['/login']);
   }
 }

@@ -1,0 +1,36 @@
+@if (formGroup && controlName) {
+  <div [formGroup]="formGroup" class="form-group w-100">
+    <label [for]="controlName">
+      {{ label + (isRequired ? '*' : '') }}
+      @if (badgeName) {
+        <span class="field-badge client">{{ badgeName }}</span>
+      }
+    </label>
+
+    <textarea
+      cdkTextareaAutosize
+      cdkAutosizeMinRows="3"
+      cdkAutosizeMaxRows="10"
+      [class.invalid]="isInvalid(controlName)"
+      [formControlName]="controlName"
+      [id]="controlName"
+      [required]="isRequired"
+      [readonly]="disabled"
+      [minlength]="min"
+      [maxlength]="max"
+      [placeholder]="placeholder"
+    ></textarea>
+
+    @if (max) {
+      <div
+        class="char-counter"
+        [class.warning]="max - (formGroup.get(controlName)?.value || '').length <= 20"
+        [class.danger]="max - (formGroup.get(controlName)?.value || '').length <= 10"
+      >
+        Char remaning:
+        {{ max - (formGroup.get(controlName)?.value || '').length }}
+        / {{ max }}
+      </div>
+    }
+  </div>
+}

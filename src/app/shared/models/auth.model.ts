@@ -71,7 +71,7 @@ export interface JwtPayloadModel {
 }
 
 export enum EditMode {
-  VIEW = 'View',
-  EDIT = 'Edit',
-  CREATE = 'Create',
+  VIEW = 'view',
+  EDIT = 'edit',
+  CREATE = 'create',
 }

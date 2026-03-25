@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedModule } from '../../../shared.module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ValidationService } from '../../../services/validation.service';
+import { SendForSignatureRequest } from '../../../models/form-generator.mode';
 
 export interface SendEmailDialogData {
   title?: string;
@@ -11,6 +13,7 @@ export interface SendEmailDialogData {
   confirmText?: string;
   cancelText?: string;
   variant?: 'danger' | 'success' | 'mail' | 'default';
+  sendForSignatureRequest: SendForSignatureRequest;
 }
 
 @Component({
@@ -22,21 +25,41 @@ export interface SendEmailDialogData {
 })
 export class SendEmailDialogComponent implements OnInit {
   formGroup: FormGroup | undefined;
+  validationErrors: ValidationIssue[] | undefined;
 
   constructor(
-    private dialogRef: MatDialogRef<SendEmailDialogComponent, boolean>,
+    private dialogRef: MatDialogRef<SendEmailDialogComponent, SendForSignatureRequest>,
+    private readonly validationService: ValidationService,
     @Inject(MAT_DIALOG_DATA) public data: SendEmailDialogData,
   ) {}
 
   ngOnInit() {
     this.formGroup = new FormGroup({
+      subject: new FormControl(''),
       recipient: new FormControl('', Validators.required),
     });
   }
 
   onConfirm(): void {
+    if (!this.formGroup) {
+      return;
+    }
+
+    this.validationErrors = [];
+
+    if (this.formGroup.invalid) {
+      this.formGroup.markAllAsTouched();
+      this.validationErrors = this.validationService.collectValidationIssues(this.formGroup);
+      return;
+    }
+
+    this.data.sendForSignatureRequest = {
+      email: this.formGroup?.value.recipient,
+      subject: this.formGroup.value.subject,
+    };
+
     if (this.formGroup?.get('recipient')?.valid) {
-      this.dialogRef.close(this.formGroup?.get('recipient')?.value ?? '');
+      this.dialogRef.close(this.data.sendForSignatureRequest);
     }
   }
 

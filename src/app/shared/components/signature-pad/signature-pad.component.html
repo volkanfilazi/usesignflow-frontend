@@ -1,6 +1,6 @@
 <div class="position-relative">
   <label
-    >{{ label }}
+    >{{ label + (isRequired ? '*' : '' ) }}
     @if (badgeName) {
       <span class="field-badge client">{{ badgeName }}</span>
     }

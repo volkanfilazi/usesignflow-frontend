@@ -29,7 +29,7 @@ import { AuthLoadingOverlayComponent } from './components/loading-overlay/loadin
 import { AgreementListComponent } from './components/agreement/agreement-list/agreement-list.component';
 import { MatCard, MatCardActions } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatDialogActions, MatDialogContent } from "@angular/material/dialog";
+import { MatDialogActions, MatDialogContent } from '@angular/material/dialog';
 import { IconButtonComponent } from './components/buttons/icon-button/icon-button.component';
 import { ConfirmDialogComponent } from './components/dialogs/confirm-dialog/confirm-dialog.component';
 import { DynamicFormRendererComponent } from './components/dynamicFormRenderer/dynamic-form-renderer.component';
@@ -46,6 +46,10 @@ import { QRCodeComponent } from 'angularx-qrcode';
 import { DeleteDialogComponent } from './components/dialogs/delete-dialog/delete-dialog.component';
 import { PasswordDialogCOmponent } from './components/dialogs/password-dialog/password-dialog.component';
 import { SegmentsComponent } from './components/segments/segments.component';
+import { UsageProgressComponent } from './components/usage-progress/usage-progress.component';
+import { LimitReachedDialogComponent } from './components/dialogs/limit-reached-dialog/limit-reached-dialog.component';
+import { TextAreaComponent } from './components/inputs/text-area/text-area.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -73,7 +77,10 @@ import { SegmentsComponent } from './components/segments/segments.component';
     TwoFAEnableControlDialogComponent,
     DeleteDialogComponent,
     PasswordDialogCOmponent,
-    SegmentsComponent
+    SegmentsComponent,
+    UsageProgressComponent,
+    LimitReachedDialogComponent,
+    TextAreaComponent,
   ],
   imports: [
     CommonModule,
@@ -104,8 +111,9 @@ import { SegmentsComponent } from './components/segments/segments.component';
     DragDropModule,
     MatRadioModule,
     AsyncPipe,
-    QRCodeComponent
-],
+    QRCodeComponent,
+    MatTooltipModule,
+  ],
   exports: [
     TextInputComponent,
     PrimaryButtonComponent,
@@ -122,7 +130,9 @@ import { SegmentsComponent } from './components/segments/segments.component';
     EmptyStateComponent,
     IconButtonComponent,
     DynamicFormRendererComponent,
-    SegmentsComponent
+    SegmentsComponent,
+    UsageProgressComponent,
+    TextAreaComponent
   ],
 })
 export class SharedModule {}

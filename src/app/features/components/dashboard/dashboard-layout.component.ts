@@ -7,6 +7,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { SharedModule } from '../../../shared/shared.module';
 import { AuthStateService } from '../../../core/services/auth-state.service';
+import { BillingApiService } from '../../../shared/services/billing-api-service';
 
 @Component({
   selector: 'app-dashboard-laylout',
@@ -32,7 +33,12 @@ export class DashboardLayoutComponent {
   constructor(
     private readonly router: Router,
     private readonly authStateService: AuthStateService,
-  ) {}
+    private readonly billingApiService: BillingApiService,
+  ) {
+    if (!this.billingApiService.getOverviewResponse()?.entitlements.maxActiveFlows) {
+      this.billingApiService.loadOverview();
+    }
+  }
 
   @HostListener('window:resize')
   onResize() {
@@ -55,6 +61,10 @@ export class DashboardLayoutComponent {
     if (this.isDesktop) {
       this.isMobile = false;
     }
+  }
+
+  overview() {
+    return this.billingApiService.getOverviewResponse();
   }
 
   logout() {

@@ -98,7 +98,8 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
         const dialogRef = this.matDialog.open(DeleteDialogComponent, {
           data: {
             title: 'Delete Account',
-            description: 'If you approve, your account will be permanently deleted!',
+            description:
+              'If you approve, your account will be permanently deleted and cancel future renewals.',
             icon: 'warning',
           },
         });

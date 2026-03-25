@@ -8,10 +8,16 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class IconButtonComponent {
   @Input() iconName: string = 'close';
+  @Input() disabled = false;
   @Input() class: 'success-button' | 'delete-button' = 'success-button';
   @Output() buttonClick = new EventEmitter<void>();
 
-  onClick() {
+  handleClick(event: MouseEvent): void {
+    console.log('isDis', this.disabled);
+    event.stopPropagation();
+
+    if (this.disabled) return;
+
     this.buttonClick.emit();
   }
 }

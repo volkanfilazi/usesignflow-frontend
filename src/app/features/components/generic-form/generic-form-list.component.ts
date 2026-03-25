@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormsApiService } from '../../../shared/services/form-api.service';
 import { Router } from '@angular/router';
@@ -7,6 +7,8 @@ import { ToolsService } from '../../../shared/services/tools.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/components/dialogs/confirm-dialog/confirm-dialog.component';
 import { BehaviorSubject } from 'rxjs';
+import { BillingApiService } from '../../../shared/services/billing-api-service';
+import { EditMode } from '../../../shared/models/auth.model';
 
 @Component({
   selector: 'app-generic-form-list',
@@ -25,8 +27,8 @@ export class GenericFormListComponent implements OnInit {
     private readonly formApiService: FormsApiService,
     private readonly toolsService: ToolsService,
     private readonly matDialog: MatDialog,
-    private cdr: ChangeDetectorRef,
     private router: Router,
+    private readonly billingApiService: BillingApiService,
   ) {}
 
   ngOnInit() {
@@ -46,12 +48,20 @@ export class GenericFormListComponent implements OnInit {
     });
   }
 
-  onFormClick(formDef: FormDefinition) {
-    this.router.navigate(['/dashboard/forms', formDef.id]);
+  onPreviewClick(formDef: FormDefinition) {
+    this.router.navigate(['/dashboard/form-generator/', formDef.id, EditMode.VIEW]);
+  }
+
+  editFlow(formDef: FormDefinition) {
+    this.router.navigate(['/dashboard/form-generator/', formDef.id, EditMode.EDIT]);
   }
 
   goToCreateForm() {
     this.router.navigate(['/dashboard/form-generator']);
+  }
+
+  createSubmission(formDef: FormDefinition) {
+    this.router.navigate(['/dashboard/forms', formDef.id]);
   }
 
   deleteFormitem(id: string) {
@@ -74,6 +84,7 @@ export class GenericFormListComponent implements OnInit {
           next: () => {
             setTimeout(() => {
               this.toolsService.showSnackbar('Form deleted successfully.', 'success-snackbar');
+              this.billingApiService.loadOverview();
               this.loadForms();
             });
           },

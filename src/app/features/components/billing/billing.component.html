@@ -1,0 +1,125 @@
+<div class="billing-page">
+  <section class="billing-hero">
+    <div class="billing-hero-content">
+      <span class="billing-kicker">Usage & billing</span>
+      <h1>Manage your plan and usage</h1>
+      <p>
+        Track your current limits, monitor usage, and upgrade your workspace when you need more
+        capacity.
+      </p>
+    </div>
+
+    <div class="current-plan-card">
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center">
+        <span class="plan-badge active">Current plan</span>
+        @if (billingOverviewResponse?.currentPeriodEndUtc) {
+          <span
+            >Your plan end:
+            {{ billingOverviewResponse?.currentPeriodEndUtc | date: 'medium' }}</span
+          >
+        }
+      </div>
+      <h2>{{ billingOverviewResponse?.planCode }}</h2>
+      <p>You are currently using the {{ billingOverviewResponse?.planCode }} plan.</p>
+
+      @if (
+        billingOverviewResponse?.planCode !== 'Free' &&
+        billingOverviewResponse?.status !== 'Cancelled'
+      ) {
+        <button mat-stroked-button color="warn" (click)="cancelSubscription()">
+          Cancel subscription
+        </button>
+      }
+
+      @if (
+        billingOverviewResponse?.planCode !== 'Free' &&
+        billingOverviewResponse?.cancelAtPeriodEnd === true
+      ) {
+        <button mat-stroked-button color="warn" (click)="reactivateSubscription()">
+          Reactive your plan
+        </button>
+      }
+    </div>
+  </section>
+
+  <section class="usage-section">
+    <div class="section-head">
+      <div>
+        <span class="section-kicker">Current usage</span>
+        <h2>Workspace limits</h2>
+      </div>
+    </div>
+
+    <div class="usage-grid">
+      @for (card of usageCards; track card.key) {
+        <div class="usage-card" [class.warning]="card.isWarning" [class.locked]="card.isLocked">
+          <div class="usage-card-head">
+            <span>{{ card.title }}</span>
+            <strong>{{ card.usedLabel }}</strong>
+          </div>
+
+          <div class="usage-bar">
+            <div
+              class="usage-bar-fill"
+              [class.warning-fill]="card.isWarning"
+              [style.width.%]="card.progress"
+            ></div>
+          </div>
+          <p>{{ card.helperText }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="plans-section">
+    <div class="section-head">
+      <div>
+        <span class="section-kicker">Plans</span>
+        <h2>Choose the right plan</h2>
+      </div>
+    </div>
+
+    <div class="plans-grid">
+      @for (plan of plans; track plan.code) {
+        <div
+          class="plan-card"
+          [class.active]="isCurrentPlan(plan.code)"
+          [class.featured]="plan.code === 'Pro'"
+        >
+          <span class="plan-badge" [class.active]="isCurrentPlan(plan.code)">
+            {{ isCurrentPlan(plan.code) ? 'Current' : plan.badge }}
+          </span>
+
+          <h3>{{ plan.title }}</h3>
+          <div class="price">
+            {{ plan.price }}<span>{{ plan.suffix }}</span>
+          </div>
+
+          <ul>
+            @for (feature of plan.features; track feature) {
+              <li>{{ feature }}</li>
+            }
+          </ul>
+
+          @if (isCurrentPlan(plan.code)) {
+            <button mat-stroked-button disabled>Current plan</button>
+          } @else if (isUpgrade(plan.code)) {
+            <button mat-flat-button disabled="true" class="select-plan-btn" (click)="selectPlan(plan.code)">
+              Upgrade to {{ plan.title }}
+            </button>
+          } @else if (isDowngrade(plan.code)) {
+            <button mat-stroked-button disabled>Downgrade</button>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</div>
+@if (this.checkoutLoading$ | async) {
+  <app-loading-overlay
+    [visible]="this.checkoutLoading$.value"
+    [title]="'Subscription updating...'"
+    [message]="'Please wait while we securely log you into your account.'"
+  >
+  </app-loading-overlay>
+}

@@ -2,7 +2,7 @@
   <mat-form-field [formGroup]="formGroup" class="example-chip-list w-100">
     <mat-label>Options</mat-label>
     <mat-chip-grid #chipGrid aria-label="Enter dropdown items">
-      @for (option of chipsHolder(); track option) {
+      @for (option of chipsHolder(); track $index; let i = $index) {
         <mat-chip-row (removed)="remove(option)" [editable]="true" (edited)="edit(option, $event)">
           {{ option }}
           <button matChipRemove>

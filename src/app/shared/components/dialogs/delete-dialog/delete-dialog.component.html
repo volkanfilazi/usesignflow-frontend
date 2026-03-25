@@ -4,16 +4,16 @@
   </div>
   <div class="dialog-content">
     <mat-dialog-content class="d-flex flex-column gap-2">
-      <h6 class="text-center">{{this.data.title}}</h6>
+      <h6 class="text-center">{{ this.data.title }}</h6>
       <div class="d-flex align-items-center justify-content-center gap-1">
-        <mat-icon color="warn">{{this.data.icon}}</mat-icon>
-        <span>{{this.data.description}}</span>
+        <mat-icon color="warn">{{ this.data.icon }}</mat-icon>
+        <span>{{ this.data.description }}</span>
       </div>
-      @if (formGroup) {
+      @if (formGroup && this.needReason) {
         <app-text-input
           controlName="reason"
           label="Reason"
-          type="text"
+          type="Text"
           [formGroup]="formGroup"
         ></app-text-input>
       }
