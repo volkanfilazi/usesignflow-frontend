@@ -1,3 +1,6 @@
-<div [class]="class" (click)="onClick()">
+<div
+  [class]="class + (disabled ? ' disabled-icon-button' : '')"
+  (click)="handleClick($event)"
+>
   <mat-icon>{{ iconName }}</mat-icon>
 </div>

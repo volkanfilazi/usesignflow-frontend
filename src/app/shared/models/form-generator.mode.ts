@@ -21,33 +21,37 @@ export const FIELD_CONFIG: Record<
     required?: boolean;
   }
 > = {
-  text: {
-    label: 'Text field',
+  ShortText: {
+    label: 'ShortText',
     colSpan: '4',
   },
-  email: {
+  LongText: {
+    label: 'LongText',
+    colSpan: '4',
+  },
+  Email: {
     label: 'Email',
     colSpan: '2',
     required: true,
   },
-  number: {
+  Number: {
     label: 'Number',
     colSpan: '2',
   },
-  checkbox: {
+  Checkbox: {
     label: 'Checkbox',
     colSpan: '2',
   },
-  select: {
-    label: 'Select',
+  Dropdown: {
+    label: 'Dropdown',
     colSpan: '4',
   },
-  signaturePad: {
+  Signature: {
     label: 'Signature',
     colSpan: '2',
     required: true,
   },
-  agreement: {
+  Agreement: {
     label: 'Agreement',
     colSpan: '4',
   },
@@ -65,13 +69,14 @@ export const assignedToMap: Record<AssignedTo, AssignedToEnum> = {
   Client: AssignedToEnum.Client,
 };
 export const options = [
-  'text',
-  'number',
-  'checkbox',
-  'select',
-  'email',
-  'signaturePad',
-  'agreement',
+  'ShortText',
+  'LongText',
+  'Email',
+  'Number',
+  'Checkbox',
+  'Dropdown',
+  'Signature',
+  'Agreement',
 ] as const;
 export type FormFieldType = (typeof options)[number];
 export type FieldType = (typeof options)[number];
@@ -102,6 +107,7 @@ export interface FormDefinition {
   id?: string;
   ownerUserId: string;
   formName: string;
+  agreementContentHtml?: string;
   expanded: boolean;
   version: string;
   createdAtUtc: string;
@@ -113,6 +119,7 @@ export interface FormSubmission {
   id?: string;
   formId: string;
   formName: string;
+  agreementContentHtml?: string;
   formVersion: string;
   createdByUserId: string;
   status: SubmissionStatus;
@@ -126,6 +133,7 @@ export interface FormSubmission {
 
 export interface CreateFormDefinitionRequest {
   formName: string;
+  agreementContentHtml?: string;
   expanded?: boolean;
   version?: string;
   fields: FieldDefinition[];
@@ -153,6 +161,7 @@ export enum SubmissionStatus {
   Completed = 'Completed',
   Cancelled = 'Cancelled',
   Expired = 'Expired',
+  Drafted = 'Drafted',
 }
 
 export interface AgreementTemplate {
@@ -165,27 +174,22 @@ export interface AgreementTemplate {
   updatedAtUtc?: string | null;
 }
 
-export function isSubmissionEditable(row: FormSubmission) {
-  switch (row.status) {
-    case SubmissionStatus.Pending:
-      return true;
-
-    case SubmissionStatus.Completed:
-    case SubmissionStatus.Cancelled:
-    case SubmissionStatus.Expired:
-    default:
-      return false;
+export function statusCheck(submission: FormSubmission, isExternal: boolean): boolean {
+  if (isExternal) {
+    return submission.status === 'Pending';
   }
+
+  return submission.status === 'Drafted';
 }
 
 export function getSubmissionStatusColors(row: FormSubmission) {
   switch (row.status) {
+    case SubmissionStatus.Drafted:
+      return 'status-blue';
     case SubmissionStatus.Pending:
       return 'status-yellow';
-
     case SubmissionStatus.Completed:
       return 'status-green';
-
     case SubmissionStatus.Cancelled:
     case SubmissionStatus.Expired:
     default:
@@ -223,6 +227,7 @@ export interface UpdateSubmissionByAccessTokenRequest {
 }
 
 export interface SendForSignatureRequest {
+  subject: string;
   email: string;
 }
 

@@ -6,6 +6,7 @@ export interface DeleteDialogData {
   title: '';
   description: '';
   icon: 'warn';
+  needReason: boolean;
 }
 
 @Component({
@@ -14,6 +15,7 @@ export interface DeleteDialogData {
 })
 export class DeleteDialogComponent implements OnInit {
   formGroup: FormGroup | undefined;
+  needReason = false;
 
   constructor(
     private dialogRef: MatDialogRef<DeleteDialogComponent>,
@@ -21,6 +23,7 @@ export class DeleteDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.needReason = this.data.needReason ?? true;
     this.formGroup = new FormGroup({
       reason: new FormControl(),
     });

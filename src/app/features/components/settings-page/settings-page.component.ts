@@ -1,5 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  distinctUntilChanged,
+  EMPTY,
+  exhaustMap,
+  finalize,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangePasswordDialogComponent } from '../../../shared/components/dialogs/change-password-dialog/change-password-dialog.component';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -36,6 +47,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.formGroup = new FormGroup({
           twoFactorEnabled: new FormControl(response.twoFactorEnabled),
+          notificationsEnabled: new FormControl(response.notificationsEnabled),
         });
 
         this.listenTwoFactorChanges();
@@ -83,6 +95,39 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
           });
         }
       });
+
+    const notificationsControl = this.formGroup.get('notificationsEnabled');
+
+    notificationsControl?.valueChanges
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged(),
+        tap(() => notificationsControl.disable({ emitEvent: false })),
+        exhaustMap((enabled: boolean) =>
+          this.authApiService.enableNotifications({ enabled }).pipe(
+            catchError(() => {
+              notificationsControl.setValue(!enabled, { emitEvent: false });
+              return EMPTY;
+            }),
+            finalize(() => {
+              notificationsControl.enable({ emitEvent: false });
+
+              if (enabled) {
+                this.toolsService.showSnackbar(
+                  'Notifications successfully enabled',
+                  'success-message',
+                );
+              } else {
+                this.toolsService.showSnackbar(
+                  'Notifications successfully disabled',
+                  'success-message',
+                );
+              }
+            }),
+          ),
+        ),
+      )
+      .subscribe();
   }
 
   changePassword() {
@@ -98,7 +143,8 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
         const dialogRef = this.matDialog.open(DeleteDialogComponent, {
           data: {
             title: 'Delete Account',
-            description: 'If you approve, your account will be permanently deleted!',
+            description:
+              'If you approve, your account will be permanently deleted and cancel future renewals.',
             icon: 'warning',
           },
         });

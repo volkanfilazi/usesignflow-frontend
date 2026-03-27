@@ -15,7 +15,7 @@ export class TextInputComponent {
   @Input() label: string = '';
   @Input() badgeName: string = '';
   @Input() placeholder: string = '';
-  @Input() type: 'email' | 'number' | 'text' | 'password' = 'text';
+  @Input() type: 'Email' | 'Number' | 'Text' | 'Password' = 'Text';
 
   isInvalid(controlName: string): boolean {
     const control = this.formGroup?.get(controlName);

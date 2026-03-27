@@ -20,10 +20,11 @@
               [ngClass]="{
                 pending: getFormTitle().status === 'Pending',
                 completed: getFormTitle().status === 'Completed',
-                signed: getFormTitle().status === 'Signed',
+                signed: getFormTitle().status === 'Signed'
               }"
-              >{{ getFormTitle().status }}</span
             >
+              {{ getFormTitle().status }}
+            </span>
           }
         </h4>
         <p class="form-subtitle">
@@ -32,28 +33,43 @@
       </div>
 
       @if (!(loading$ | async) && !buildingForm && myGroup) {
+        @if (form?.agreementContentHtml && agreementContentSafeHtml) {
+          <div [innerHTML]="agreementContentSafeHtml"></div>
+        }
+
         <div class="dynamic-form-grid mt-2">
           @for (item of getFields(); track item.fieldId) {
             <div
               class="field-wrapper"
               [class.client-field]="isDisabled(item)"
-              [class.signature-field]="item.type === 'signaturePad'"
-              [class.agreement-field]="item.type === 'agreement'"
+              [class.signature-field]="item.type === 'Signature'"
+              [class.agreement-field]="item.type === 'Agreement'"
               [style.grid-column]="'span ' + item.colSpan"
             >
-              @if (item.type === 'text') {
+              @if (item.type === 'ShortText') {
                 <app-text-input
                   class="full-width-field"
                   [isRequired]="item.required"
                   [formGroup]="myGroup"
-                  [type]="item.type"
+                  [type]="'Text'"
                   [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
                   [label]="getFieldLabel(item)"
                   [controlName]="item.fieldId"
                 ></app-text-input>
               }
 
-              @if (item.type === 'number') {
+              @if (item.type === 'LongText') {
+                <app-text-area
+                  [isRequired]="item.required"
+                  [formGroup]="myGroup"
+                  [max]="1000"
+                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [label]="getFieldLabel(item)"
+                  [controlName]="item.fieldId"
+                ></app-text-area>
+              }
+
+              @if (item.type === 'Number') {
                 <app-text-input
                   class="full-width-field"
                   [isRequired]="item.required"
@@ -65,7 +81,7 @@
                 ></app-text-input>
               }
 
-              @if (item.type === 'email') {
+              @if (item.type === 'Email') {
                 <app-text-input
                   class="full-width-field"
                   [isRequired]="item.required"
@@ -77,7 +93,7 @@
                 ></app-text-input>
               }
 
-              @if (item.type === 'select') {
+              @if (item.type === 'Dropdown') {
                 <app-combobox
                   class="full-width-field"
                   [isRequired]="item.required"
@@ -89,7 +105,7 @@
                 ></app-combobox>
               }
 
-              @if (item.type === 'checkbox') {
+              @if (item.type === 'Checkbox') {
                 <app-checkbox
                   class="full-width-field"
                   [isRequired]="item.required"
@@ -100,12 +116,13 @@
                 ></app-checkbox>
               }
 
-              @if (item.type === 'agreement') {
+              @if (item.type === 'Agreement') {
                 <div class="agreement-block">
-                  <div class="agreement-content">
+                  <div class="agreement">
                     <h3>{{ item.agreement?.title }}</h3>
                     <p>{{ item.agreement?.content }}</p>
                   </div>
+
                   <app-checkbox
                     class="full-width-field"
                     [formGroup]="myGroup"
@@ -117,12 +134,13 @@
                 </div>
               }
 
-              @if (item.type === 'signaturePad') {
+              @if (item.type === 'Signature') {
                 <app-signature-pad
                   [formGroup]="myGroup"
+                  [isRequired]="item.required"
                   [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
                   [label]="getFieldLabel(item)"
-                  [disabled]="isSignaturePadDisabled || isDisabled(item)"
+                  [disabled]="!canEditField(item)"
                   [controlName]="item.fieldId"
                 ></app-signature-pad>
               }
@@ -130,19 +148,16 @@
           }
         </div>
 
-        @if (!isSignaturePadDisabled && externalUserToken) {
+        @if (canShowExternalSaveButton()) {
           <div class="form-actions">
-            <button class="primary-action" (click)="update()">Save and continue</button>
+            <button class="primary-action" (click)="onUpdateClick()">Save and continue</button>
           </div>
-        }
-
-        @if (validationErrors) {
-          <app-validation
-            [validationMessages]="validationErrors"
-            [myGroup]="myGroup"
-          ></app-validation>
         }
       }
     </div>
   </section>
 </div>
+
+@if (validationErrors) {
+  <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>
+}

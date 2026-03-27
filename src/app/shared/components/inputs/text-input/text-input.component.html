@@ -1,7 +1,7 @@
 @if (formGroup && controlName) {
   <div [formGroup]="formGroup" class="form-group w-100">
     <label [for]="controlName"
-      >{{ label }}
+      >{{ label + (isRequired ? '*' : '' )}}
       @if (badgeName) {
         <span class="field-badge client">{{ badgeName }}</span>
       }
@@ -13,7 +13,7 @@
       [required]="isRequired"
       [readonly]="disabled"
       [placeholder]="placeholder"
-      [type]="type"
+      [type]="type.toLocaleLowerCase()"
     />
   </div>
 }

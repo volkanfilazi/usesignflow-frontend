@@ -28,7 +28,9 @@
                         [attr.aria-label]="action.label"
                       >
                         @if (action.icon) {
-                          <mat-icon>{{ action.icon }}</mat-icon>
+                          <mat-icon [style]="`color: ${action.iconColor}`">{{
+                            action.icon
+                          }}</mat-icon>
                         } @else {
                           {{ action.label }}
                         }
@@ -48,16 +50,21 @@
         }
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr class="table-row" mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)"></tr>
+        <tr
+          class="table-row"
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="onRowClick(row)"
+        ></tr>
       </table>
     } @else {
       <app-empty-state
-        [kicker]="'Submission list'"
-        [title]="'No submissions created yet'"
-        [description]="'You have not created any submission yet. Fill a form and submit it.'"
-        [buttonText]="'Create your first submission'"
-        [imageSrc]="'Documents-pana.svg'"
-        (action)="navigateClick()"
+        [kicker]="tableEmptyStateMessage?.kicker ?? 'List'"
+        [title]="tableEmptyStateMessage?.title ?? 'No list item yet'"
+        [description]="tableEmptyStateMessage?.description ?? 'You have not created any item yet'"
+        [buttonText]="tableEmptyStateMessage?.buttonText ?? ''"
+        [imageSrc]="tableEmptyStateMessage?.imageSrc ?? ''"
+        (action)="onNavigationClick()"
       ></app-empty-state>
     }
   }

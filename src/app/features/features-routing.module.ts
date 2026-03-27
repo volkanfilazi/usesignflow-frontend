@@ -18,6 +18,16 @@ import { SubmissionAccessComponent } from './components/auth/submission-access/s
 import { SubmissionCompletedComponent } from './components/submission-completed/submission-completed.component';
 import { PricingPageComponent } from './components/pricing-page/pricing-page.component';
 import { GoogleCallbackComponent } from './components/googleCallback/google-callback.component';
+import { BillingComponent } from './components/billing/billing.component';
+import { billingFlowGuard } from './guard/billing-guard';
+import { FormGeneratorEntryComponent } from './components/gates/form-generator-entry/form-generator-entry.component';
+import { EmailComponent } from './components/emails/emails.component';
+import { CookiePolicyComponent } from './components/cookie-policy/cookie-policy.component';
+import { LegalComponent } from '../shared/components/legal/legal.component';
+import { PrivacyComponent } from '../shared/components/privacy/privacy.component';
+import { ForgotPasswordComponent } from './components/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/auth/reset-password/reset-password.component';
+import { pendingChangesGuard } from './guard/pending-changes-guard';
 
 const routes: Routes = [
   {
@@ -40,11 +50,32 @@ const routes: Routes = [
     canActivate: [guestGuard],
   },
   {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    canActivate: [guestGuard],
+  },
+  {
     path: 'pricing',
     component: PricingPageComponent,
     canActivate: [guestGuard],
   },
-
+  {
+    path: 'cookie-policy',
+    component: CookiePolicyComponent,
+  },
+  {
+    path: 'terms',
+    component: LegalComponent,
+  },
+  {
+    path: 'privacy-policy',
+    component: PrivacyComponent,
+  },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'verification-process', component: VerificationProcessComponent },
 
@@ -60,16 +91,40 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'forms', pathMatch: 'full' },
       { path: 'forms', component: GenericFormListComponent },
+      { path: 'emails', component: EmailComponent },
+      { path: 'billing', component: BillingComponent },
       { path: 'submissions', component: SubmissionsComponent },
       {
         path: 'submissions/:submissionId',
         redirectTo: 'submissions/:submissionId/view',
         pathMatch: 'full',
       },
-      { path: 'submissions/:submissionId/:mode', component: GenericFormDetailComponent },
-      { path: 'forms/:formId', component: GenericFormDetailComponent },
+      {
+        path: 'submissions/:submissionId/:mode',
+        component: GenericFormDetailComponent,
+        canDeactivate: [pendingChangesGuard],
+      },
+      {
+        path: 'forms/:formId/:mode',
+        component: GenericFormDetailComponent,
+        canDeactivate: [pendingChangesGuard],
+      },
       { path: 'forms/form/preview', component: GenericFormDetailComponent },
-      { path: 'form-generator', component: FormGeneratorComponent },
+      {
+        path: 'form-generator-entry',
+        component: FormGeneratorEntryComponent,
+      },
+      {
+        path: 'form-generator/:formId/:mode',
+        canDeactivate: [pendingChangesGuard],
+        component: FormGeneratorComponent,
+      },
+      {
+        path: 'form-generator/:mode',
+        component: FormGeneratorComponent,
+        canDeactivate: [pendingChangesGuard],
+        canActivate: [billingFlowGuard],
+      },
       { path: 'profile', component: ProfilePageComponent },
       { path: 'settings', component: SettingsPageComponent },
     ],

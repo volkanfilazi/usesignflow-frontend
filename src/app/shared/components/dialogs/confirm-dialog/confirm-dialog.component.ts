@@ -6,7 +6,14 @@ export interface ConfirmDialogData {
   message?: string;
   confirmText?: string;
   cancelText?: string;
+  hasDiscard?: boolean;
   variant?: 'danger' | 'success' | 'default';
+}
+
+export enum DialogResults {
+  discard = 'discard',
+  save = 'save',
+  cancel ='cancel'
 }
 
 @Component({
@@ -16,12 +23,14 @@ export interface ConfirmDialogData {
   standalone: false
 })
 export class ConfirmDialogComponent {
+  dialogResult = DialogResults;
+  
   constructor(
-    private dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>,
+    private dialogRef: MatDialogRef<ConfirmDialogComponent, DialogResults>,
     @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData,
   ) {}
 
-  close(result: boolean): void {
+  close(result: DialogResults): void {
     this.dialogRef.close(result);
   }
 

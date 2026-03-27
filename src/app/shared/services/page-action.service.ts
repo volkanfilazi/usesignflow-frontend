@@ -2,7 +2,9 @@ import { Injectable, signal } from '@angular/core';
 
 export interface PageAction {
   id: string;
-  text: string;
+  text?: string;
+  iconName?: string;
+  iconTooltip?: string;
   handler: () => void;
   owner?: string;
 }

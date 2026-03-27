@@ -1,0 +1,17 @@
+<div class="usage-progress" [class.compact]="compact">
+  @if (showText) {
+    <div class="usage-progress-meta">
+      <span>{{ used }} / {{ limit }}</span>
+      <strong>{{ percent | number:'1.0-0' }}%</strong>
+    </div>
+  }
+
+  <div class="usage-bar">
+    <div
+      class="usage-bar-fill"
+      [class.warning-fill]="variant === 'warning'"
+      [class.danger-fill]="variant === 'danger'"
+      [style.width.%]="percent"
+    ></div>
+  </div>
+</div>

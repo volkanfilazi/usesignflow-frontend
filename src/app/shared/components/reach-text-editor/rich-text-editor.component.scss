@@ -1,0 +1,149 @@
+:host {
+  display: block;
+}
+
+.rte {
+  border: 1px solid rgba(34, 197, 94, 0.14);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  overflow: hidden;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.rte--readonly {
+  border-color: rgba(34, 197, 94, 0.08);
+  background: linear-gradient(180deg, #fcfefc 0%, #f8fffb 100%);
+}
+
+.reach-label {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--400);
+}
+
+.rte__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  padding: 0.9rem;
+  border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+  background: var(--G800);
+}
+
+.rte__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  border: 1px solid rgba(34, 197, 94, 0.12);
+  background: #fff;
+  border-radius: 10px;
+
+  color: var(--400);
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.rte__btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.rte__btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #f8fffb;
+  border-color: rgba(34, 197, 94, 0.18);
+  box-shadow: var(--shadow-green-sm);
+  color: var(--600);
+}
+
+.rte__btn.is-active {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08));
+  border-color: rgba(34, 197, 94, 0.24);
+  color: var(--600);
+  box-shadow: var(--shadow-green-sm);
+}
+
+.rte__btn:disabled {
+  opacity: 0.4;
+  box-shadow: none;
+}
+
+.rte__divider {
+  width: 1px;
+  background: rgba(34, 197, 94, 0.12);
+  margin: 0 0.2rem;
+  border-radius: 999px;
+}
+
+.rte__content-shell {
+  padding: 1rem 1rem 1.1rem;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+:host ::ng-deep .tiptap-editor__content {
+  outline: none;
+  min-height: inherit;
+  line-height: 1.7;
+  color: var(--400);
+  word-break: break-word;
+  font-size: 15px;
+}
+
+:host ::ng-deep .tiptap-editor__content p {
+  margin: 0 0 0.85rem;
+}
+
+:host ::ng-deep .tiptap-editor__content h2,
+:host ::ng-deep .tiptap-editor__content h3 {
+  margin: 1rem 0 0.6rem;
+  line-height: 1.25;
+  color: var(--400);
+  font-weight: 800;
+}
+
+:host ::ng-deep .tiptap-editor__content h2 {
+  font-size: 1.3rem;
+}
+
+:host ::ng-deep .tiptap-editor__content h3 {
+  font-size: 1.08rem;
+}
+
+:host ::ng-deep .tiptap-editor__content ul,
+:host ::ng-deep .tiptap-editor__content ol {
+  padding-left: 1.35rem;
+  margin: 0 0 0.85rem;
+}
+
+:host ::ng-deep .tiptap-editor__content li {
+  margin-bottom: 0.3rem;
+}
+
+:host ::ng-deep .tiptap-editor__content a {
+  color: var(--500);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+:host ::ng-deep .tiptap-editor__content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}

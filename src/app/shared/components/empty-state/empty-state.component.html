@@ -1,6 +1,8 @@
 <div class="empty-state">
   <div class="empty-state-visual">
-    <img [src]="imageSrc" [alt]="title" />
+    @if (imageSrc) {
+      <img [src]="imageSrc" [alt]="title" />
+    }
   </div>
 
   <div class="empty-state-content">

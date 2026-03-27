@@ -10,7 +10,7 @@
     @if (forms && forms.length > 0) {
       <div class="forms-grid">
         @for (item of forms; track item.id ?? $index) {
-          <mat-card class="form-card" appearance="outlined" (click)="onFormClick(item)">
+          <mat-card class="form-card" appearance="outlined" (click)="onPreviewClick(item)">
             <div class="form-card-top">
               <div class="form-card-icon">
                 <mat-icon>description</mat-icon>
@@ -19,7 +19,7 @@
               <div class="form-card-meta">
                 <span class="form-badge">Dynamic form</span>
                 <h3>{{ item.formName }}</h3>
-                <p>Version {{ item.version }}</p>
+                <p>Form fields: {{ item.fields.length }}</p>
               </div>
             </div>
 
@@ -31,26 +31,43 @@
 
               <div class="form-info-row">
                 <span class="info-label">Type</span>
-                <span class="info-value">Reusable template</span>
+                <span class="info-value">Form template</span>
               </div>
             </div>
 
-            <mat-card-actions class="form-card-actions">
+            <mat-card-actions class="d-flex flex-column gap-3">
               <button
                 mat-stroked-button
                 class="card-btn card-btn-ghost"
-                (click)="$event.stopPropagation(); onFormClick(item)"
+                (click)="$event.stopPropagation(); createSubmission(item)"
               >
-                Preview
+                Create Submission
               </button>
-
-              <button
-                mat-flat-button
-                class="card-btn card-btn-danger"
-                (click)="$event.stopPropagation(); deleteFormitem(item.id ?? '')"
-              >
-                Delete
-              </button>
+              <div class="d-flex align-items-center justify-content-between w-100 gap-1">
+                <div class="d-flex align-items-center gap-2">
+                  <app-icon-button
+                    iconName="content_copy"
+                    class="success-button"
+                    (buttonClick)="makeCopy(item)"
+                  ></app-icon-button>
+                  <app-icon-button
+                    iconName="visibility"
+                    class="success-button"
+                    (buttonClick)="onPreviewClick(item)"
+                  ></app-icon-button>
+                  <app-icon-button
+                    iconName="edit"
+                    class="success-button"
+                    (buttonClick)="editFlow(item)"
+                  >
+                  </app-icon-button>
+                </div>
+                <app-icon-button
+                  iconName="delete"
+                  class="delete-button"
+                  (buttonClick)="deleteFormitem(item.id ?? '')"
+                ></app-icon-button>
+              </div>
             </mat-card-actions>
           </mat-card>
         }

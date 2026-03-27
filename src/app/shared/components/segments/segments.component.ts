@@ -31,6 +31,16 @@ export class SegmentsComponent {
     }
   }
 
+  onSelect(option: string) {
+    const control = this.formGroup.get(this.controlName!);
+
+    if (!control || control.disabled) {
+      return;
+    }
+
+    control.setValue(option);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.unsubscribe();
   }

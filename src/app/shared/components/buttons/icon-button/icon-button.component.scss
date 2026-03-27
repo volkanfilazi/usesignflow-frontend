@@ -21,6 +21,11 @@
   box-shadow: var(--shadow-focus-error);
 }
 
+.disabled-icon-button {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 .success-button {
   cursor: grab;
   width: 42px;

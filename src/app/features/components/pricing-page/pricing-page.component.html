@@ -18,6 +18,7 @@
       </button>
 
       <button
+        [disabled]="true"
         type="button"
         class="toggle-btn"
         [class.active]="billingCycle === 'yearly'"
@@ -107,9 +108,7 @@
         {{ businessSavingsText }}
       </div>
 
-      <a routerLink="/register" class="btn btn-ghost full-width">
-        Start Business
-      </a>
+      <a routerLink="/register" class="btn btn-ghost full-width"> Start Business </a>
 
       <ul class="feature-list">
         <li>Unlimited active flows</li>

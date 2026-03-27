@@ -10,11 +10,18 @@ export interface MeDto {
   email: string;
   fullName: string;
   twoFactorEnabled: boolean;
+  notificationsEnabled: boolean;
 }
 
 export interface LoginDto {
   email: string;
   password: string;
+}
+
+export interface ResetPassword {
+  email: string;
+  token: string;
+  NewPassword: string;
 }
 
 export interface AuthResponse {
@@ -48,6 +55,10 @@ export interface TwoFASetupResponse {
   otpauthUrl: string;
 }
 
+export interface EnableNotificationsResponse {
+  enabled: boolean;
+}
+
 export interface VerifyTwoFactorRequest {
   twoFactorToken: string;
   code: string;
@@ -67,11 +78,12 @@ export interface JwtPayloadModel {
   email: string;
   name: string;
   exp: number;
+  emailVerified: string;
   twoFactorEnabled?: string;
 }
 
 export enum EditMode {
-  VIEW = 'View',
-  EDIT = 'Edit',
-  CREATE = 'Create',
+  VIEW = 'view',
+  EDIT = 'edit',
+  CREATE = 'create',
 }

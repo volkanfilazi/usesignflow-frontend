@@ -4,7 +4,10 @@
   [class.success]="data.variant === 'success'"
 >
   <div class="dialog-header">
-    <app-icon-button class="delete-button" (buttonClick)="close(false)"></app-icon-button>
+    <app-icon-button
+      class="delete-button"
+      (buttonClick)="close(this.dialogResult.cancel)"
+    ></app-icon-button>
   </div>
   <div class="dialog-content">
     <mat-dialog-content>
@@ -22,13 +25,23 @@
     </mat-dialog-content>
 
     <mat-dialog-actions align="end" class="d-flex align-items-center gap-1">
-      <button mat-stroked-button class="dialog-btn dialog-cancel" (click)="close(false)">
+      <button
+        mat-stroked-button
+        class="dialog-btn dialog-cancel"
+        (click)="close(this.dialogResult.cancel)"
+      >
         {{ data.cancelText || 'Cancel' }}
       </button>
+      @if (data.hasDiscard) {
+        <app-primary-button
+          (click)="close(this.dialogResult.discard)"
+          buttonName="Discard"
+          color="warn"
+        ></app-primary-button>
+      }
       <app-primary-button
-        (click)="close(true)"
+        (click)="close(this.dialogResult.save)"
         [buttonName]="data.confirmText || 'Confirm'"
-        color="warn"
       ></app-primary-button>
     </mat-dialog-actions>
   </div>

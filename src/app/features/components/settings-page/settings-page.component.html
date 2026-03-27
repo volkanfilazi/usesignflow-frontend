@@ -5,10 +5,7 @@
       <h1>Settings</h1>
       <p>Customize security, notifications, preferences, and privacy options for your account.</p>
     </div>
-
-    <button class="btn btn-primary">Save changes</button>
   </section>
-
   <div class="settings-grid">
     <section class="settings-card">
       <div class="card-head">
@@ -17,7 +14,6 @@
           <h2>Account security</h2>
         </div>
       </div>
-
       <div class="settings-list">
         <div class="setting-row">
           <div>
@@ -29,7 +25,6 @@
             (buttonClick)="changePassword()"
           ></app-primary-button>
         </div>
-
         @if (!(loading$ | async) && formGroup) {
           <div [formGroup]="formGroup" class="setting-row">
             <div>
@@ -44,7 +39,6 @@
         }
       </div>
     </section>
-
     <section class="settings-card">
       <div class="card-head">
         <div>
@@ -52,22 +46,28 @@
           <h2>Email updates</h2>
         </div>
       </div>
-
       <div class="settings-list">
-        <div class="setting-row">
-          <div>
-            <strong>Document signed notifications</strong>
-            <p>Receive an email when a contract or form is completed.</p>
+        @if (!(loading$ | async) && formGroup) {
+          <div [formGroup]="formGroup" class="setting-row">
+            <div>
+              <strong>Document signed notifications</strong>
+              <p>Receive an email when a contract or form is completed.</p>
+            </div>
+            <label for="notificationsEnabled" class="switch">
+              <input
+                formControlName="notificationsEnabled"
+                id="notificationsEnabled"
+                type="checkbox"
+              />
+              <span class="slider"></span>
+            </label>
           </div>
-          <label class="switch">
-            <input type="checkbox" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
+        }
       </div>
     </section>
 
-    <section class="settings-card">
+    <!-- OPEN HIDDEN IF READY TO GO -->
+    <section hidden class="settings-card">
       <div class="card-head">
         <div>
           <span class="section-kicker">Preferences</span>

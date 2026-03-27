@@ -23,6 +23,7 @@ export class SignaturePadComponent implements AfterViewInit, OnChanges, OnDestro
   @Input() formGroup!: FormGroup;
   @Input() controlName!: string;
   @Input() disabled = false;
+  @Input() isRequired = false;
   @Input() label: string | undefined;
   @Input() badgeName: string | undefined;
 

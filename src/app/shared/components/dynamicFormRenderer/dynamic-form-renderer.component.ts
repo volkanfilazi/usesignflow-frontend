@@ -1,7 +1,18 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  map,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 import { FormsApiService } from '../../../shared/services/form-api.service';
 import { PageActionService } from '../../../shared/services/page-action.service';
@@ -10,15 +21,18 @@ import { ValidationService } from '../../../shared/services/validation.service';
 import { AuthStateService } from '../../../core/services/auth-state.service';
 
 import {
-  AssignedToEnum,
   CreateFormSubmissionRequest,
   FieldDefinition,
   FormDefinition,
   FormSubmission,
-  isSubmissionEditable,
   options,
   UpdateFormSubmissionRequest,
 } from '../../../shared/models/form-generator.mode';
+import { BillingApiService } from '../../services/billing-api-service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { PendingChangesAware } from '../../models/pending-changes-aware.model';
+import { EditMode } from '../../models/auth.model';
+import { canEditField } from '../../utility/form-permission/form-permission-helper';
 
 @Component({
   selector: 'app-dynamic-form-renderer',
@@ -26,9 +40,10 @@ import {
   styleUrl: './dynamic-form-renderer.component.scss',
   standalone: false,
 })
-export class DynamicFormRendererComponent implements OnInit, OnDestroy {
+export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingChangesAware {
   @Input() previewForm: FormDefinition | undefined;
 
+  editMode: EditMode = EditMode.CREATE;
   buildingForm = true;
   loading$ = new BehaviorSubject(false);
   myGroup = new FormGroup({});
@@ -38,10 +53,9 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
   fieldLabelMap: Record<string, string> = {};
   currentUserId = '';
   externalUserToken = '';
-  mode: 'create' | 'submission' | 'preview' = 'create';
-  isSignaturePadDisabled = false;
   submissinTitle = '';
   pageOwner = 'dynamic-form-renderer';
+  agreementContentSafeHtml: SafeHtml | null = null;
 
   private initialFormValue: any = null;
   private readonly destroy$ = new Subject<void>();
@@ -55,17 +69,33 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     private readonly validationService: ValidationService,
     private readonly router: Router,
     private readonly authService: AuthStateService,
+    private readonly billingApiService: BillingApiService,
+    private readonly sanitizer: DomSanitizer,
   ) {}
 
+  public hasPendingChanges(): boolean {
+    if (this.editMode === EditMode.VIEW) {
+      return false;
+    }
+
+    return this.hasFormChanged();
+  }
+
+  public saveBeforeLeave(): Observable<boolean> {
+    if (this.editMode === EditMode.VIEW) {
+      return of(true);
+    }
+
+    return this.editMode === EditMode.CREATE ? this.create() : this.update();
+  }
+
   ngOnInit(): void {
-    console.log(this.authService.getUserId());
     this.currentUserId = this.authService.getUserId() ?? '';
 
     if (this.previewForm) {
-      this.mode = 'preview';
+      this.editMode = EditMode.VIEW;
       this.configurePageAction();
       this.loadPreviewForm(this.previewForm);
-
       return;
     }
 
@@ -77,17 +107,16 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
       this.resetState();
 
       if (formId) {
-        this.mode = 'create';
+        this.editMode = EditMode.CREATE;
         this.configurePageAction();
         this.loadForm(formId);
-
         return;
       }
 
       if (submissionId) {
-        this.mode = 'submission';
+        this.editMode = EditMode.EDIT;
         this.configurePageAction();
-        this.loadSubmission(submissionId, this.externalUserToken ?? undefined);
+        this.loadSubmission(submissionId, this.externalUserToken || undefined);
       }
     });
   }
@@ -97,14 +126,34 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     this.validationErrors = [];
     this.fieldLabelMap = {};
     this.myGroup = new FormGroup({});
+    this.initialFormValue = null;
   }
 
   private configurePageAction(): void {
     this.pageActionService.addAction({
       id: 'save-ui',
-      text: this.mode === 'create' ? 'Create' : 'Update',
       owner: this.pageOwner,
-      handler: () => (this.mode === 'create' ? this.create() : this.update()),
+      text: 'Save',
+      handler: () => {
+        const action$ = this.editMode === EditMode.CREATE ? this.create() : this.update();
+
+        action$.subscribe((success) => {
+          if (!success) return;
+
+          if (this.editMode === EditMode.CREATE) {
+            this.router.navigate(['/dashboard/submissions']);
+            return;
+          }
+
+          if (this.externalUserToken && this.form?.id) {
+            this.router.navigate(['submission-access', this.form.id, 'completed'], {
+              state: { token: this.externalUserToken },
+            });
+          } else {
+            this.router.navigate(['/dashboard/submissions']);
+          }
+        });
+      },
     });
   }
 
@@ -126,7 +175,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
 
   private loadSubmission(submissionId: string, accessToken?: string): void {
     this.formApiService
-      .getSubmissionById(submissionId, accessToken ?? undefined)
+      .getSubmissionById(submissionId, accessToken)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (submission) => {
@@ -140,7 +189,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadPreviewForm(previewForm: any): void {
+  private loadPreviewForm(previewForm: FormDefinition): void {
     this.resetState();
 
     this.form = {
@@ -152,6 +201,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
       createdAtUtc: new Date().toISOString(),
       updatedAtUtc: null,
       ownerUserId: this.currentUserId,
+      agreementContentHtml: previewForm.agreementContentHtml,
     };
 
     this.buildFormControls(undefined, this.getFields());
@@ -160,7 +210,13 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
 
   private finishBuild(): void {
     this.buildingForm = false;
+    this.setAgreementContent(this.form?.agreementContentHtml);
     this.cdr.detectChanges();
+  }
+
+  setAgreementContent(html: string | null | undefined): void {
+    const normalized = html ?? '';
+    this.agreementContentSafeHtml = this.sanitizer.bypassSecurityTrustHtml(normalized);
   }
 
   private buildFormControls(
@@ -171,58 +227,46 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     fields.forEach((field) => {
       this.fieldLabelMap[field.fieldId] = field.label;
 
-      if (field.type === 'agreement') {
-        const controlName = field.fieldId;
-
-        const rawValue = answers?.find((x) => x.fieldId === field.fieldId)?.value;
-        const existingValue = rawValue === true || rawValue === 'true';
-
-        this.myGroup.addControl(
-          controlName,
-          new FormControl(
-            {
-              value: existingValue,
-              disabled: (submission && !isSubmissionEditable(submission)) || this.isDisabled(field),
-            },
-            field.required ? Validators.requiredTrue : [],
-          ),
-        );
-
-        return;
-      }
-
-      const validators = this.buildFieldValidators(field);
       const rawValue = answers?.find((x) => x.fieldId === field.fieldId)?.value;
-
       const existingValue =
-        field.type === 'checkbox' ? rawValue === true || rawValue === 'true' : (rawValue ?? null);
+        field.type === 'Checkbox' || field.type === 'Agreement'
+          ? rawValue === true || rawValue === 'true'
+          : (rawValue ?? null);
 
-      this.isSignaturePadDisabled = (submission && !isSubmissionEditable(submission)) ?? false;
-      this.submissinTitle = submission?.formName ?? '';
+      const validators =
+        field.type === 'Agreement'
+          ? field.required && this.canEditField(field, submission)
+            ? [Validators.requiredTrue]
+            : []
+          : this.buildFieldValidators(field, submission);
 
       this.myGroup.addControl(
         field.fieldId,
         new FormControl(
           {
             value: existingValue,
-            disabled: (submission && !isSubmissionEditable(submission)) || this.isDisabled(field),
+            disabled: !this.canEditField(field, submission),
           },
           validators,
         ),
       );
     });
 
+    this.submissinTitle = submission?.formName ?? '';
     this.captureInitialFormValue();
   }
 
-  private buildFieldValidators(field: FieldDefinition): ValidatorFn[] {
-    return this.validationService.buildValidators(field, this.shouldValidateField(field));
+  private buildFieldValidators(field: FieldDefinition, submission?: FormSubmission): ValidatorFn[] {
+    return this.validationService.buildValidators(
+      field,
+      this.shouldValidateField(field, submission),
+    );
   }
 
   getFields(): FieldDefinition[] {
     if (!this.form) return [];
 
-    if (this.mode === 'preview' && this.isFormDefinition(this.form)) {
+    if (this.editMode === EditMode.VIEW && this.isFormDefinition(this.form)) {
       return this.form.fields;
     }
 
@@ -238,30 +282,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
   }
 
   getFieldLabel(field: FieldDefinition): string {
-    if (!this.isDisabled(field)) {
-      return field.label;
-    }
-
     return field.label;
-  }
-
-  isOwnerUser(): boolean {
-    if (!this.form) return false;
-
-    if (this.isFormDefinition(this.form)) {
-      return this.form.ownerUserId === this.currentUserId;
-    }
-
-    if (this.isFormSubmission(this.form)) {
-      return this.form.createdByUserId === this.currentUserId;
-    }
-
-    return false;
-  }
-
-  isFieldAssignedToCurrentUser(field: FieldDefinition): boolean {
-    const assignedToOwner = (field.assignedTo ?? 'You') === 'You';
-    return this.isOwnerUser() === assignedToOwner;
   }
 
   getFormTitle(): { title: string; status?: string } {
@@ -283,21 +304,65 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     return { title: '' };
   }
 
+  private isExternalUser(): boolean {
+    return !!this.externalUserToken;
+  }
+
+  private isSubmissionEditableByActor(submission: FormSubmission): boolean {
+    if (this.isExternalUser()) {
+      return submission.status === 'Pending';
+    }
+
+    return submission.status === 'Drafted';
+  }
+
+  private isFieldAssignedToActor(field: FieldDefinition): boolean {
+    const assignedTo = field.assignedTo ?? 'You';
+
+    if (this.isExternalUser()) {
+      return assignedTo === 'Client';
+    }
+
+    return assignedTo === 'You';
+  }
+
+  canEditField(field: FieldDefinition, submission?: FormSubmission): boolean {
+    const currentSubmission =
+      submission ?? (this.isFormSubmission(this.form) ? this.form : undefined);
+
+    return canEditField({
+      editMode: this.editMode,
+      isExternalUser: !!this.externalUserToken,
+      assignedTo: field.assignedTo ?? 'You',
+      submissionStatus: currentSubmission?.status,
+    });
+  }
+
   isDisabled(field: FieldDefinition): boolean {
-    return !this.isFieldAssignedToCurrentUser(field);
+    return !this.canEditField(field);
   }
 
-  shouldValidateField(field: FieldDefinition): boolean {
-    return this.isFieldAssignedToCurrentUser(field);
+  shouldValidateField(field: FieldDefinition, submission?: FormSubmission): boolean {
+    return this.canEditField(field, submission);
   }
 
-  create(): void {
+  canShowExternalSaveButton(): boolean {
+    return (
+      !!this.externalUserToken && this.isFormSubmission(this.form) && this.form.status === 'Pending'
+    );
+  }
+
+  create(): Observable<boolean> {
     this.validationErrors = [];
 
-    if (!this.form || !this.myGroup) return;
+    if (!this.form || !this.myGroup) {
+      return of(false);
+    }
 
     const formId = this.getFormId();
-    if (!formId) return;
+    if (!formId) {
+      return of(false);
+    }
 
     this.myGroup.updateValueAndValidity();
 
@@ -307,35 +372,56 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
         this.myGroup,
         this.fieldLabelMap,
       );
-      return;
+      return of(false);
     }
 
     this.loading$.next(true);
 
+    const rawFormValue = this.myGroup.getRawValue() as Record<string, unknown>;
     const fields = this.getFields();
-    const signatureField = fields.find((x) => x.type === 'signaturePad');
-    const signatureValue = signatureField ? this.myGroup.get(signatureField.fieldId)?.value : null;
 
     const answers = fields.map((field) => ({
       fieldId: field.fieldId,
-      value: this.normalizeAnswerValue(
-        this.myGroup.get(this.getAnswerControlName(field))?.value ?? null,
-      ),
+      value: this.normalizeAnswerValue(rawFormValue[field.fieldId] ?? null),
     }));
 
-    if (signatureField && this.isBase64Image(signatureValue)) {
-      this.uploadSignatureAndCreate(signatureField.fieldId, signatureValue, answers, formId);
-      return;
-    }
-
-    this.submitSubmission(formId, answers);
+    return this.uploadAllChangedSignatures$(answers, undefined, formId, true).pipe(
+      tap((success) => {
+        if (success) {
+          this.captureInitialFormValue();
+        }
+      }),
+      finalize(() => {
+        this.loading$.next(false);
+      }),
+    );
   }
 
-  update(): void {
+  onUpdateClick(): void {
+    this.update().subscribe((success) => {
+      if (success && this.externalUserToken && this.form?.id) {
+        this.router.navigate(['submission-access', this.form.id, 'completed'], {
+          state: { token: this.externalUserToken },
+        });
+      }
+    });
+  }
+
+  private update(): Observable<boolean> {
     this.validationErrors = [];
 
-    if (!this.form || !this.myGroup) return;
-    if (!this.isFormSubmission(this.form)) return;
+    if (!this.form || !this.myGroup) {
+      return of(false);
+    }
+
+    if (!this.isFormSubmission(this.form)) {
+      return of(false);
+    }
+
+    if (!this.isSubmissionEditableByActor(this.form)) {
+      this.toolsService.showSnackbar('This submission is no longer editable.', 'error-snackbar');
+      return of(false);
+    }
 
     this.myGroup.updateValueAndValidity();
 
@@ -345,102 +431,106 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
         this.myGroup,
         this.fieldLabelMap,
       );
-      return;
+      return of(false);
     }
 
-    if (!this.hasFormChanged()) {
+    if (!this.hasPendingChanges()) {
       this.toolsService.showSnackbar('No changes', 'error-snackbar');
-
-      return;
+      return of(false);
     }
 
     this.loading$.next(true);
 
+    const rawFormValue = this.myGroup.getRawValue() as Record<string, unknown>;
     const fields = this.getFields();
-    const signatureField = fields.find((x) => x.type === 'signaturePad');
-    const signatureValue = signatureField ? this.myGroup.get(signatureField.fieldId)?.value : null;
 
     const answers = fields.map((field) => ({
       fieldId: field.fieldId,
-      value: this.normalizeAnswerValue(
-        this.myGroup.get(this.getAnswerControlName(field))?.value ?? null,
-      ),
+      value: this.normalizeAnswerValue(rawFormValue[field.fieldId] ?? null),
     }));
 
-    if (signatureField && this.isBase64Image(signatureValue)) {
-      this.uploadSignatureAndUpdate(
-        signatureField.fieldId,
-        signatureValue,
-        answers,
-        this.form.rowVersion,
-      );
-      return;
+    return this.uploadAllChangedSignatures$(answers, this.form.rowVersion, undefined, false).pipe(
+      tap((success) => {
+        if (success) {
+          this.captureInitialFormValue();
+        }
+      }),
+      finalize(() => {
+        this.loading$.next(false);
+      }),
+    );
+  }
+
+  private uploadAllChangedSignatures$(
+    answers: { fieldId: string; value: any }[],
+    rowVersion?: number,
+    formId?: string,
+    isCreate = false,
+  ): Observable<boolean> {
+    const signatureFields = this.getFields().filter(
+      (field) => field.type === 'Signature' && this.canEditField(field),
+    );
+
+    const signaturesToUpload = signatureFields
+      .map((field) => ({
+        fieldId: field.fieldId,
+        value: this.myGroup.get(field.fieldId)?.value,
+      }))
+      .filter((item) => this.isBase64Image(item.value));
+
+    if (!signaturesToUpload.length) {
+      return isCreate
+        ? this.submitSubmission$(formId!, answers)
+        : this.updateSubmission$(rowVersion!, answers);
     }
 
-    this.updateSubmission(this.form.rowVersion, answers);
+    let request$: Observable<{ fieldId: string; value: any }[]> = of(answers);
+
+    signaturesToUpload.forEach((signature) => {
+      request$ = request$.pipe(
+        switchMap((currentAnswers) => {
+          const file = this.base64ToFile(signature.value, 'signature.png');
+          const accessToken = this.route.snapshot.queryParamMap.get('token');
+
+          return this.formApiService
+            .uploadSignature(file, isCreate ? undefined : (accessToken ?? undefined))
+            .pipe(
+              map((uploadRes) =>
+                currentAnswers.map((answer) =>
+                  answer.fieldId === signature.fieldId
+                    ? { ...answer, value: uploadRes.url }
+                    : answer,
+                ),
+              ),
+            );
+        }),
+      );
+    });
+
+    return request$.pipe(
+      switchMap((finalAnswers) =>
+        isCreate
+          ? this.submitSubmission$(formId!, finalAnswers)
+          : this.updateSubmission$(rowVersion!, finalAnswers),
+      ),
+      catchError(() => {
+        this.toolsService.showSnackbar('Signature could not be uploaded.', 'error-snackbar');
+        return of(false);
+      }),
+    );
   }
 
   private isBase64Image(value: unknown): value is string {
     return typeof value === 'string' && value.startsWith('data:image');
   }
 
-  private uploadSignatureAndCreate(
-    signatureFieldId: string,
-    signatureBase64: string,
-    answers: { fieldId: string; value: any }[],
-    formId: string,
-  ): void {
-    const file = this.base64ToFile(signatureBase64, 'signature.png');
-    this.formApiService
-      .uploadSignature(file)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (uploadRes) => {
-          const finalAnswers = answers.map((answer) =>
-            answer.fieldId === signatureFieldId ? { ...answer, value: uploadRes.url } : answer,
-          );
-
-          this.submitSubmission(formId, finalAnswers);
-        },
-        error: () => {
-          this.loading$.next(false);
-          this.toolsService.showSnackbar('Signature could not be uploaded.', 'error-snackbar');
-        },
-      });
-  }
-
-  private uploadSignatureAndUpdate(
-    signatureFieldId: string,
-    signatureBase64: string,
-    answers: { fieldId: string; value: any }[],
+  private updateSubmission$(
     rowVersion: number,
-  ): void {
-    const file = this.base64ToFile(signatureBase64, 'signature.png');
-    const accessToken = this.route.snapshot.queryParamMap.get('token');
-    this.formApiService
-      .uploadSignature(file, accessToken ?? undefined)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (uploadRes) => {
-          const finalAnswers = answers.map((answer) =>
-            answer.fieldId === signatureFieldId ? { ...answer, value: uploadRes.url } : answer,
-          );
-
-          this.updateSubmission(rowVersion, finalAnswers);
-        },
-        error: () => {
-          this.loading$.next(false);
-          this.toolsService.showSnackbar('Signature could not be uploaded.', 'error-snackbar');
-        },
-      });
-  }
-
-  private getAnswerControlName(field: FieldDefinition): string {
-    return field.fieldId;
-  }
-
-  private updateSubmission(rowVersion: number, answers: { fieldId: string; value: any }[]): void {
-    if (!this.form?.id) return;
+    answers: { fieldId: string; value: any }[],
+  ): Observable<boolean> {
+    if (!this.form?.id) {
+      return of(false);
+    }
 
     const payload: UpdateFormSubmissionRequest = {
       answers,
@@ -448,79 +538,63 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     };
 
     if (this.externalUserToken) {
-      this.formApiService
+      return this.formApiService
         .updateSubmissionByAccessToken(this.form.id, {
           token: this.externalUserToken,
-          rowVersion: rowVersion,
+          rowVersion,
           answers,
         })
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.loading$.next(false);
+        .pipe(
+          map(() => {
             this.toolsService.showSnackbar(
               'The document has been successfully completed.',
               'success-snackbar',
             );
-            this.router.navigate(['submission-access', this.form?.id!, 'completed'], {
-              state: { token: this.externalUserToken! },
-            });
-          },
-          error: () => {
-            this.loading$.next(false);
+            return true;
+          }),
+          catchError((err) => {
+            console.error('UPDATE BY ACCESS TOKEN ERROR:', err);
             this.toolsService.showSnackbar(
               'The document could not be completed.',
               'error-snackbar',
             );
-          },
-        });
-    } else {
-      this.formApiService
-        .updateSubmission(this.form.id, payload)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.loading$.next(false);
-            this.toolsService.showSnackbar(
-              'Form submission updated successfully.',
-              'success-snackbar',
-            );
-            this.router.navigate(['/dashboard/submissions']);
-          },
-          error: () => {
-            this.loading$.next(false);
-            this.toolsService.showSnackbar(
-              'Form submission could not be updated.',
-              'error-snackbar',
-            );
-          },
-        });
+            return of(false);
+          }),
+        );
     }
+
+    return this.formApiService.updateSubmission(this.form.id, payload).pipe(
+      map(() => {
+        this.toolsService.showSnackbar('Form submission updated successfully.', 'success-snackbar');
+        return true;
+      }),
+      catchError(() => {
+        this.toolsService.showSnackbar('Form submission could not be updated.', 'error-snackbar');
+        return of(false);
+      }),
+    );
   }
 
-  private submitSubmission(formId: string, answers: { fieldId: string; value: any }[]): void {
+  private submitSubmission$(
+    formId: string,
+    answers: { fieldId: string; value: any }[],
+  ): Observable<boolean> {
     const payload: CreateFormSubmissionRequest = {
       formId,
       answers,
     };
 
-    this.formApiService
-      .createSubmission(payload)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.loading$.next(false);
-          this.toolsService.showSnackbar(
-            'Form submission created successfully.',
-            'success-snackbar',
-          );
-          this.router.navigate(['/dashboard/submissions']);
-        },
-        error: () => {
-          this.loading$.next(false);
-          this.toolsService.showSnackbar('Form submission could not be created.', 'error-snackbar');
-        },
-      });
+    return this.formApiService.createSubmission(payload).pipe(
+      map(() => {
+        this.billingApiService.loadOverview();
+        this.toolsService.showSnackbar('Form submission created successfully.', 'success-snackbar');
+        return true;
+      }),
+      catchError(() => {
+        this.toolsService.showSnackbar('Form submission could not be created.', 'error-snackbar');
+        return of(false);
+      }),
+    );
   }
 
   private getFormId(): string | null {
@@ -568,16 +642,33 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy {
     return !!form && 'ownerUserId' in form;
   }
 
-  private isFormSubmission(
-    form: FormDefinition | FormSubmission | undefined,
-  ): form is FormSubmission {
+  isFormSubmission(form: FormDefinition | FormSubmission | undefined): form is FormSubmission {
     return !!form && 'createdByUserId' in form;
   }
 
-  private hasFormChanged(): boolean {
-    const currentValue = this.myGroup.getRawValue();
+  private normalizeFormValue(value: any): any {
+    if (Array.isArray(value)) {
+      return value.map((item) => this.normalizeFormValue(item));
+    }
 
-    return JSON.stringify(currentValue) !== JSON.stringify(this.initialFormValue);
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.entries(value).map(([key, val]) => [key, this.normalizeFormValue(val)]),
+      );
+    }
+
+    if (value === '') {
+      return null;
+    }
+
+    return value;
+  }
+
+  private hasFormChanged(): boolean {
+    const currentValue = this.normalizeFormValue(this.myGroup.getRawValue());
+    const initialValue = this.normalizeFormValue(this.initialFormValue);
+
+    return JSON.stringify(currentValue) !== JSON.stringify(initialValue);
   }
 
   private captureInitialFormValue(): void {

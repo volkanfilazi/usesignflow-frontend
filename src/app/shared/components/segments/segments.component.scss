@@ -15,6 +15,11 @@
   margin-left: 4px;
 }
 
+.segment-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .segments {
   display: inline-flex;
   background: rgba(241, 245, 249, 0.9);

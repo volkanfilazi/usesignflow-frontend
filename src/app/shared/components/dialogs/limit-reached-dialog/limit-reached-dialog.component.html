@@ -1,0 +1,41 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="close()"></app-icon-button>
+  </div>
+  <div class="dialog-content">
+    <mat-dialog-content class="limit-dialog-body">
+      <div class="limit-hero">
+        <div class="limit-icon-wrap">
+          <div class="limit-icon">
+            <mat-icon>workspace_premium</mat-icon>
+          </div>
+        </div>
+
+        <span class="limit-badge">
+          {{ data.planCode || 'Current plan' }}
+        </span>
+
+        <h2>You’ve reached your current limit</h2>
+
+        <p class="limit-description">
+          Your current plan no longer allows additional
+          <strong>{{ data.reason }}</strong>
+          usage. Upgrade to continue without interruption and unlock higher limits.
+        </p>
+
+        <div class="limit-note">
+          <mat-icon>info</mat-icon>
+          <span> You can review your plan details and usage on the billing page. </span>
+        </div>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="d-flex align-items-center gap-1">
+      <button mat-stroked-button class="dialog-btn dialog-cancel" (click)="close()">Cancel</button>
+      <app-primary-button
+        (click)="goBilling()"
+        [buttonName]="'Go to the billing page'"
+        color="primary"
+      ></app-primary-button>
+    </mat-dialog-actions>
+  </div>
+</div>

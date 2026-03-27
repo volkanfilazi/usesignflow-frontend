@@ -12,6 +12,8 @@ import { MatChipEditedEvent, MatChipInputEvent } from '@angular/material/chips';
 export class ChipsInputComponent {
   @Input() formGroup!: FormGroup;
   @Input() controlName?: string;
+  @Input() required = false;
+  
 
   readonly addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
