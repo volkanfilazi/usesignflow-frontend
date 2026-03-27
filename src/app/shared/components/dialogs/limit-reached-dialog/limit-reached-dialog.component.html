@@ -3,11 +3,30 @@
     <app-icon-button class="delete-button" (buttonClick)="close()"></app-icon-button>
   </div>
   <div class="dialog-content">
-    <mat-dialog-content class="d-flex flex-column gap-2">
-      <h6 class="text-center">Reached limit</h6>
-      <div class="d-flex align-items-center justify-content-center gap-1">
-        <mat-icon color="warn">warning</mat-icon>
-        <span>You have reached your active {{this.data.reason}} limit.</span>
+    <mat-dialog-content class="limit-dialog-body">
+      <div class="limit-hero">
+        <div class="limit-icon-wrap">
+          <div class="limit-icon">
+            <mat-icon>workspace_premium</mat-icon>
+          </div>
+        </div>
+
+        <span class="limit-badge">
+          {{ data.planCode || 'Current plan' }}
+        </span>
+
+        <h2>You’ve reached your current limit</h2>
+
+        <p class="limit-description">
+          Your current plan no longer allows additional
+          <strong>{{ data.reason }}</strong>
+          usage. Upgrade to continue without interruption and unlock higher limits.
+        </p>
+
+        <div class="limit-note">
+          <mat-icon>info</mat-icon>
+          <span> You can review your plan details and usage on the billing page. </span>
+        </div>
       </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end" class="d-flex align-items-center gap-1">

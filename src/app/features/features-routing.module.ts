@@ -25,6 +25,9 @@ import { EmailComponent } from './components/emails/emails.component';
 import { CookiePolicyComponent } from './components/cookie-policy/cookie-policy.component';
 import { LegalComponent } from '../shared/components/legal/legal.component';
 import { PrivacyComponent } from '../shared/components/privacy/privacy.component';
+import { ForgotPasswordComponent } from './components/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/auth/reset-password/reset-password.component';
+import { pendingChangesGuard } from './guard/pending-changes-guard';
 
 const routes: Routes = [
   {
@@ -44,6 +47,16 @@ const routes: Routes = [
   {
     path: 'register',
     component: RegisterPageComponent,
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
     canActivate: [guestGuard],
   },
   {
@@ -86,17 +99,30 @@ const routes: Routes = [
         redirectTo: 'submissions/:submissionId/view',
         pathMatch: 'full',
       },
-      { path: 'submissions/:submissionId/:mode', component: GenericFormDetailComponent },
-      { path: 'forms/:formId', component: GenericFormDetailComponent },
+      {
+        path: 'submissions/:submissionId/:mode',
+        component: GenericFormDetailComponent,
+        canDeactivate: [pendingChangesGuard],
+      },
+      {
+        path: 'forms/:formId/:mode',
+        component: GenericFormDetailComponent,
+        canDeactivate: [pendingChangesGuard],
+      },
       { path: 'forms/form/preview', component: GenericFormDetailComponent },
       {
         path: 'form-generator-entry',
         component: FormGeneratorEntryComponent,
       },
-      { path: 'form-generator/:formId/:mode', component: FormGeneratorComponent },
       {
-        path: 'form-generator',
+        path: 'form-generator/:formId/:mode',
+        canDeactivate: [pendingChangesGuard],
         component: FormGeneratorComponent,
+      },
+      {
+        path: 'form-generator/:mode',
+        component: FormGeneratorComponent,
+        canDeactivate: [pendingChangesGuard],
         canActivate: [billingFlowGuard],
       },
       { path: 'profile', component: ProfilePageComponent },

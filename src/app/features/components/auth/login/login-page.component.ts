@@ -11,7 +11,6 @@ import { getApiErrorMessage } from '../../../../shared/utility/helper/response-e
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { TwoFAVerifyDialogComponent } from '../../../../shared/components/dialogs/twoFA-verify-dialog/twoFA-verify-dialog.component';
-import { environment } from '../../../../../environments/environment';
 import { GoogleAuthService } from '../../../../core/services/google-auth.service';
 import { BillingApiService } from '../../../../shared/services/billing-api-service';
 
@@ -102,6 +101,15 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
         } else {
           this.authStateService.setSession(res.token, res.refreshToken);
           this.loading$.next(false);
+          const returnUrL = sessionStorage.getItem('returnUrl');
+
+          if (returnUrL) {
+            sessionStorage.removeItem('returnUrl');
+            this.router.navigate([returnUrL]);
+
+            return;
+          }
+
           this.router.navigate(['/dashboard']);
         }
       },

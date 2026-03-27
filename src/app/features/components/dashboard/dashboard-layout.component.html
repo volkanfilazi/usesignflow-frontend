@@ -24,33 +24,9 @@
           <span>Dashboard</span>
         </div>
       </div>
-
       <div class="sidenav-section">
         <span class="sidenav-section-title">Workspace</span>
-
         <mat-nav-list class="sidenav-nav">
-          <a
-            mat-list-item
-            class="sidenav-link"
-            routerLink="/dashboard/form-generator"
-            (click)="isMobile ? (isMobile = !isMobile) : null"
-            routerLinkActive="selected"
-          >
-            <div class="d-flex align-items-center gap-1">
-              <mat-icon>edit_note</mat-icon>
-              <div class="d-flex flex-column w-100">
-                <span>New Flow</span>
-                @if (this.overview() != null) {
-                  <app-usage-progress
-                    [used]="this.overview()?.usage?.activeFlowsUsed ?? 0"
-                    [limit]="this.overview()?.entitlements?.maxActiveFlows ?? 0"
-                    [showText]="true"
-                  ></app-usage-progress>
-                }
-              </div>
-            </div>
-          </a>
-
           <a
             mat-list-item
             class="sidenav-link"
@@ -72,7 +48,6 @@
               </div>
             </div>
           </a>
-
           <a
             mat-list-item
             class="sidenav-link"
@@ -94,7 +69,6 @@
               </div>
             </div>
           </a>
-
            <a
             mat-list-item
             class="sidenav-link"

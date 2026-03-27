@@ -6,7 +6,7 @@ import { AgreementApiService } from '../../../services/agreement-api.service';
 import { ToolsService } from '../../../services/tools.service';
 import { ValidationService } from '../../../services/validation.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../../dialogs/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, DialogResults } from '../../dialogs/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-agreement-list',
@@ -103,8 +103,8 @@ export class AgreementListComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
+    dialogRef.afterClosed().subscribe((confirmed: DialogResults) => {
+      if (confirmed === DialogResults.save) {
         this.loading$.next(true);
 
         if (item.id) {

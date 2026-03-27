@@ -45,9 +45,13 @@ export class AuthStateService {
     return !!this.getRefreshToken();
   }
 
+  getIsVerified() {
+    return this.getPayload()?.emailVerified === 'True' ? true : false;
+  }
+
   getFullName(): string | null {
     const payload = this.getPayload();
-    
+
     return payload?.name ?? null;
   }
 

@@ -16,7 +16,6 @@ export class GoogleCallbackComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       if (params['error']) {
-        console.error(params['error']);
         this.router.navigate(['/login']);
         return;
       }
@@ -24,9 +23,16 @@ export class GoogleCallbackComponent implements OnInit {
       const token = params['token'];
       const refreshToken = params['refreshToken'];
 
+      let returnUrl = params['returnUrl'] || sessionStorage.getItem('returnUrl') || '/dashboard';
+
+      if (!returnUrl.startsWith('/')) {
+        returnUrl = '/dashboard';
+      }
+
       if (token && refreshToken) {
         this.authState.setSession(token, refreshToken);
-        this.router.navigate(['/dashboard']);
+        sessionStorage.removeItem('returnUrl');
+        this.router.navigateByUrl(returnUrl);
       } else {
         this.router.navigate(['/login']);
       }

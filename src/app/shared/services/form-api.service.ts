@@ -86,6 +86,7 @@ export class FormsApiService {
     submissionId: string,
     request: UpdateSubmissionByAccessTokenRequest,
   ): Observable<void> {
+    console.log('31', submissionId, request)
     return this.http.put<void>(`${this.baseUrl}/submissions/access/${submissionId}`, request);
   }
 

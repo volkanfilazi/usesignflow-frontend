@@ -161,6 +161,7 @@ export enum SubmissionStatus {
   Completed = 'Completed',
   Cancelled = 'Cancelled',
   Expired = 'Expired',
+  Drafted = 'Drafted',
 }
 
 export interface AgreementTemplate {
@@ -173,27 +174,22 @@ export interface AgreementTemplate {
   updatedAtUtc?: string | null;
 }
 
-export function isSubmissionEditable(row: FormSubmission) {
-  switch (row.status) {
-    case SubmissionStatus.Pending:
-      return true;
-
-    case SubmissionStatus.Completed:
-    case SubmissionStatus.Cancelled:
-    case SubmissionStatus.Expired:
-    default:
-      return false;
+export function statusCheck(submission: FormSubmission, isExternal: boolean): boolean {
+  if (isExternal) {
+    return submission.status === 'Pending';
   }
+
+  return submission.status === 'Drafted';
 }
 
 export function getSubmissionStatusColors(row: FormSubmission) {
   switch (row.status) {
+    case SubmissionStatus.Drafted:
+      return 'status-blue';
     case SubmissionStatus.Pending:
       return 'status-yellow';
-
     case SubmissionStatus.Completed:
       return 'status-green';
-
     case SubmissionStatus.Cancelled:
     case SubmissionStatus.Expired:
     default:

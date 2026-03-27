@@ -1,9 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FormsApiService } from '../../../shared/services/form-api.service';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  finalize,
+  map,
+  Observable,
+  of,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { ValidationService } from '../../../shared/services/validation.service';
@@ -26,6 +35,7 @@ import { AgreementListComponent } from '../../../shared/components/agreement/agr
 import { FormPreviewDialogComponent } from '../../../shared/components/dialogs/form-preview-dialog/form-preview-dialog.component';
 import { BillingApiService } from '../../../shared/services/billing-api-service';
 import { EditMode } from '../../../shared/models/auth.model';
+import { SnapshotTrackedComponent } from '../../../shared/class/snapshot-tracked';
 
 type BuilderItem =
   | { type: 'Field'; id: string }
@@ -37,14 +47,29 @@ type BuilderItem =
   styleUrls: ['./form-generator.component.scss'],
   standalone: false,
 })
-export class FormGeneratorComponent implements OnDestroy, OnInit {
+export class FormGeneratorComponent
+  extends SnapshotTrackedComponent<{
+    form: unknown;
+    builderItems: unknown[];
+  }>
+  implements OnDestroy, OnInit
+{
+  protected override buildSnapshot(): { form: unknown; builderItems: unknown[] } {
+    return {
+      form: this.myGroup.getRawValue(),
+      builderItems: this.builderItems,
+    };
+  }
+
+  protected override getForm(): AbstractControl | null {
+    return this.myGroup;
+  }
+
+  saveBeforeLeave(): Observable<boolean> {
+    return this.persistBeforeLeave(this.editMode);
+  }
+
   private readonly destroy$ = new Subject<void>();
-  private initialFormValue:
-    | {
-        form: Record<string, any>;
-        builderItems: BuilderItem[];
-      }
-    | undefined;
 
   editMode = EditMode.CREATE;
   formById: FormDefinition | undefined;
@@ -78,7 +103,9 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
     private readonly matDialog: MatDialog,
     private readonly billingApi: BillingApiService,
     private readonly route: ActivatedRoute,
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit() {
     this.buildForm();
@@ -91,7 +118,7 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
 
       if (!formId) {
         this.myGroup.enable({ emitEvent: false });
-        this.captureInitialFormValue();
+        this.captureInitialState();
 
         return;
       }
@@ -123,17 +150,13 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
             agreementContentHtml: normalizedAgreementContentHtml,
           });
 
-          if (this.myGroup) {
-            console.log('1', this.myGroup.value);
-          }
-
           if (this.editMode === EditMode.VIEW) {
             this.myGroup.disable({ emitEvent: false });
           } else {
             this.myGroup.enable({ emitEvent: false });
           }
 
-          this.captureInitialFormValue();
+          this.captureInitialState();
         },
         error: (err) => {
           console.error(err);
@@ -156,7 +179,9 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
     this.collapsedMap = {};
 
     Object.keys(this.myGroup.controls).forEach((key) => {
-      const isBaseControl = ['formName', 'expanded', 'version', 'agreementContentHtml'].includes(key);
+      const isBaseControl = ['formName', 'expanded', 'version', 'agreementContentHtml'].includes(
+        key,
+      );
       if (!isBaseControl) {
         this.myGroup.removeControl(key);
       }
@@ -180,15 +205,14 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
       if (editMode === EditMode.CREATE) {
         this.pageActionService.addAction({
           id: 'save-ui',
-          iconName: 'add',
-          iconTooltip: 'create',
+          text: 'Save',
           owner: this.pageOwner,
           handler: () => this.create(),
         });
       } else {
         this.pageActionService.addAction({
           id: 'save-ui',
-          text: 'Update',
+          text: 'Save',
           owner: this.pageOwner,
           handler: () => this.update(),
         });
@@ -374,60 +398,22 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
   }
 
   update() {
-    const valid = this.isValid();
+    this.persistBeforeLeave(EditMode.EDIT).subscribe((success) => {
+      if (!success) {
+        return;
+      }
 
-    if (!valid || !this.formById?.id) {
-      return;
-    }
-
-    this.loading$.next(true);
-
-    const formDefinition = this.buildFormPayload();
-
-    this.formApiService.updateForm(this.formById.id, formDefinition).subscribe({
-      next: () => {
-        setTimeout(() => {
-          this.billingApi.loadOverview();
-          this.loading$.next(false);
-          this.toolsService.showSnackbar('Form updated successfully.', 'success-snackbar');
-          this.router.navigate(['/dashboard/forms']);
-        });
-      },
-      error: () => {
-        setTimeout(() => {
-          this.loading$.next(false);
-          this.toolsService.showSnackbar('Form could not be updated.', 'error-snackbar');
-        });
-      },
+      this.router.navigate(['/dashboard/forms']);
     });
   }
 
   create() {
-    const valid = this.isValid();
+    this.persistBeforeLeave(EditMode.CREATE).subscribe((success) => {
+      if (!success) {
+        return;
+      }
 
-    if (!valid) {
-      return;
-    }
-
-    this.loading$.next(true);
-
-    const formDefinition = this.buildFormPayload();
-
-    this.formApiService.createForm(formDefinition).subscribe({
-      next: () => {
-        setTimeout(() => {
-          this.billingApi.loadOverview();
-          this.loading$.next(false);
-          this.toolsService.showSnackbar('Form created successfully.', 'success-snackbar');
-          this.router.navigate(['/dashboard/forms']);
-        });
-      },
-      error: () => {
-        setTimeout(() => {
-          this.loading$.next(false);
-          this.toolsService.showSnackbar('Form could not be created.', 'error-snackbar');
-        });
-      },
+      this.router.navigate(['/dashboard/forms']);
     });
   }
 
@@ -470,8 +456,6 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
         return null;
       })
       .filter((field): field is FieldDefinition => field !== null);
-
-      console.log('updated', this.myGroup.get('agreementContentHtml')?.value)
 
     return {
       formName: this.myGroup.get('formName')?.value,
@@ -631,6 +615,52 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
     }
   }
 
+  private persistBeforeLeave(mode: EditMode): Observable<boolean> {
+    const valid = this.isValid();
+
+    if (!valid) {
+      return of(false);
+    }
+
+    const formDefinition = this.buildFormPayload();
+
+    let request$: Observable<unknown>;
+    let successMessage: string;
+    let errorMessage: string;
+
+    if (mode === EditMode.CREATE) {
+      request$ = this.formApiService.createForm(formDefinition);
+      successMessage = 'Form created successfully.';
+      errorMessage = 'Form could not be created.';
+    } else {
+      if (!this.formById?.id) {
+        return of(false);
+      }
+
+      request$ = this.formApiService.updateForm(this.formById.id, formDefinition);
+      successMessage = 'Form updated successfully.';
+      errorMessage = 'Form could not be updated.';
+    }
+
+    this.loading$.next(true);
+
+    return request$.pipe(
+      map(() => {
+        this.captureInitialState();
+        this.billingApi.loadOverview();
+        this.toolsService.showSnackbar(successMessage, 'success-snackbar');
+        return true;
+      }),
+      catchError(() => {
+        this.toolsService.showSnackbar(errorMessage, 'error-snackbar');
+        return of(false);
+      }),
+      finalize(() => {
+        this.loading$.next(false);
+      }),
+    );
+  }
+
   private isValid() {
     this.validationErrors = [];
 
@@ -645,31 +675,13 @@ export class FormGeneratorComponent implements OnDestroy, OnInit {
       return false;
     }
 
-    if (!this.hasFormChanged()) {
+    if (!this.hasPendingChanges()) {
       this.toolsService.showSnackbar('No changes', 'error-snackbar');
 
       return false;
     }
 
     return true;
-  }
-
-  private hasFormChanged(): boolean {
-    const currentState = {
-      form: this.myGroup.getRawValue(),
-      builderItems: this.builderItems,
-    };
-
-    return JSON.stringify(currentState) !== JSON.stringify(this.initialFormValue);
-  }
-
-  private captureInitialFormValue(): void {
-    this.initialFormValue = {
-      form: this.myGroup.getRawValue(),
-      builderItems: structuredClone(this.builderItems),
-    };
-
-    this.myGroup.markAsPristine();
   }
 
   ngOnDestroy(): void {

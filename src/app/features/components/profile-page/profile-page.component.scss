@@ -12,7 +12,6 @@
 
 .profile-hero-card,
 .content-card,
-.stat-card,
 .danger-card {
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(34, 197, 94, 0.12);
@@ -69,12 +68,17 @@
 }
 
 .profile-badge.verified {
-  background: #dcfce7;
+  background: var(--light-green);
   color: var(--600);
 }
 
+.profile-badge.not-verified {
+  background: var(--light-red);
+  color: var(--dark-red);
+}
+
 .profile-badge.soft {
-  background: #f0fdf4;
+  background: var(--light-green);
   color: #15803d;
 }
 
@@ -137,39 +141,6 @@
   color: white;
   background: linear-gradient(135deg, #dc2626, #ef4444);
   box-shadow: var(--shadow-green-md);
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  border-radius: 22px;
-  padding: 20px;
-}
-
-.stat-label {
-  display: block;
-  font-size: 13px;
-  color: var(--100);
-  margin-bottom: 12px;
-}
-
-.stat-value {
-  display: block;
-  font-size: 28px;
-  line-height: 1.1;
-  color: var(--600);
-  margin-bottom: 10px;
-}
-
-.stat-meta {
-  font-size: 13px;
-  color: var(--500);
-  font-weight: 600;
 }
 
 .profile-grid {
@@ -322,7 +293,6 @@
 }
 
 @media (max-width: 1100px) {
-  .stats-grid,
   .profile-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -345,7 +315,6 @@
     align-items: flex-start;
   }
 
-  .stats-grid,
   .profile-grid,
   .info-grid {
     grid-template-columns: 1fr;

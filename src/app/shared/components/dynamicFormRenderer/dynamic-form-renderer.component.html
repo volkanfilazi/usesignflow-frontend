@@ -20,10 +20,11 @@
               [ngClass]="{
                 pending: getFormTitle().status === 'Pending',
                 completed: getFormTitle().status === 'Completed',
-                signed: getFormTitle().status === 'Signed',
+                signed: getFormTitle().status === 'Signed'
               }"
-              >{{ getFormTitle().status }}</span
             >
+              {{ getFormTitle().status }}
+            </span>
           }
         </h4>
         <p class="form-subtitle">
@@ -32,9 +33,10 @@
       </div>
 
       @if (!(loading$ | async) && !buildingForm && myGroup) {
-        @if (this.form?.agreementContentHtml && agreementContentSafeHtml) {
+        @if (form?.agreementContentHtml && agreementContentSafeHtml) {
           <div [innerHTML]="agreementContentSafeHtml"></div>
         }
+
         <div class="dynamic-form-grid mt-2">
           @for (item of getFields(); track item.fieldId) {
             <div
@@ -120,6 +122,7 @@
                     <h3>{{ item.agreement?.title }}</h3>
                     <p>{{ item.agreement?.content }}</p>
                   </div>
+
                   <app-checkbox
                     class="full-width-field"
                     [formGroup]="myGroup"
@@ -137,7 +140,7 @@
                   [isRequired]="item.required"
                   [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
                   [label]="getFieldLabel(item)"
-                  [disabled]="isSignaturePadDisabled || isDisabled(item)"
+                  [disabled]="!canEditField(item)"
                   [controlName]="item.fieldId"
                 ></app-signature-pad>
               }
@@ -145,15 +148,16 @@
           }
         </div>
 
-        @if (!isSignaturePadDisabled && externalUserToken) {
+        @if (canShowExternalSaveButton()) {
           <div class="form-actions">
-            <button class="primary-action" (click)="update()">Save and continue</button>
+            <button class="primary-action" (click)="onUpdateClick()">Save and continue</button>
           </div>
         }
       }
     </div>
   </section>
 </div>
+
 @if (validationErrors) {
   <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>
 }

@@ -19,6 +19,7 @@ export const billingFlowGuard: CanActivateFn = (route, state) => {
     queryParams: {
       returnUrl: state.url,
       reason: 'flow',
+      planCode: overview.planCode
     },
   });
 };

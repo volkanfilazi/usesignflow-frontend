@@ -17,10 +17,15 @@ import { ToolsService } from '../../../shared/services/tools.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SendEmailDialogComponent } from '../../../shared/components/dialogs/send-email-dialog/send-email-dialog.component';
 import { AuthStateService } from '../../../core/services/auth-state.service';
-import { ConfirmDialogComponent } from '../../../shared/components/dialogs/confirm-dialog/confirm-dialog.component';
+import {
+  ConfirmDialogComponent,
+  DialogResults,
+} from '../../../shared/components/dialogs/confirm-dialog/confirm-dialog.component';
 import { BillingApiService } from '../../../shared/services/billing-api-service';
 import { BillingOverviewResponse } from '../../../shared/models/payment.model';
 import { LimitReachedDialogComponent } from '../../../shared/components/dialogs/limit-reached-dialog/limit-reached-dialog.component';
+import { DomSanitizer } from '@angular/platform-browser';
+import { PdfReaderDialogComponent } from '../../../shared/components/dialogs/pdf-reader/pdf-reader.component';
 
 @Component({
   selector: 'app-submissions',
@@ -44,6 +49,7 @@ export class SubmissionsComponent {
     private readonly matDialog: MatDialog,
     private readonly authStateService: AuthStateService,
     private readonly billingApiService: BillingApiService,
+    private readonly sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit() {
@@ -190,11 +196,20 @@ export class SubmissionsComponent {
         .subscribe({
           next: (blob) => {
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `submission-${row?.id}.pdf`;
-            a.click();
-            window.URL.revokeObjectURL(url);
+            const pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+            const isMobile = window.innerWidth <= 480;
+
+            if (isMobile) {
+              window.open(url, '_blank');
+            } else {
+              this.matDialog.open(PdfReaderDialogComponent, {
+                width: '500vh',
+                height: '90%',
+                data: {
+                  pdfUrl: pdfUrl,
+                },
+              });
+            }
           },
           error: () => {
             this.toolsService.showSnackbar('PDF could not be downloaded.', 'error-snackbar');
@@ -225,21 +240,24 @@ export class SubmissionsComponent {
       },
     });
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
+    dialogRef.afterClosed().subscribe((confirmed: DialogResults) => {
+      if (confirmed === DialogResults.save) {
+        this.loading$.next(true);
 
-      this.loading$.next(true);
-
-      this.formApiService.cancelSubmission(row.id!).subscribe({
-        next: () => {
-          this.loading$.next(false);
-          this.toolsService.showSnackbar('Submission cancelled successfully.', 'success-snackbar');
-          this.loadSubmissions();
-        },
-        error: (error: any) => {
-          this.loading$.next(false);
-        },
-      });
+        this.formApiService.cancelSubmission(row.id!).subscribe({
+          next: () => {
+            this.loading$.next(false);
+            this.toolsService.showSnackbar(
+              'Submission cancelled successfully.',
+              'success-snackbar',
+            );
+            this.loadSubmissions();
+          },
+          error: (error: any) => {
+            this.loading$.next(false);
+          },
+        });
+      }
     });
   }
 
@@ -275,6 +293,7 @@ export class SubmissionsComponent {
         data: {
           returnUrl: '',
           reason: '',
+          planCode: this.overview.planCode,
         },
       });
 
@@ -309,6 +328,7 @@ export class SubmissionsComponent {
           next: () => {
             this.loading$.next(false);
             this.billingApiService.loadOverview();
+            this.loadSubmissions();
             this.toolsService.showSnackbar('Access link sent successfully.', 'success-snackbar');
           },
           error: () => {

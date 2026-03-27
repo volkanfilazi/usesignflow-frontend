@@ -6,10 +6,12 @@ import {
   ChangePasswordRequest,
   DeleteAccountRequest,
   DisableTwoFactorRequest,
+  EnableNotificationsResponse,
   LoginDto,
   MeDto,
   RefreshTokenRequest,
   RegisterDto,
+  ResetPassword,
   TwoFAEnableRequest,
   TwoFASetupResponse,
   VerifyTwoFactorRequest,
@@ -33,6 +35,14 @@ export class AuthApiService {
 
   login(form: LoginDto): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, form);
+  }
+
+  forgotPassword(email: string): Observable<string> {
+    return this.http.post<string>(`${this.baseUrl}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(reset: ResetPassword): Observable<string> {
+    return this.http.post<string>(`${this.baseUrl}/auth/reset-password`, reset);
   }
 
   deleteMyAccount(request: DeleteAccountRequest) {
@@ -59,6 +69,10 @@ export class AuthApiService {
 
   twoFASetup(): Observable<TwoFASetupResponse> {
     return this.http.post<TwoFASetupResponse>(`${this.baseUrl}/auth/2fa/setup`, {});
+  }
+
+  enableNotifications(enable: EnableNotificationsResponse): Observable<string> {
+    return this.http.post<string>(`${this.baseUrl}/auth/notifications`, enable);
   }
 
   twoFAEnable(request: TwoFAEnableRequest): Observable<AuthResponse> {

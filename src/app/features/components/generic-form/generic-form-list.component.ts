@@ -5,10 +5,12 @@ import { Router } from '@angular/router';
 import { FormDefinition } from '../../../shared/models/form-generator.mode';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../../../shared/components/dialogs/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, DialogResults } from '../../../shared/components/dialogs/confirm-dialog/confirm-dialog.component';
 import { BehaviorSubject } from 'rxjs';
 import { BillingApiService } from '../../../shared/services/billing-api-service';
 import { EditMode } from '../../../shared/models/auth.model';
+import { LimitReachedDialogComponent } from '../../../shared/components/dialogs/limit-reached-dialog/limit-reached-dialog.component';
+import { PageActionService } from '../../../shared/services/page-action.service';
 
 @Component({
   selector: 'app-generic-form-list',
@@ -27,12 +29,14 @@ export class GenericFormListComponent implements OnInit {
     private readonly formApiService: FormsApiService,
     private readonly toolsService: ToolsService,
     private readonly matDialog: MatDialog,
-    private router: Router,
+    private readonly router: Router,
     private readonly billingApiService: BillingApiService,
+    private readonly pageActionService: PageActionService,
   ) {}
 
   ngOnInit() {
     this.loading$.next(true);
+    this.configurePageAction();
     this.loadForms();
   }
 
@@ -48,6 +52,31 @@ export class GenericFormListComponent implements OnInit {
     });
   }
 
+  makeCopy(formDef: FormDefinition) {
+    if (!this.limitCheck()) {
+      return;
+    }
+
+    this.loading$.next(true);
+
+    this.formApiService.createForm(formDef).subscribe({
+      next: (response) => {
+        setTimeout(() => {
+          this.billingApiService.loadOverview();
+          this.loading$.next(false);
+          this.toolsService.showSnackbar('Form created successfully.', 'success-snackbar');
+          this.router.navigate(['/dashboard/forms', response.id, EditMode.EDIT]);
+        });
+      },
+      error: () => {
+        setTimeout(() => {
+          this.loading$.next(false);
+          this.toolsService.showSnackbar('Form could not be created.', 'error-snackbar');
+        });
+      },
+    });
+  }
+
   onPreviewClick(formDef: FormDefinition) {
     this.router.navigate(['/dashboard/form-generator/', formDef.id, EditMode.VIEW]);
   }
@@ -57,11 +86,34 @@ export class GenericFormListComponent implements OnInit {
   }
 
   goToCreateForm() {
-    this.router.navigate(['/dashboard/form-generator']);
+    this.router.navigate(['/dashboard/form-generator', EditMode.CREATE]);
   }
 
   createSubmission(formDef: FormDefinition) {
-    this.router.navigate(['/dashboard/forms', formDef.id]);
+    const overview = this.billingApiService.getOverviewResponse();
+    if (
+      overview &&
+      overview.usage.submissionsUsedThisMonth >= overview.entitlements.maxSubmissionsPerMonth
+    ) {
+      const dialogRef = this.matDialog.open(LimitReachedDialogComponent, {
+        data: {
+          returnUrl: '',
+          reason: '',
+          planCode: overview.planCode
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result === 'billing') {
+          this.router.navigate(['/dashboard/billing']);
+        } else {
+          dialogRef.close();
+        }
+      });
+      return;
+    }
+
+    this.router.navigate(['/dashboard/forms', formDef.id, EditMode.CREATE]);
   }
 
   deleteFormitem(id: string) {
@@ -77,8 +129,8 @@ export class GenericFormListComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (confirmed) {
+    dialogRef.afterClosed().subscribe((confirmed: DialogResults) => {
+      if (confirmed === DialogResults.save) {
         this.loading$.next(true);
         this.formApiService.deleteForm(id).subscribe({
           next: () => {
@@ -97,5 +149,52 @@ export class GenericFormListComponent implements OnInit {
         });
       }
     });
+  }
+
+  private configurePageAction() {
+    this.pageActionService.addAction({
+      id: 'save-ui',
+      text: 'Create',
+      owner: 'generic-form-list',
+      handler: () => this.createForm(),
+    });
+  }
+
+  private createForm() {
+    if (!this.limitCheck()) {
+      return;
+    }
+
+    this.router.navigate(['dashboard/form-generator', EditMode.CREATE]);
+  }
+
+  private limitCheck() {
+    const overview = this.billingApiService.getOverviewResponse();
+
+    if (overview && overview.usage.activeFlowsUsed >= overview.entitlements.maxActiveFlows) {
+      const dialogRef = this.matDialog.open(LimitReachedDialogComponent, {
+        data: {
+          returnUrl: '',
+          reason: '',
+          planCode: overview.planCode
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result === 'billing') {
+          this.router.navigate(['/dashboard/billing']);
+        } else {
+          dialogRef.close();
+        }
+      });
+
+      return false;
+    }
+
+    return true;
+  }
+
+  ngOnDestroy() {
+    this.pageActionService.clearActionsByOwner('generic-form-list');
   }
 }
