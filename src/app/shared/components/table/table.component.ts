@@ -62,7 +62,6 @@ export class TableComponent<T> {
   }
 
   onNavigationClick() {
-    console.log(this.tableEmptyStateMessage);
     if (this.tableEmptyStateMessage?.navigationUrl) {
       this.router.navigate([this.tableEmptyStateMessage.navigationUrl]);
     }

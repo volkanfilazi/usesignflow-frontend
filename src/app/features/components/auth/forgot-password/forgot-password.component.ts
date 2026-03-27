@@ -40,7 +40,6 @@ export class ForgotPasswordComponent {
     if (email) {
       this.authApiService.forgotPassword(email).subscribe({
         next: (response) => {
-          console.log(response);
           this.loading$.next(false);
         },
         error: () => {

@@ -13,7 +13,6 @@ export class IconButtonComponent {
   @Output() buttonClick = new EventEmitter<void>();
 
   handleClick(event: MouseEvent): void {
-    console.log('isDis', this.disabled);
     event.stopPropagation();
 
     if (this.disabled) return;

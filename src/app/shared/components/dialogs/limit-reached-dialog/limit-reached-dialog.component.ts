@@ -16,7 +16,6 @@ export class LimitReachedDialogComponent {
   ) {}
 
   ngOnInit() {
-    console.log(this.data.planCode)
     this.planCode = this.data.planCode ?? '';
   }
 
