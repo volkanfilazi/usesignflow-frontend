@@ -1,9 +1,11 @@
 @if (formGroup && controlName) {
   <div [formGroup]="formGroup" class="form-group w-100">
     <label [for]="controlName"
-      >{{ label + (isRequired ? '*' : '' )}}
+      >{{ label + (isRequired ? '*' : '') }}
       @if (badgeName) {
-        <span class="field-badge client">{{ badgeName }}</span>
+        <span class="field-badge" [ngClass]="assignee">
+          {{ badgeName }}
+        </span>
       }
     </label>
     <input

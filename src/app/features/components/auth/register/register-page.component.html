@@ -20,40 +20,36 @@
       <form class="auth-form" [formGroup]="formGroup">
         <app-text-input
           [isRequired]="true"
-          [label]="'Full name'"
+          [label]="'Fullname'"
           [formGroup]="formGroup"
           [controlName]="'fullName'"
-          [label]="'fullName'"
           type="Text"
           placeholder="John Doe"
         >
         </app-text-input>
         <app-text-input
           [isRequired]="true"
-          [label]="'email'"
+          [label]="'Email'"
           [formGroup]="formGroup"
           [controlName]="'email'"
-          [label]="'email'"
           type="Email"
           placeholder="name@email.com"
         >
         </app-text-input>
         <app-text-input
           [isRequired]="true"
-          [label]="'password'"
+          [label]="'Password'"
           [formGroup]="formGroup"
           [controlName]="'password'"
-          [label]="'password'"
           type="Password"
           placeholder="••••••••"
         >
         </app-text-input>
         <app-text-input
           [isRequired]="true"
-          [label]="'passwordConfirm'"
+          [label]="'Password Confirm'"
           [formGroup]="formGroup"
           [controlName]="'passwordConfirm'"
-          [label]="'passwordConfirm'"
           type="Password"
           placeholder="••••••••"
         >

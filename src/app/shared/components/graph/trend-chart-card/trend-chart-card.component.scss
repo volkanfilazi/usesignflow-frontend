@@ -1,0 +1,67 @@
+.trend-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.legend-dot.series-0 {
+  background: #6dd58c;
+}
+
+.legend-dot.series-1 {
+  background: #7c5cff;
+}
+
+.chart-placeholder {
+  min-height: 280px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8fbf9 0%, #ffffff 100%);
+  border: 1px dashed #d6e6db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trend-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+}
+
+.trend-header {
+  margin-bottom: 16px;
+
+  h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 14px;
+  }
+}
+
+.chart-container {
+  height: 280px;
+}

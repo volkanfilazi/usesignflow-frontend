@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { ValidationService } from '../../../../shared/services/validation.service';
 import { AuthApiService } from '../../../../core/services/auth-api.service';
@@ -13,8 +13,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { TwoFAVerifyDialogComponent } from '../../../../shared/components/dialogs/twoFA-verify-dialog/twoFA-verify-dialog.component';
 import { GoogleAuthService } from '../../../../core/services/google-auth.service';
 import { BillingApiService } from '../../../../shared/services/billing-api-service';
-
-declare const google: any;
 
 @Component({
   selector: 'app-login-page',
@@ -43,8 +41,8 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.formGroup = new FormGroup({
-      email: new FormControl(),
-      password: new FormControl(),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required]),
     });
   }
 

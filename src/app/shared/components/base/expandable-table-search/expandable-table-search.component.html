@@ -1,0 +1,17 @@
+<div class="table-search-input-wrap w-100">
+  <mat-icon>search</mat-icon>
+
+  <input class="w-100" #searchInput type="text" [formControl]="searchControl" [placeholder]="placeholder" />
+
+  @if (searchControl.value) {
+    <button
+      type="button"
+      class="clear-btn"
+      mat-icon-button
+      matTooltip="Clear search"
+      (click)="clearOnly()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+</div>

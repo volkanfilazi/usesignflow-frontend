@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, takeUntil } from 'rxjs';
 
 import {
@@ -14,10 +14,17 @@ import {
   ResolveSubmissionAccessRequest,
   ResolveSubmissionAccessResponse,
   UpdateSubmissionByAccessTokenRequest,
+  PagedResult,
+  ResolveVerifyTokenResponse,
 } from '../models/form-generator.mode';
 
 import { environment } from '../../../environments/environment';
 import { ToolsService } from './tools.service';
+import {
+  SubmissionSummaryResponse,
+  SubmissionTrendPointResponse,
+  SubmissionTrendResponse,
+} from '../models/submission-settings.model';
 
 @Injectable({ providedIn: 'root' })
 export class FormsApiService {
@@ -57,18 +64,114 @@ export class FormsApiService {
     return this.http.post<FormSubmission>(`${this.baseUrl}/submissions`, request);
   }
 
-  getSubmissions(): Observable<FormSubmission[]> {
-    return this.http.get<FormSubmission[]>(`${this.baseUrl}/submissions/mine`);
+  getSubmissions(
+    search?: string,
+    page: number = 1,
+    pageSize: number = 20,
+    sortField?: string,
+    sortDir?: 'asc' | 'desc',
+  ): Observable<PagedResult<FormSubmission>> {
+    let params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
+
+    if (search?.trim()) {
+      params = params.set('search', search.trim());
+    }
+
+    if (sortField) {
+      params = params.set('sortField', sortField);
+    }
+
+    if (sortDir) {
+      params = params.set('sortDir', sortDir);
+    }
+
+    return this.http.get<PagedResult<FormSubmission>>(`${this.baseUrl}/submissions/mine`, {
+      params,
+    });
   }
 
-  getSubmissionById(id: string, accessToken?: string): Observable<FormSubmission> {
+  getSubmissionById(
+    id: string,
+    accessToken?: string,
+    verifyToken?: string,
+  ): Observable<FormSubmission> {
     let url = `${this.baseUrl}/submissions/${id}`;
+    const params: string[] = [];
 
     if (accessToken) {
-      url += `?accessToken=${encodeURIComponent(accessToken)}`;
+      params.push(`accessToken=${encodeURIComponent(accessToken)}`);
+    }
+
+    if (verifyToken) {
+      params.push(`verifyToken=${encodeURIComponent(verifyToken)}`);
+    }
+
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
     }
 
     return this.http.get<FormSubmission>(url);
+  }
+
+  getSubmissionsSummary(
+    start: string | null,
+    end: string | null,
+  ): Observable<SubmissionSummaryResponse<FormSubmission>> {
+    let params = new HttpParams();
+
+    console.log('start', start);
+
+    if (start) {
+      params = params.set('start', start);
+    }
+
+    if (end) {
+      params = params.set('end', end);
+    }
+
+    console.log('keys', params.keys());
+    console.log('params string', params.toString());
+
+    return this.http.get<SubmissionSummaryResponse<FormSubmission>>(
+      `${this.baseUrl}/submissions/mine/summary`,
+      {
+        params,
+      },
+    );
+  }
+
+  getSubmissionsTrend(
+    start: string | null,
+    end: string | null,
+  ): Observable<SubmissionTrendResponse> {
+    let params = new HttpParams();
+
+    if (start) {
+      params = params.set('start', start);
+    }
+
+    if (end) {
+      params = params.set('end', end);
+    }
+
+    return this.http.get<SubmissionTrendResponse>(`${this.baseUrl}/submissions/mine/trend`, {
+      params,
+    });
+  }
+
+  resolveverificationPdfAccess(verifyToken: string): Observable<ResolveVerifyTokenResponse> {
+    return this.http.get<ResolveVerifyTokenResponse>(
+      `${this.baseUrl}/submissions/verification-pdf-access?verifyToken=${encodeURIComponent(verifyToken)}`,
+    );
+  }
+
+  resolveSubmissionAccess(
+    request: ResolveSubmissionAccessRequest,
+  ): Observable<ResolveSubmissionAccessResponse> {
+    return this.http.post<ResolveSubmissionAccessResponse>(
+      `${this.baseUrl}/submissions/access/resolve`,
+      request,
+    );
   }
 
   updateSubmission(id: string, request: UpdateFormSubmissionRequest): Observable<void> {
@@ -123,6 +226,7 @@ export class FormsApiService {
 
     return this.http.post<{ fileName: string; url: string }>(requestUrl, formData);
   }
+
   downloadSubmissionPdf(submissionId: string): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/submissions/${submissionId}/pdf`, {
       responseType: 'blob',
@@ -134,15 +238,6 @@ export class FormsApiService {
       params: { token },
       responseType: 'blob',
     });
-  }
-
-  resolveSubmissionAccess(
-    request: ResolveSubmissionAccessRequest,
-  ): Observable<ResolveSubmissionAccessResponse> {
-    return this.http.post<ResolveSubmissionAccessResponse>(
-      `${this.baseUrl}/submissions/access/resolve`,
-      request,
-    );
   }
 
   downloadPdf(submissionId: string, token: string, toolsService: ToolsService): void {

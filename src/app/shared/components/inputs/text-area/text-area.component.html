@@ -3,7 +3,9 @@
     <label [for]="controlName">
       {{ label + (isRequired ? '*' : '') }}
       @if (badgeName) {
-        <span class="field-badge client">{{ badgeName }}</span>
+        <span class="field-badge" [ngClass]="assignee">
+          {{ badgeName }}
+        </span>
       }
     </label>
 

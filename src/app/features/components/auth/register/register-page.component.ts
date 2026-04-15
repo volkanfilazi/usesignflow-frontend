@@ -7,7 +7,6 @@ import { BehaviorSubject } from 'rxjs';
 import { ToolsService } from '../../../../shared/services/tools.service';
 import { Router } from '@angular/router';
 import { Validators } from '@angular/forms';
-import { Constants } from '../../../../shared/models/constants';
 import { LegalComponent } from '../../../../shared/components/legal/legal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PrivacyComponent } from '../../../../shared/components/privacy/privacy.component';
@@ -35,7 +34,7 @@ export class RegisterPageComponent implements OnInit {
     this.formGroup = new FormGroup(
       {
         fullName: new FormControl(),
-        email: new FormControl(),
+        email: new FormControl('', [Validators.required, Validators.email]),
         password: new FormControl('', [
           Validators.required,
           ValidationService.passwordPatternValidator(),

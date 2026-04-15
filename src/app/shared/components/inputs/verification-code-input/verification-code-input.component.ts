@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Input,
   Output,
   QueryList,
   ViewChildren,
@@ -16,6 +17,7 @@ import {
 export class VerificationCodeInputComponent {
   @ViewChildren('codeInput') codeInputs!: QueryList<ElementRef<HTMLInputElement>>;
   @Output() codeCompleted = new EventEmitter<string>();
+  @Input() codeType = '2FA'
 
   codeArray = Array(6).fill(0);
   code: string[] = ['', '', '', '', '', ''];

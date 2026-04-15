@@ -1,0 +1,324 @@
+@if ((loading$ | async) || !brandingForm) {
+  <app-loading-overlay
+    [visible]="this.loading$.value"
+    [title]="'Loading data..'"
+    [message]="'Please wait while we securely lload the data.'"
+  >
+  </app-loading-overlay>
+} @else {
+  <form class="branding-page" [formGroup]="brandingForm">
+    <div class="branding-page__header">
+      <div>
+        <h1>PDF branding</h1>
+        <p>Customize how completed submissions appear when exported as PDF.</p>
+      </div>
+
+      <div class="plan-badge">
+        {{ currentPlanBadge }}
+      </div>
+    </div>
+
+    <div class="branding-page__grid">
+      <!-- LEFT -->
+      <section class="branding-card branding-form-card">
+        <div class="card-header">
+          <div>
+            <h2>Brand identity</h2>
+            <p>Update the branding details used in your PDF exports.</p>
+          </div>
+        </div>
+
+        <div class="branding-level-box">
+          <div class="branding-level-box__top">
+            <div>
+              <h3>{{ brandingLevelTitle }}</h3>
+              <p>{{ brandingLevelDescription }}</p>
+            </div>
+
+            <button type="button" class="secondary-btn" (click)="changePlan()">Manage plan</button>
+          </div>
+
+          <div class="feature-pills">
+            <span class="feature-pill" [class.feature-pill--disabled]="!canUploadLogo"> Logo </span>
+            <span class="feature-pill" [class.feature-pill--disabled]="!canEditCompanyInfo">
+              Company details
+            </span>
+            <span class="feature-pill" [class.feature-pill--disabled]="!canUseBrandColor">
+              Brand color
+            </span>
+            <span class="feature-pill" [class.feature-pill--disabled]="!canRemoveWatermark">
+              No watermark
+            </span>
+          </div>
+        </div>
+
+        <div class="branding-form-layout">
+          <!-- Logo panel -->
+          <div class="logo-panel">
+            <div class="logo-panel__preview">
+              <ng-container *ngIf="brandingForm.get('logoFileUrl')?.value; else fallbackLogo">
+                <img [src]="brandingForm.get('logoFileUrl')?.value" alt="Logo" />
+              </ng-container>
+
+              <ng-template #fallbackLogo>
+                <div
+                  class="logo-panel__placeholder"
+                  [style.background]="previewPlaceholderBackground"
+                >
+                  {{ previewLogoText }}
+                </div>
+              </ng-template>
+            </div>
+
+            <div class="logo-panel__meta">
+              <h4>Your logo</h4>
+              <p>{{ uploadHint }}</p>
+            </div>
+
+            <label class="upload-btn" [class.upload-btn--disabled]="!canUploadLogo">
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/svg+xml"
+                (change)="onLogoChange($event)"
+                [disabled]="!canUploadLogo"
+              />
+              Upload logo
+            </label>
+
+            <button
+              *ngIf="brandingForm.get('logoFileUrl')?.value && canUploadLogo"
+              type="button"
+              class="ghost-btn"
+              (click)="removeLogo()"
+            >
+              Remove logo
+            </button>
+          </div>
+
+          <!-- Form inputs -->
+          <div class="fields-panel">
+            <div class="input-grid">
+              <div class="form-field">
+                <label for="companyName">Company name</label>
+                <app-text-input
+                  id="companyName"
+                  [formGroup]="this.brandingForm"
+                  [disabled]="!this.canEditCompanyInfo"
+                  controlName="companyName"
+                  placeholder="Your company name"
+                ></app-text-input>
+                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+              </div>
+
+              <div class="form-field">
+                <label for="website">Website</label>
+                <app-text-input
+                  id="website"
+                  [formGroup]="this.brandingForm"
+                  [disabled]="!this.canEditCompanyInfo"
+                  controlName="website"
+                  placeholder="yourcompany.com"
+                ></app-text-input>
+                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+              </div>
+
+              <div class="form-field">
+                <label for="email">Contact email</label>
+                <app-text-input
+                  id="email"
+                  [formGroup]="this.brandingForm"
+                  [disabled]="!this.canEditCompanyInfo"
+                  controlName="email"
+                  type="Email"
+                  placeholder="hello@yourcompany.com"
+                ></app-text-input>
+                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+              </div>
+
+              <div class="form-field">
+                <label for="phone">Phone</label>
+                <app-text-input
+                  id="phone"
+                  [formGroup]="this.brandingForm"
+                  [disabled]="!this.canEditCompanyInfo"
+                  controlName="phone"
+                  placeholder="+00 000 000 00 00"
+                ></app-text-input>
+                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+              </div>
+
+              <div class="form-field form-field--full">
+                <label for="address">Address</label>
+                <app-text-input
+                  id="address"
+                  [formGroup]="this.brandingForm"
+                  [disabled]="!this.canEditCompanyInfo"
+                  controlName="address"
+                  placeholder="City, Country"
+                ></app-text-input>
+                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+              </div>
+
+              <div class="form-field form-field--full">
+                <label for="brandColor">Brand color</label>
+
+                <div class="color-field">
+                  <input
+                    id="brandColorPicker"
+                    class="color-picker"
+                    type="color"
+                    formControlName="brandColorHex"
+                    [disabled]="!canUseBrandColor"
+                  />
+
+                  <input
+                    id="brandColorHex"
+                    type="text"
+                    formControlName="brandColorHex"
+                    [disabled]="!canUseBrandColor"
+                    placeholder="#8FE3A8"
+                  />
+                </div>
+
+                <small *ngIf="!canUseBrandColor">Available on Business plan.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <section class="branding-card branding-preview-card">
+        <div class="card-header">
+          <div>
+            <h2>Live preview</h2>
+            <p>This preview updates instantly as you change your branding settings.</p>
+          </div>
+
+          <div class="preview-badge">
+            {{ brandingLevelTitle }}
+          </div>
+        </div>
+
+        <div class="preview-stage">
+          <div class="preview-sheet">
+            <div
+              class="preview-sheet__header"
+              [style.background-color]="previewHeaderBackground"
+              [style.border-color]="previewBorderColor"
+            >
+              <div class="preview-header__left">
+                <div class="preview-title-block">
+                  <h3>Freelancer Employee Register</h3>
+                  <div class="preview-meta-row">
+                    <span>Reference No: {{ sampleReferenceNo }}</span>
+                  </div>
+                  <div class="preview-meta-row">
+                    <span>Status: {{ sampleStatus }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="preview-header__right" *ngIf="showCompanyDetailsInPreview">
+                <div class="preview-logo" [style.background]="previewLogoBackground">
+                  <ng-container *ngIf="brandingForm.get('logoFileUrl')?.value; else textLogo">
+                    <img [src]="brandingForm.get('logoFileUrl')?.value" alt="Logo" />
+                  </ng-container>
+
+                  <ng-template #textLogo>
+                    <span>{{ previewLogoText }}</span>
+                  </ng-template>
+                </div>
+                <strong>{{ visibleCompanyName }}</strong>
+                <span>{{ visibleWebsite }}</span>
+                <span>{{ visibleEmail }}</span>
+                <span>{{ visiblePhone }}</span>
+              </div>
+
+              <div
+                class="preview-header__right"
+                *ngIf="!showCompanyDetailsInPreview && showLogoInPreview"
+              >
+                <strong>{{ visibleCompanyName }}</strong>
+                <span *ngIf="isPro">Custom logo enabled</span>
+                <span *ngIf="isPro && !isBusiness">Watermark removed</span>
+              </div>
+
+              <div
+                class="preview-header__right"
+                *ngIf="!showCompanyDetailsInPreview && !showLogoInPreview"
+              >
+                <strong>SignFlow</strong>
+                <span>Default branding</span>
+                <span>Watermark visible</span>
+              </div>
+            </div>
+
+            <div class="preview-sheet__content">
+              <div class="preview-section-title" [style.color]="previewAccentColor">
+                Agreement Content
+              </div>
+
+              <div class="preview-content-box" [style.border-color]="previewBorderColor">
+                <h4>{{ sampleAgreementTitle }}</h4>
+                <p *ngFor="let line of sampleAgreementLines">{{ line }}</p>
+              </div>
+
+              <div class="preview-section-title" [style.color]="previewAccentColor">
+                Form Details
+              </div>
+
+              <div class="preview-details">
+                <div class="preview-detail-row">
+                  <span>Fullname of owner</span>
+                  <strong>{{ previewOwnerName }}</strong>
+                </div>
+
+                <div class="preview-detail-row">
+                  <span>Fullname of client</span>
+                  <strong>John Doe</strong>
+                </div>
+
+                <div class="preview-detail-row">
+                  <span>Email</span>
+                  <strong>john.doe@example.com</strong>
+                </div>
+
+                <div class="preview-detail-row" *ngIf="showCompanyDetailsInPreview">
+                  <span>Address</span>
+                  <strong>{{ visibleAddress }}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="preview-watermark" *ngIf="showWatermarkInPreview">SignFlow</div>
+          </div>
+        </div>
+
+        <div class="upgrade-box" *ngIf="!isBusiness">
+          <div class="upgrade-box__content">
+            <h3 *ngIf="isFree">Unlock custom PDF branding</h3>
+            <h3 *ngIf="isPro">Unlock full company branding</h3>
+
+            <p *ngIf="isFree">
+              Upgrade to Pro or Business to remove watermark and add your own logo.
+            </p>
+
+            <p *ngIf="isPro">
+              Upgrade to Business to show company details and use your brand color in the PDF
+              header.
+            </p>
+          </div>
+
+          <button type="button" class="primary-btn" (click)="changePlan()">Upgrade plan</button>
+        </div>
+      </section>
+    </div>
+  </form>
+  @if (validationErrors) {
+    <app-validation
+      [validationMessages]="validationErrors"
+      [myGroup]="brandingForm"
+    ></app-validation>
+  }
+}

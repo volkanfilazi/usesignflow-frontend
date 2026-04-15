@@ -604,6 +604,110 @@ html {
   }
 }
 
+.process-section {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 90px 32px;
+}
+
+.process-layout {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+
+.process-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.process-step-card {
+  text-align: left;
+  padding: 18px 18px 18px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(146, 227, 169, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.process-step-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(109, 213, 140, 0.32);
+}
+
+.process-step-card.active {
+  background: linear-gradient(180deg, rgba(146, 227, 169, 0.14), rgba(146, 227, 169, 0.08));
+  border-color: rgba(109, 213, 140, 0.45);
+  box-shadow: 0 18px 34px rgba(109, 213, 140, 0.12);
+}
+
+.process-step-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.process-step-number {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: linear-gradient(135deg, #92e3a9, #6dd58c);
+  box-shadow: var(--shadow-green-md);
+}
+
+.process-step-card h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--400);
+}
+
+.process-step-card p {
+  margin: 0;
+  color: var(--100);
+  line-height: 1.65;
+  font-size: 0.96rem;
+  max-width: 34ch;
+}
+
+.process-preview {
+  min-width: 0;
+}
+
+.process-preview-card {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 18px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(146, 227, 169, 0.18);
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.10);
+}
+
+.process-preview-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+}
+
 @media (max-width: 1100px) {
   .hero-stats {
     grid-template-columns: 1fr;

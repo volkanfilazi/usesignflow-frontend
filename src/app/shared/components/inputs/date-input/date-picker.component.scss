@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+
+.shared-date-picker {
+  width: 100%;
+}
+
+.shared-date-picker ::ng-deep .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 16px;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.shared-date-picker ::ng-deep .mdc-notched-outline__leading,
+.shared-date-picker ::ng-deep .mdc-notched-outline__notch,
+.shared-date-picker ::ng-deep .mdc-notched-outline__trailing {
+  border-color: #e5e7eb !important;
+  transition: border-color 0.2s ease;
+}
+
+.shared-date-picker ::ng-deep .mdc-floating-label {
+  color: #6b7280 !important;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.shared-date-picker ::ng-deep .mat-mdc-input-element {
+  color: #111827;
+  font-size: 0.96rem;
+  caret-color: var(--500);
+  cursor: pointer;
+}
+
+.shared-date-picker ::ng-deep .mat-mdc-input-element::placeholder {
+  color: #9ca3af;
+}
+
+/* focus */
+.shared-date-picker ::ng-deep .mdc-text-field--focused .mdc-notched-outline__leading,
+.shared-date-picker ::ng-deep .mdc-text-field--focused .mdc-notched-outline__notch,
+.shared-date-picker ::ng-deep .mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: #6dd58c !important;
+  border-width: 2px !important;
+}
+
+.shared-date-picker ::ng-deep .mdc-text-field--focused .mdc-floating-label {
+  color: var(--600) !important;
+}
+
+.shared-date-picker ::ng-deep .mdc-text-field--focused .mat-mdc-text-field-wrapper {
+  box-shadow: var(--shadow-focus-success);
+}
+
+/* hover */
+.shared-date-picker ::ng-deep .mat-mdc-text-field-wrapper:hover .mdc-notched-outline__leading,
+.shared-date-picker ::ng-deep .mat-mdc-text-field-wrapper:hover .mdc-notched-outline__notch,
+.shared-date-picker ::ng-deep .mat-mdc-text-field-wrapper:hover .mdc-notched-outline__trailing {
+  border-color: #b7eac5 !important;
+}
+
+/* invalid */
+.shared-date-picker ::ng-deep .mdc-text-field--invalid .mdc-notched-outline__leading,
+.shared-date-picker ::ng-deep .mdc-text-field--invalid .mdc-notched-outline__notch,
+.shared-date-picker ::ng-deep .mdc-text-field--invalid .mdc-notched-outline__trailing {
+  border-color: #ef4444 !important;
+}
+
+.shared-date-picker ::ng-deep .mdc-text-field--invalid .mdc-floating-label {
+  color: #dc2626 !important;
+}
+
+.shared-date-picker
+  ::ng-deep
+  .mdc-text-field--invalid.mdc-text-field--focused
+  .mat-mdc-text-field-wrapper {
+  box-shadow: var(--shadow-focus-error);
+}
+
+/* calendar icon */
+.shared-date-picker ::ng-deep .mat-datepicker-toggle {
+  color: var(--500);
+}
+
+.shared-date-picker ::ng-deep .mat-datepicker-toggle:hover {
+  color: var(--600);
+}

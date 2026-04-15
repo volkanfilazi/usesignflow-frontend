@@ -5,12 +5,15 @@ import { Router } from '@angular/router';
 import { FormDefinition } from '../../../shared/models/form-generator.mode';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, DialogResults } from '../../../shared/components/dialogs/confirm-dialog/confirm-dialog.component';
+import {
+  ConfirmDialogComponent,
+  DialogResults,
+} from '../../../shared/components/dialogs/confirm-dialog/confirm-dialog.component';
 import { BehaviorSubject } from 'rxjs';
 import { BillingApiService } from '../../../shared/services/billing-api-service';
 import { EditMode } from '../../../shared/models/auth.model';
 import { LimitReachedDialogComponent } from '../../../shared/components/dialogs/limit-reached-dialog/limit-reached-dialog.component';
-import { PageActionService } from '../../../shared/services/page-action.service';
+import { PageActionService } from '../../../shared/services/header/page-action.service';
 
 @Component({
   selector: 'app-generic-form-list',
@@ -99,7 +102,7 @@ export class GenericFormListComponent implements OnInit {
         data: {
           returnUrl: '',
           reason: '',
-          planCode: overview.planCode
+          planCode: overview.planCode,
         },
       });
 
@@ -176,7 +179,7 @@ export class GenericFormListComponent implements OnInit {
         data: {
           returnUrl: '',
           reason: '',
-          planCode: overview.planCode
+          planCode: overview.planCode,
         },
       });
 

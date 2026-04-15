@@ -1,9 +1,12 @@
 import { Injectable, signal } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 export interface PageAction {
   id: string;
   text?: string;
   iconName?: string;
+  loading$?: BehaviorSubject<boolean>,
+  disabled?: boolean,
   iconTooltip?: string;
   handler: () => void;
   owner?: string;

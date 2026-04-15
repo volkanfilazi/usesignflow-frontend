@@ -16,18 +16,19 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { ValidationService } from '../../../shared/services/validation.service';
-import { PageActionService } from '../../../shared/services/page-action.service';
+import { PageActionService } from '../../../shared/services/header/page-action.service';
 import {
-  Agreements,
   AssignedTo,
   AssignedToEnum,
   AssignedToOptions,
+  BuilderItem,
+  ComboboxOption,
   FIELD_CONFIG,
   FieldDefinition,
   FieldType,
+  FieldTypes,
   FormDefinition,
   FormElementsEnum,
-  FormFieldType,
   options,
 } from '../../../shared/models/form-generator.mode';
 import { MatDialog } from '@angular/material/dialog';
@@ -36,10 +37,6 @@ import { FormPreviewDialogComponent } from '../../../shared/components/dialogs/f
 import { BillingApiService } from '../../../shared/services/billing-api-service';
 import { EditMode } from '../../../shared/models/auth.model';
 import { SnapshotTrackedComponent } from '../../../shared/class/snapshot-tracked';
-
-type BuilderItem =
-  | { type: 'Field'; id: string }
-  | { type: 'Agreement'; id: string; agreement: Agreements };
 
 @Component({
   selector: 'app-form-generator',
@@ -77,7 +74,11 @@ export class FormGeneratorComponent
   builderItems: BuilderItem[] = [];
   myGroup!: FormGroup;
   FormElementsEnum = FormElementsEnum;
-  fieldOptions: FormFieldType[] = [...options];
+  FieldTypes = FieldTypes;
+  fieldOptions: ComboboxOption[] = options.map((type) => ({
+    value: type,
+    label: FIELD_CONFIG[type].label,
+  }));
   assignedToOptions: AssignedTo[] = [...AssignedToOptions];
   validationErrors: ValidationIssue[] | undefined;
   requiredCheckboxLabel = 'Required';
@@ -85,13 +86,13 @@ export class FormGeneratorComponent
   collapsedMap: Record<string, boolean> = {};
 
   toolbarItems: { icon: string; name: string; type: FieldType }[] = [
-    { icon: 'short_text', name: 'ShortText', type: 'ShortText' },
-    { icon: 'notes', name: 'LongText', type: 'LongText' },
-    { icon: 'alternate_email', name: 'Email', type: 'Email' },
-    { icon: 'tag', name: 'Number', type: 'Number' },
-    { icon: 'arrow_drop_down_circle', name: 'Dropdown', type: 'Dropdown' },
-    { icon: 'check_box', name: 'Checkbox', type: 'Checkbox' },
-    { icon: 'draw', name: 'Signature', type: 'Signature' },
+    { icon: 'short_text', name: 'Short Text', type: FieldTypes.ShortText },
+    { icon: 'notes', name: 'Long Text', type: FieldTypes.LongText },
+    { icon: 'alternate_email', name: 'Email', type: FieldTypes.Email },
+    { icon: 'tag', name: 'Number', type: FieldTypes.Number },
+    { icon: 'arrow_drop_down_circle', name: 'Dropdown', type: FieldTypes.Dropdown },
+    { icon: 'check_box', name: 'Checkbox', type: FieldTypes.Checkbox },
+    { icon: 'draw', name: 'Signature', type: FieldTypes.Signature },
   ];
 
   constructor(
@@ -138,6 +139,8 @@ export class FormGeneratorComponent
           const normalizedFields = response?.fields ?? response?.Fields ?? [];
           const normalizedFormName = response?.formName ?? response?.FormName ?? '';
           const normalizedExpanded = response?.expanded ?? response?.Expanded ?? false;
+          const normalizedRequiresVerification =
+            response?.requiresVerification ?? response?.requiresVerification ?? false;
           const normalizedVersion = response?.version ?? response?.Version ?? '';
           const normalizedAgreementContentHtml = response?.agreementContentHtml;
 
@@ -146,6 +149,7 @@ export class FormGeneratorComponent
           this.myGroup.patchValue({
             formName: normalizedFormName,
             expanded: normalizedExpanded,
+            requiresVerification: normalizedRequiresVerification,
             version: normalizedVersion,
             agreementContentHtml: normalizedAgreementContentHtml,
           });
@@ -170,6 +174,7 @@ export class FormGeneratorComponent
       formName: new FormControl(''),
       expanded: new FormControl(false),
       version: new FormControl(''),
+      requiresVerification: new FormControl(false),
       agreementContentHtml: new FormControl(''),
     });
   }
@@ -179,9 +184,13 @@ export class FormGeneratorComponent
     this.collapsedMap = {};
 
     Object.keys(this.myGroup.controls).forEach((key) => {
-      const isBaseControl = ['formName', 'expanded', 'version', 'agreementContentHtml'].includes(
-        key,
-      );
+      const isBaseControl = [
+        'formName',
+        'expanded',
+        'version',
+        'requiresVerification',
+        'agreementContentHtml',
+      ].includes(key);
       if (!isBaseControl) {
         this.myGroup.removeControl(key);
       }
@@ -238,11 +247,11 @@ export class FormGeneratorComponent
         return;
       }
 
-      if (type === 'Agreement') {
+      if (type === FieldTypes.Agreement) {
         const agreement = field?.agreement ?? field?.Agreement;
 
         this.builderItems.push({
-          type: 'Agreement',
+          type: FieldTypes.Agreement,
           id,
           agreement,
         });
@@ -261,7 +270,7 @@ export class FormGeneratorComponent
       .map((item) => item.id);
   }
 
-  createNewControl(type: FieldType = 'ShortText') {
+  createNewControl(type: FieldType = FieldTypes.ShortText) {
     const uniqueId = uuidv4();
     this.addDynamicField(uniqueId, type, undefined, true);
   }
@@ -278,7 +287,7 @@ export class FormGeneratorComponent
       const randomID = uuidv4();
 
       this.builderItems.push({
-        type: 'Agreement',
+        type: FieldTypes.Agreement,
         id: randomID,
         agreement: confirmed,
       });
@@ -306,7 +315,7 @@ export class FormGeneratorComponent
 
   removeAgreement(id: string) {
     this.builderItems = this.builderItems.filter(
-      (item) => !(item.type === 'Agreement' && item.id === id),
+      (item) => !(item.type === FieldTypes.Agreement && item.id === id),
     );
 
     delete this.collapsedMap[id];
@@ -374,7 +383,7 @@ export class FormGeneratorComponent
   }
 
   comboboxChanged(id: string, value: string) {
-    if (value === 'Dropdown') {
+    if (value === FieldTypes.Dropdown) {
       if (!this.myGroup.get(FormElementsEnum.SelectOptions + id)) {
         this.addSelectOptionsConrol(id);
       }
@@ -437,15 +446,15 @@ export class FormGeneratorComponent
             assignedTo: assignedToValue ?? 'You',
             required: this.myGroup.get(FormElementsEnum.Required + id)?.value ?? false,
             colSpan: Number(this.myGroup.get(FormElementsEnum.ColSpan + id)?.value),
-            options: this.myGroup.get(FormElementsEnum.SelectOptions + id)?.value ?? null,
+            options: this.myGroup.get(FormElementsEnum.SelectOptions + id)?.value,
           } as FieldDefinition;
         }
 
-        if (item.type === 'Agreement') {
+        if (item.type === FieldTypes.Agreement) {
           return {
             fieldId: item.id,
             label: item.agreement.title,
-            type: 'Agreement',
+            type: FieldTypes.Agreement,
             required: true,
             assignedTo: 'Client' as AssignedTo,
             colSpan: 4,
@@ -460,6 +469,7 @@ export class FormGeneratorComponent
     return {
       formName: this.myGroup.get('formName')?.value,
       version: this.myGroup.get('version')?.value,
+      requiresVerification: this.myGroup.get('requiresVerification')?.value,
       agreementContentHtml: this.myGroup.get('agreementContentHtml')?.value,
       expanded: this.myGroup.get('expanded')?.value ?? false,
       fields,
@@ -601,10 +611,13 @@ export class FormGeneratorComponent
       }),
     );
 
-    if (type === 'Dropdown') {
+    if (type === FieldTypes.Dropdown) {
       this.myGroup.addControl(
         FormElementsEnum.SelectOptions + id,
-        new FormControl({ value: field?.options ?? field?.Options ?? [], disabled }),
+        new FormControl(
+          { value: field?.options ?? field?.Options ?? [], disabled },
+          Validators.required,
+        ),
       );
     }
 

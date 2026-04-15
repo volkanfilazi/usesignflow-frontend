@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
+import { plans } from '../../models/billing.model';
 
 @Component({
   selector: 'app-pricing-page',
   templateUrl: './pricing-page.component.html',
+  standalone: false,
   styleUrls: ['./pricing-page.component.scss'],
 })
 export class PricingPageComponent {
+  plans = plans;
+  
   billingCycle: 'monthly' | 'yearly' = 'monthly';
 
   get proPrice(): string {

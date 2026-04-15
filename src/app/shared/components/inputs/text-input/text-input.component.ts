@@ -14,6 +14,7 @@ export class TextInputComponent {
   @Input() disabled: boolean = false;
   @Input() label: string = '';
   @Input() badgeName: string = '';
+  @Input() assignee: 'you' | 'client' = 'you';
   @Input() placeholder: string = '';
   @Input() type: 'Email' | 'Number' | 'Text' | 'Password' = 'Text';
 

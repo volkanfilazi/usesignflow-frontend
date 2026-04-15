@@ -25,6 +25,7 @@ export class SignaturePadComponent implements AfterViewInit, OnChanges, OnDestro
   @Input() disabled = false;
   @Input() isRequired = false;
   @Input() label: string | undefined;
+  @Input() assignee: 'you' | 'client' = 'you';
   @Input() badgeName: string | undefined;
 
   @ViewChild('signatureCanvas', { static: true })

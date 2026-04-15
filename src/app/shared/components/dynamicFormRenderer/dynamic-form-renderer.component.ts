@@ -1,4 +1,11 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import {
@@ -15,7 +22,7 @@ import {
 } from 'rxjs';
 
 import { FormsApiService } from '../../../shared/services/form-api.service';
-import { PageActionService } from '../../../shared/services/page-action.service';
+import { PageActionService } from '../../services/header/page-action.service';
 import { ToolsService } from '../../../shared/services/tools.service';
 import { ValidationService } from '../../../shared/services/validation.service';
 import { AuthStateService } from '../../../core/services/auth-state.service';
@@ -23,7 +30,10 @@ import { AuthStateService } from '../../../core/services/auth-state.service';
 import {
   CreateFormSubmissionRequest,
   FieldDefinition,
+  FieldTypes,
+  FormAgreementAcceptance,
   FormDefinition,
+  FormSignature,
   FormSubmission,
   options,
   UpdateFormSubmissionRequest,
@@ -33,6 +43,21 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { PendingChangesAware } from '../../models/pending-changes-aware.model';
 import { EditMode } from '../../models/auth.model';
 import { canEditField } from '../../utility/form-permission/form-permission-helper';
+import { normalizeFormValue } from '../../utility/helper/form-helper';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  ConfirmDialogComponent,
+  DialogResults,
+} from '../dialogs/confirm-dialog/confirm-dialog.component';
+
+type AuditPanelData = {
+  actorLabel: string;
+  actorValue: string;
+  timeLabel: string;
+  timeValue: string;
+  ipAddress: string;
+  userAgent: string;
+};
 
 @Component({
   selector: 'app-dynamic-form-renderer',
@@ -43,6 +68,9 @@ import { canEditField } from '../../utility/form-permission/form-permission-help
 export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingChangesAware {
   @Input() previewForm: FormDefinition | undefined;
 
+  FieldTypes = FieldTypes;
+  submissionSignatures: FormSignature[] = [];
+  submissionAgreementAcceptances: FormAgreementAcceptance[] = [];
   editMode: EditMode = EditMode.CREATE;
   buildingForm = true;
   loading$ = new BehaviorSubject(false);
@@ -53,9 +81,20 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
   fieldLabelMap: Record<string, string> = {};
   currentUserId = '';
   externalUserToken = '';
+  externalUserVerifyToken = '';
   submissinTitle = '';
   pageOwner = 'dynamic-form-renderer';
   agreementContentSafeHtml: SafeHtml | null = null;
+
+  auditMode = false;
+  auditPanelVisible = false;
+  activeAuditFieldId: string | null = null;
+  auditPanelData: AuditPanelData | null = null;
+
+  auditPanelPosition = {
+    top: 0,
+    left: 0,
+  };
 
   private initialFormValue: any = null;
   private readonly destroy$ = new Subject<void>();
@@ -71,6 +110,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     private readonly authService: AuthStateService,
     private readonly billingApiService: BillingApiService,
     private readonly sanitizer: DomSanitizer,
+    private readonly matDialog: MatDialog,
   ) {}
 
   public hasPendingChanges(): boolean {
@@ -89,11 +129,33 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     return this.editMode === EditMode.CREATE ? this.create() : this.update();
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.auditMode || !this.auditPanelVisible) return;
+
+    const target = event.target as HTMLElement;
+    const clickedInsidePanel = target.closest('.audit-panel');
+    const clickedVerifyField = target.closest('.verifyable-field');
+    const clickedToggle = target.closest('.audit-toggle');
+
+    if (clickedInsidePanel || clickedVerifyField || clickedToggle) {
+      return;
+    }
+
+    this.closeAuditPanel();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (!this.auditMode) return;
+    this.closeAuditPanel();
+  }
+
   ngOnInit(): void {
     this.currentUserId = this.authService.getUserId() ?? '';
 
     if (this.previewForm) {
-      this.editMode = EditMode.VIEW;
+      this.editMode = EditMode.EDIT;
       this.configurePageAction();
       this.loadPreviewForm(this.previewForm);
       return;
@@ -103,8 +165,16 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
       const formId = params.get('formId');
       const submissionId = params.get('submissionId');
       this.externalUserToken = this.route.snapshot.queryParamMap.get('token') ?? '';
+      this.externalUserVerifyToken = this.route.snapshot.queryParamMap.get('verifyToken') ?? '';
 
       this.resetState();
+
+      if (this.externalUserVerifyToken && submissionId) {
+        this.editMode = EditMode.VIEW;
+        this.loadSubmission(submissionId, undefined, this.externalUserVerifyToken);
+
+        return;
+      }
 
       if (formId) {
         this.editMode = EditMode.CREATE;
@@ -116,9 +186,171 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
       if (submissionId) {
         this.editMode = EditMode.EDIT;
         this.configurePageAction();
-        this.loadSubmission(submissionId, this.externalUserToken || undefined);
+        this.loadSubmission(submissionId, this.externalUserToken || undefined, undefined);
       }
     });
+  }
+
+  get isThirdPartyVerification(): boolean {
+    return !!this.externalUserVerifyToken || !!this.externalUserToken;
+  }
+
+  get canUseAuditMode(): boolean {
+    return !this.isThirdPartyVerification;
+  }
+
+  toggleAuditMode(): void {
+    if (!this.canUseAuditMode) {
+      return;
+    }
+
+    this.auditMode = !this.auditMode;
+
+    if (!this.auditMode) {
+      this.closeAuditPanel();
+    }
+  }
+
+  onAuditFieldClick(item: any, element: HTMLElement, event: MouseEvent): void {
+    if (!this.canUseAuditMode || !this.auditMode || !this.isVerifyableField(item)) {
+      return;
+    }
+
+    event.stopPropagation();
+
+    if (this.auditPanelVisible && this.activeAuditFieldId === item.fieldId) {
+      this.closeAuditPanel();
+      return;
+    }
+
+    this.activeAuditFieldId = item.fieldId;
+    this.auditPanelVisible = true;
+    this.setAuditPanelPositionFromElement(element);
+    this.auditPanelData = this.getAuditDataForField(item);
+  }
+
+  getAuditDataForField(item: any): AuditPanelData {
+    if (item.type === FieldTypes.Signature) {
+      const signature = this.submissionSignatures.find((s) => s.fieldId === item.fieldId);
+
+      return {
+        actorLabel: 'Signed by',
+        actorValue: signature?.signedByEmail ?? '-',
+        timeLabel: 'Signed at',
+        timeValue: this.formatAuditDate(signature?.signedAtUtc),
+        ipAddress: signature?.signedFromIpAddress ?? '-',
+        userAgent: signature?.signedUserAgent ?? '-',
+      };
+    }
+
+    if (item.type === FieldTypes.Agreement) {
+      const acceptance = this.submissionAgreementAcceptances.find(
+        (a) => a.fieldId === item.fieldId,
+      );
+
+      return {
+        actorLabel: 'Accepted by',
+        actorValue: acceptance?.acceptedByEmail ?? '-',
+        timeLabel: 'Accepted at',
+        timeValue: this.formatAuditDate(acceptance?.acceptedAtUtc),
+        ipAddress: acceptance?.acceptedFromIpAddress ?? '-',
+        userAgent: acceptance?.acceptedUserAgent ?? '-',
+      };
+    }
+
+    return {
+      actorLabel: 'Actor',
+      actorValue: '-',
+      timeLabel: 'Timestamp',
+      timeValue: '-',
+      ipAddress: '-',
+      userAgent: '-',
+    };
+  }
+
+  formatAuditDate(value: string | null | undefined): string {
+    if (!value) return '-';
+
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return '-';
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  }
+
+  isVerifyableField(item: any): boolean {
+    return item.type === FieldTypes.Signature || item.type === FieldTypes.Agreement;
+  }
+
+  closeAuditPanel(): void {
+    this.auditPanelVisible = false;
+    this.activeAuditFieldId = null;
+    this.auditPanelData = null;
+  }
+
+  setAuditPanelPositionFromElement(element: HTMLElement): void {
+    const rect = element.getBoundingClientRect();
+
+    const panelWidth = 360;
+    const panelHeight = 240;
+    const gap = 14;
+    const padding = 16;
+
+    let left = rect.right + gap;
+    let top = rect.top;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    if (left + panelWidth + padding > viewportWidth) {
+      left = rect.left - panelWidth - gap;
+    }
+
+    if (left < padding) {
+      left = padding;
+    }
+
+    if (top + panelHeight + padding > viewportHeight) {
+      top = viewportHeight - panelHeight - padding;
+    }
+
+    if (top < padding) {
+      top = padding;
+    }
+
+    this.auditPanelPosition = { top, left };
+  }
+
+  setAuditPanelPosition(event: MouseEvent) {
+    const padding = 16;
+    const panelWidth = 360;
+    const panelHeight = 220; // approx (dynamic yaparsan daha iyi olur)
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let left = event.clientX + 20;
+    let top = event.clientY + 20;
+
+    // sağdan taşıyorsa sola al
+    if (left + panelWidth + padding > viewportWidth) {
+      left = event.clientX - panelWidth - 20;
+    }
+
+    // alttan taşıyorsa yukarı al
+    if (top + panelHeight + padding > viewportHeight) {
+      top = event.clientY - panelHeight - 20;
+    }
+
+    this.auditPanelPosition = {
+      top,
+      left,
+    };
   }
 
   private resetState(): void {
@@ -173,13 +405,15 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
       });
   }
 
-  private loadSubmission(submissionId: string, accessToken?: string): void {
+  private loadSubmission(submissionId: string, accessToken?: string, verifyToken?: string): void {
     this.formApiService
-      .getSubmissionById(submissionId, accessToken)
+      .getSubmissionById(submissionId, accessToken, verifyToken)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (submission) => {
           this.form = submission;
+          this.submissionSignatures = submission.signatures ?? [];
+          this.submissionAgreementAcceptances = submission.agreementAcceptances ?? [];
           this.buildFormControls(submission, this.getFields(), submission.answers);
           this.finishBuild();
         },
@@ -229,12 +463,12 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
 
       const rawValue = answers?.find((x) => x.fieldId === field.fieldId)?.value;
       const existingValue =
-        field.type === 'Checkbox' || field.type === 'Agreement'
+        field.type === FieldTypes.Checkbox || field.type === FieldTypes.Agreement
           ? rawValue === true || rawValue === 'true'
           : (rawValue ?? null);
 
       const validators =
-        field.type === 'Agreement'
+        field.type === FieldTypes.Agreement
           ? field.required && this.canEditField(field, submission)
             ? [Validators.requiredTrue]
             : []
@@ -316,16 +550,6 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     return submission.status === 'Drafted';
   }
 
-  private isFieldAssignedToActor(field: FieldDefinition): boolean {
-    const assignedTo = field.assignedTo ?? 'You';
-
-    if (this.isExternalUser()) {
-      return assignedTo === 'Client';
-    }
-
-    return assignedTo === 'You';
-  }
-
   canEditField(field: FieldDefinition, submission?: FormSubmission): boolean {
     const currentSubmission =
       submission ?? (this.isFormSubmission(this.form) ? this.form : undefined);
@@ -397,8 +621,8 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     );
   }
 
-  onUpdateClick(): void {
-    this.update().subscribe((success) => {
+  onUpdateClickByExternalUser(): void {
+    this.update(true).subscribe((success) => {
       if (success && this.externalUserToken && this.form?.id) {
         this.router.navigate(['submission-access', this.form.id, 'completed'], {
           state: { token: this.externalUserToken },
@@ -407,28 +631,31 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     });
   }
 
-  private update(): Observable<boolean> {
+  private update(isExternalUser: boolean = false): Observable<boolean> {
     this.validationErrors = [];
 
-    if (!this.form || !this.myGroup) {
+    const form = this.form;
+    const myGroup = this.myGroup;
+
+    if (!form || !myGroup) {
       return of(false);
     }
 
-    if (!this.isFormSubmission(this.form)) {
+    if (!this.isFormSubmission(form)) {
       return of(false);
     }
 
-    if (!this.isSubmissionEditableByActor(this.form)) {
+    if (!this.isSubmissionEditableByActor(form)) {
       this.toolsService.showSnackbar('This submission is no longer editable.', 'error-snackbar');
       return of(false);
     }
 
-    this.myGroup.updateValueAndValidity();
+    myGroup.updateValueAndValidity();
 
-    if (this.myGroup.invalid) {
-      this.myGroup.markAllAsTouched();
+    if (myGroup.invalid) {
+      myGroup.markAllAsTouched();
       this.validationErrors = this.validationService.collectValidationIssues(
-        this.myGroup,
+        myGroup,
         this.fieldLabelMap,
       );
       return of(false);
@@ -439,24 +666,28 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
       return of(false);
     }
 
-    this.loading$.next(true);
+    const confirmation$ = isExternalUser ? this.confirmExternalSubmissionDialog() : of(true);
 
-    const rawFormValue = this.myGroup.getRawValue() as Record<string, unknown>;
-    const fields = this.getFields();
-
-    const answers = fields.map((field) => ({
-      fieldId: field.fieldId,
-      value: this.normalizeAnswerValue(rawFormValue[field.fieldId] ?? null),
-    }));
-
-    return this.uploadAllChangedSignatures$(answers, this.form.rowVersion, undefined, false).pipe(
-      tap((success) => {
-        if (success) {
-          this.captureInitialFormValue();
+    return confirmation$.pipe(
+      switchMap((confirmed) => {
+        if (!confirmed) {
+          return of(false);
         }
-      }),
-      finalize(() => {
-        this.loading$.next(false);
+
+        this.loading$.next(true);
+
+        const answers = this.buildEditableAnswers();
+
+        return this.uploadAllChangedSignatures$(answers, form.rowVersion, undefined, false).pipe(
+          tap((success) => {
+            if (success) {
+              this.captureInitialFormValue();
+            }
+          }),
+          finalize(() => {
+            this.loading$.next(false);
+          }),
+        );
       }),
     );
   }
@@ -468,7 +699,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     isCreate = false,
   ): Observable<boolean> {
     const signatureFields = this.getFields().filter(
-      (field) => field.type === 'Signature' && this.canEditField(field),
+      (field) => field.type === FieldTypes.Signature && this.canEditField(field),
     );
 
     const signaturesToUpload = signatureFields
@@ -575,6 +806,17 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     );
   }
 
+  private buildEditableAnswers(): { fieldId: string; value: string | null }[] {
+    const rawFormValue = this.myGroup.getRawValue() as Record<string, unknown>;
+
+    return this.getFields()
+      .filter((field) => this.canEditField(field))
+      .map((field) => ({
+        fieldId: field.fieldId,
+        value: this.normalizeAnswerValue(rawFormValue[field.fieldId] ?? null),
+      }));
+  }
+
   private submitSubmission$(
     formId: string,
     answers: { fieldId: string; value: any }[],
@@ -646,27 +888,9 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     return !!form && 'createdByUserId' in form;
   }
 
-  private normalizeFormValue(value: any): any {
-    if (Array.isArray(value)) {
-      return value.map((item) => this.normalizeFormValue(item));
-    }
-
-    if (value && typeof value === 'object') {
-      return Object.fromEntries(
-        Object.entries(value).map(([key, val]) => [key, this.normalizeFormValue(val)]),
-      );
-    }
-
-    if (value === '') {
-      return null;
-    }
-
-    return value;
-  }
-
   private hasFormChanged(): boolean {
-    const currentValue = this.normalizeFormValue(this.myGroup.getRawValue());
-    const initialValue = this.normalizeFormValue(this.initialFormValue);
+    const currentValue = normalizeFormValue(this.myGroup.getRawValue());
+    const initialValue = normalizeFormValue(this.initialFormValue);
 
     return JSON.stringify(currentValue) !== JSON.stringify(initialValue);
   }
@@ -674,6 +898,30 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
   private captureInitialFormValue(): void {
     this.initialFormValue = this.myGroup.getRawValue();
     this.myGroup.markAsPristine();
+  }
+
+  private confirmExternalSubmissionDialog(): Observable<boolean> {
+    const dialogRef = this.matDialog.open(ConfirmDialogComponent, {
+      width: '460px',
+      panelClass: 'confirm-dialog-panel',
+      data: {
+        title: 'Confirm submission',
+        message: `
+        By completing this submission, you confirm that all provided information is correct and final.
+
+        Once submitted, you will not be able to make further changes.
+
+        For verification and security purposes, your IP address, device information, and timestamp will be recorded and may be visible to the form owner and organization.
+      `,
+        confirmText: 'Confirm and submit',
+        cancelText: 'Back',
+        variant: 'primary',
+      },
+    });
+
+    return dialogRef
+      .afterClosed()
+      .pipe(map((confirmed: DialogResults) => confirmed === DialogResults.save));
   }
 
   ngOnDestroy(): void {

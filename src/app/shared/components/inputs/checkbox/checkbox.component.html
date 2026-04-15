@@ -1,9 +1,11 @@
 @if (controlName && formGroup) {
   <div [formGroup]="formGroup">
     <mat-checkbox [required]="isRequired" [id]="controlName" [formControlName]="controlName"
-      >{{ label ? (label + (isRequired ? '*' : '' )) : (checkboxName + (isRequired ? '*' : '' )) }}
+      >{{ label ? label + (isRequired ? '*' : '') : checkboxName + (isRequired ? '*' : '') }}
       @if (badgeName) {
-        <span class="field-badge client">{{ badgeName }}</span>
+        <span class="field-badge" [ngClass]="assignee">
+          {{ badgeName }}
+        </span>
       }
     </mat-checkbox>
   </div>

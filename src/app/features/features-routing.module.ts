@@ -13,9 +13,7 @@ import { authGuard } from '../core/auth/auth.guard';
 import { DashboardLayoutComponent } from './components/dashboard/dashboard-layout.component';
 import { ProfilePageComponent } from './components/profile-page/profile-page.component';
 import { SettingsPageComponent } from './components/settings-page/settings-page.component';
-import { SubmissionsComponent } from './components/submissions/submissions.component';
 import { SubmissionAccessComponent } from './components/auth/submission-access/submission-access.componen';
-import { SubmissionCompletedComponent } from './components/submission-completed/submission-completed.component';
 import { PricingPageComponent } from './components/pricing-page/pricing-page.component';
 import { GoogleCallbackComponent } from './components/googleCallback/google-callback.component';
 import { BillingComponent } from './components/billing/billing.component';
@@ -28,6 +26,11 @@ import { PrivacyComponent } from '../shared/components/privacy/privacy.component
 import { ForgotPasswordComponent } from './components/auth/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/auth/reset-password/reset-password.component';
 import { pendingChangesGuard } from './guard/pending-changes-guard';
+import { BrandingPdfComponent } from './components/branding-pdf/branding-pdf.component';
+import { VerificationPdfAccessComponent } from './components/auth/verification-pdf-access/verification-pdf-access.component';
+import { SubmissionsComponent } from './components/submission/submissions/submissions.component';
+import { SubmissionCompletedComponent } from './components/submission/submission-completed/submission-completed.component';
+import { SubmissionSettingsComponent } from './components/submission/submission-settings/submission-settings.component';
 
 const routes: Routes = [
   {
@@ -78,10 +81,13 @@ const routes: Routes = [
   },
   { path: 'verify-email', component: VerifyEmailComponent },
   { path: 'verification-process', component: VerificationProcessComponent },
-
+  
   { path: 'submission-access', component: SubmissionAccessComponent },
   { path: 'submission-access/:submissionId/completed', component: SubmissionCompletedComponent },
   { path: 'submission-access/:submissionId/:mode', component: GenericFormDetailComponent },
+
+  { path: 'verification-pdf-access', component: VerificationPdfAccessComponent },
+  { path: 'verification-pdf-access/:submissionId/:mode', component: GenericFormDetailComponent },
 
   {
     path: 'dashboard',
@@ -92,6 +98,15 @@ const routes: Routes = [
       { path: '', redirectTo: 'forms', pathMatch: 'full' },
       { path: 'forms', component: GenericFormListComponent },
       { path: 'emails', component: EmailComponent },
+      {
+        path: 'submission-settings',
+        component: SubmissionSettingsComponent
+      },
+      {
+        path: 'branding-pdf',
+        component: BrandingPdfComponent,
+        canDeactivate: [pendingChangesGuard],
+      },
       { path: 'billing', component: BillingComponent },
       { path: 'submissions', component: SubmissionsComponent },
       {

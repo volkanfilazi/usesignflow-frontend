@@ -1,0 +1,12 @@
+<section class="trend-card" *ngIf="data">
+  <div class="trend-header">
+    <div>
+      <h3>{{ data.title }}</h3>
+      <p *ngIf="data.subtitle">{{ data.subtitle }}</p>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="'line'"> </canvas>
+  </div>
+</section>

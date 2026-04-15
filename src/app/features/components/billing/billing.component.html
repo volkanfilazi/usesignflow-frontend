@@ -104,7 +104,7 @@
           @if (isCurrentPlan(plan.code)) {
             <button mat-stroked-button disabled>Current plan</button>
           } @else if (isUpgrade(plan.code)) {
-            <button mat-flat-button disabled="true" class="select-plan-btn" (click)="selectPlan(plan.code)">
+            <button mat-flat-button class="select-plan-btn" (click)="selectPlan(plan.code)">
               Upgrade to {{ plan.title }}
             </button>
           } @else if (isDowngrade(plan.code)) {

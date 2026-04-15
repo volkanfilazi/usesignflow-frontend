@@ -1,0 +1,92 @@
+@if (!(this.loading$ | async) && form) {
+  <div class="settings-card" [formGroup]="form">
+    <!-- 🔵 EXPIRATION -->
+    <div class="settings-section">
+      <div class="d-flex align-items-center gap-1 flex-wrap">
+        <div class="d-flex align-items-center gap-1">
+          <h3 class="m-0">External link expiration</h3>
+          <div class="d-flex align-items-center">
+            <mat-icon
+              matTooltip="The link sent to the user will be deactivated after the time you specified expires."
+              >info</mat-icon
+            >
+          </div>
+        </div>
+        <span>(Reminders must be scheduled before the external link expires.)</span>
+      </div>
+
+      <mat-radio-group formControlName="expirationPreset" class="radio-group">
+        <mat-radio-button value="1">1 day</mat-radio-button>
+        <mat-radio-button value="3">3 days</mat-radio-button>
+        <mat-radio-button value="7">7 days</mat-radio-button>
+        <mat-radio-button value="14">14 days</mat-radio-button>
+        <mat-radio-button value="30">30 days</mat-radio-button>
+
+        <div class="custom-row">
+          <mat-radio-button value="custom" [disabled]="getExpirationDays() <= 1"
+            >Custom</mat-radio-button
+          >
+
+          <input
+            type="number"
+            formControlName="expirationCustom"
+            [disabled]="form.value.expirationPreset !== 'custom'"
+            min="1"
+          />
+          <span>days</span>
+        </div>
+      </mat-radio-group>
+    </div>
+
+    <div class="settings-section">
+      <div class="section-header">
+        <div class="d-flex align-items-center gap-1">
+          <h3 class="m-0">Reminders</h3>
+          <div class="d-flex align-items-center">
+            <mat-icon
+              matTooltip="When the specified number of days is reached, it sends a link reminder to the user."
+              >info</mat-icon
+            >
+          </div>
+        </div>
+
+        <mat-slide-toggle formControlName="reminderEnabledByDefault"></mat-slide-toggle>
+      </div>
+
+      @if (form.value.reminderEnabledByDefault) {
+        <div class="reminder-body">
+          <label class="sub-label">Reminder frequency</label>
+
+          <mat-radio-group formControlName="reminderPreset" class="radio-group">
+            <mat-radio-button value="1" [disabled]="isReminderPresetDisabled(1)"
+              >1 day</mat-radio-button
+            >
+            <mat-radio-button value="3" [disabled]="isReminderPresetDisabled(3)"
+              >3 days</mat-radio-button
+            >
+            <mat-radio-button value="7" [disabled]="isReminderPresetDisabled(7)"
+              >7 days</mat-radio-button
+            >
+
+            <div class="custom-row">
+              <mat-radio-button value="custom">Custom</mat-radio-button>
+              <input
+                type="number"
+                formControlName="reminderCustom"
+                [disabled]="form.value.reminderPreset !== 'custom'"
+                min="1"
+                [max]="getMaxAllowedReminderDays()"
+              />
+              <span>days</span>
+            </div>
+          </mat-radio-group>
+
+          <div class="max-row">
+            <label>Max reminders</label>
+            <input type="number" formControlName="maxReminderCount" min="1" />
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

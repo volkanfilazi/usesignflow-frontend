@@ -1,11 +1,17 @@
+@if (this.resending | async) {
+  <app-loading-overlay
+    [visible]="this.resending.value"
+    [title]="'Signup you in...'"
+    [message]="'Please wait while we securely log you into your account.'"
+  >
+  </app-loading-overlay>
+}
 <div class="verify-page">
   <div class="verify-card">
     <a routerLink="/" class="back-link">← Back to home</a>
 
     <div class="verify-icon-wrap">
-      <div class="verify-icon">
-        ✉
-      </div>
+      <div class="verify-icon">✉</div>
     </div>
 
     <div class="verify-content">
@@ -13,8 +19,8 @@
       <h1>Verify your email address</h1>
 
       <p class="verify-text">
-        We sent a verification link to your email address.
-        Please open your inbox and confirm your account before accessing the dashboard.
+        We sent a verification link to your email address. Please open your inbox and confirm your
+        account before accessing the dashboard.
       </p>
 
       @if (email) {
@@ -34,12 +40,8 @@
       </div>
 
       <div class="verify-actions">
-        <button class="btn btn-primary" (click)="resendEmail()" [disabled]="resending">
-          @if (!resending) {
-            <span>Resend email</span>
-          } @else {
-            <span>Sending...</span>
-          }
+        <button class="btn btn-primary" (click)="resendEmail()" [disabled]="this.resending | async">
+          Resend email
         </button>
 
         <a routerLink="/login" class="btn btn-ghost">Back to login</a>

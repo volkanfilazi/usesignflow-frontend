@@ -69,7 +69,7 @@
               </div>
             </div>
           </a>
-           <a
+          <a
             mat-list-item
             class="sidenav-link"
             routerLink="/dashboard/emails"
@@ -92,6 +92,35 @@
           </a>
 
           <span class="sidenav-section-title mt-3">Account</span>
+          <a
+            mat-list-item
+            class="sidenav-link"
+            routerLink="/dashboard/submission-settings"
+            (click)="isMobile ? (isMobile = !isMobile) : null"
+            routerLinkActive="selected"
+          >
+            <div class="d-flex align-items-center gap-1">
+              <mat-icon>settings</mat-icon>
+              <div class="d-flex flex-column w-100">
+                <span>Submission Settings</span>
+              </div>
+            </div>
+          </a>
+          <a
+            mat-list-item
+            class="sidenav-link"
+            routerLink="/dashboard/branding-pdf"
+            (click)="isMobile ? (isMobile = !isMobile) : null"
+            routerLinkActive="selected"
+          >
+            <div class="d-flex align-items-center gap-1">
+              <mat-icon>palette</mat-icon>
+              <div class="d-flex flex-column w-100">
+                <span>Branding & PDF</span>
+                <span>Customization</span>
+              </div>
+            </div>
+          </a>
           <a
             mat-list-item
             class="sidenav-link"

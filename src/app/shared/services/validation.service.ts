@@ -7,6 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Constants } from '../models/constants';
+import { FieldDefinition, FieldTypes } from '../models/form-generator.mode';
 
 @Injectable({ providedIn: 'root' })
 export class ValidationService {
@@ -54,35 +55,46 @@ export class ValidationService {
     };
   }
 
-  buildValidators(field: any, includeRequired = true): ValidatorFn[] {
+  buildValidators(field: FieldDefinition, includeRequired = true): ValidatorFn[] {
     const validators: ValidatorFn[] = [];
 
     if (field.required && includeRequired) {
       validators.push(Validators.required);
     }
 
-    if (field.type === 'email') {
-      validators.push(Validators.email);
-    }
+    switch (field.type) {
+      case FieldTypes.Email:
+        validators.push(Validators.email);
 
-    if (field.type === 'number') {
-      if (field.min !== null && field.min !== undefined) {
-        validators.push(Validators.min(field.min));
-      }
+        if (field.minLength != null) {
+          validators.push(Validators.minLength(field.minLength));
+        }
 
-      if (field.max !== null && field.max !== undefined) {
-        validators.push(Validators.max(field.max));
-      }
-    }
+        if (field.maxLength != null) {
+          validators.push(Validators.maxLength(field.maxLength));
+        }
+        break;
 
-    if (field.type === 'text' || field.type === 'email') {
-      if (field.minLength !== null && field.minLength !== undefined) {
-        validators.push(Validators.minLength(field.minLength));
-      }
+      case FieldTypes.Number:
+        if (field.min != null) {
+          validators.push(Validators.min(field.min));
+        }
 
-      if (field.maxLength !== null && field.maxLength !== undefined) {
-        validators.push(Validators.maxLength(field.maxLength));
-      }
+        if (field.max != null) {
+          validators.push(Validators.max(field.max));
+        }
+        break;
+
+      case FieldTypes.ShortText:
+      case FieldTypes.LongText:
+        if (field.minLength != null) {
+          validators.push(Validators.minLength(field.minLength));
+        }
+
+        if (field.maxLength != null) {
+          validators.push(Validators.maxLength(field.maxLength));
+        }
+        break;
     }
 
     if (field.pattern) {

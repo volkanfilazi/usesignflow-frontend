@@ -35,7 +35,6 @@ import { LoginPageComponent } from './components/auth/login/login-page.component
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthLoadingOverlayComponent } from '../shared/components/loading-overlay/loading-overlay.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { SubmissionsComponent } from './components/submissions/submissions.component';
 import { AsyncPipe } from '@angular/common';
 import { SettingsPageComponent } from './components/settings-page/settings-page.component';
 import { BillingComponent } from './components/billing/billing.component';
@@ -45,6 +44,12 @@ import { LandingFooterComponent } from "../shared/components/landing-footer/land
 import { RichTextEditorComponent } from '../shared/components/reach-text-editor/rich-text-editor.component';
 import { ForgotPasswordComponent } from './components/auth/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/auth/reset-password/reset-password.component';
+import { PricingPageComponent } from './components/pricing-page/pricing-page.component';
+import { VerifyEmailComponent } from './components/auth/verify-email/verify-email.component';
+import { BrandingPdfComponent } from './components/branding-pdf/branding-pdf.component';
+import { SubmissionsComponent } from './components/submission/submissions/submissions.component';
+import { SubmissionSettingsComponent } from './components/submission/submission-settings/submission-settings.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -60,7 +65,11 @@ import { ResetPasswordComponent } from './components/auth/reset-password/reset-p
     BillingComponent,
     EmailComponent,
     ForgotPasswordComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    PricingPageComponent,
+    VerifyEmailComponent,
+    BrandingPdfComponent,
+    SubmissionSettingsComponent
   ],
 
   imports: [
@@ -99,7 +108,8 @@ import { ResetPasswordComponent } from './components/auth/reset-password/reset-p
     AsyncPipe,
     MatTooltipModule,
     LandingFooterComponent,
-    RichTextEditorComponent
+    RichTextEditorComponent,
+    MatSlideToggleModule
 ],
 })
 export class FeaturesModule {}

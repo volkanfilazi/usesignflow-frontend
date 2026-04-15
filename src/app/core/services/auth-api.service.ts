@@ -9,11 +9,15 @@ import {
   EnableNotificationsResponse,
   LoginDto,
   MeDto,
+  OneTimeCodeResponse,
   RefreshTokenRequest,
   RegisterDto,
   ResetPassword,
+  SendOneTimeCodeRequest,
   TwoFAEnableRequest,
   TwoFASetupResponse,
+  VerifyOneTimeCodeRequest,
+  VerifyOneTimeCodeResponse,
   VerifyTwoFactorRequest,
 } from '../../shared/models/auth.model';
 import { environment } from '../../../environments/environment';
@@ -63,12 +67,27 @@ export class AuthApiService {
     return this.http.post<AuthResponse>(`${this.baseUrl}/auth/refresh`, request);
   }
 
+  resendVerification(email: string): Observable<string> {
+    return this.http.post<string>(`${this.baseUrl}/auth/resend-verification`, { email });
+  }
+
   changePassword(request: ChangePasswordRequest): Observable<string> {
     return this.http.put<string>(`${this.baseUrl}/auth/change/password`, request);
   }
 
   twoFASetup(): Observable<TwoFASetupResponse> {
     return this.http.post<TwoFASetupResponse>(`${this.baseUrl}/auth/2fa/setup`, {});
+  }
+
+  verifyOneTimeCode(request: VerifyOneTimeCodeRequest): Observable<VerifyOneTimeCodeResponse> {
+    return this.http.post<VerifyOneTimeCodeResponse>(`${this.baseUrl}/auth/one-time-code/verify`, request);
+  }
+
+  sendOneTimeCode(request: SendOneTimeCodeRequest): Observable<OneTimeCodeResponse> {
+    return this.http.post<OneTimeCodeResponse>(
+      `${this.baseUrl}/auth/one-time-code/send`,
+      request,
+    );
   }
 
   enableNotifications(enable: EnableNotificationsResponse): Observable<string> {

@@ -9,6 +9,7 @@ import { authInterceptor } from './core/auth/auth.interceptor';
 import routes from './app.routes';
 import { errorInterceptor } from './core/services/error-interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
+    provideCharts(withDefaultRegisterables()),
   ],
 };
