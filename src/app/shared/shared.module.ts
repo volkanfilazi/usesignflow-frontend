@@ -50,6 +50,17 @@ import { UsageProgressComponent } from './components/usage-progress/usage-progre
 import { LimitReachedDialogComponent } from './components/dialogs/limit-reached-dialog/limit-reached-dialog.component';
 import { TextAreaComponent } from './components/inputs/text-area/text-area.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ExpandableTableSearchComponent } from './components/base/expandable-table-search/expandable-table-search.componen';
+import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
+import { ɵɵCdkFixedSizeVirtualScroll } from "@angular/cdk/overlay";
+import { DatePickerComponent } from './components/inputs/date-input/date-picker.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { OneTimeCodeDialogComponent } from './components/dialogs/one-time-code-dialog/one-time-code-dialog.component';
+import { StatsOverviewCardsComponent } from './components/graph/stats-overview-cards/stats-overview-cards.component';
+import { TrendChartCardComponent } from './components/graph/trend-chart-card/trend-chart-card.component';
+import { AdvancedDateRangePickerComponent } from './components/advanced-date-range-picker/advanced-date-range-picker.component';
+import { MatNativeDateModule } from '@angular/material/core';
+import { BaseChartDirective } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -81,6 +92,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     UsageProgressComponent,
     LimitReachedDialogComponent,
     TextAreaComponent,
+    ExpandableTableSearchComponent,
+    DatePickerComponent,
+    OneTimeCodeDialogComponent,
+    StatsOverviewCardsComponent,
+    TrendChartCardComponent,
+    AdvancedDateRangePickerComponent
   ],
   imports: [
     CommonModule,
@@ -113,7 +130,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     AsyncPipe,
     QRCodeComponent,
     MatTooltipModule,
-  ],
+    CdkVirtualScrollViewport,
+    ɵɵCdkFixedSizeVirtualScroll,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    BaseChartDirective
+],
   exports: [
     TextInputComponent,
     PrimaryButtonComponent,
@@ -132,7 +154,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     DynamicFormRendererComponent,
     SegmentsComponent,
     UsageProgressComponent,
-    TextAreaComponent
+    TextAreaComponent,
+    ExpandableTableSearchComponent,
+    DatePickerComponent,
+    StatsOverviewCardsComponent,
+    TrendChartCardComponent,
+    AdvancedDateRangePickerComponent
   ],
 })
 export class SharedModule {}

@@ -8,7 +8,7 @@ import { CookieConsentService } from './shared/services/cookie-consent.service';
   standalone: true,
   templateUrl: './app.html',
   styleUrl: './app.scss',
-  imports: [RouterOutlet, CookieBannerComponent],
+  imports: [RouterOutlet, CookieBannerComponent,],
 })
 export class App implements OnInit {
   constructor(private cookieConsent: CookieConsentService) {}

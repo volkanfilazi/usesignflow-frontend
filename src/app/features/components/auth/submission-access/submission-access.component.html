@@ -1,3 +1,18 @@
-<div class="top-50 end-50 h-100 d-flex align-items-center justify-content-center">
-  <img width="250px" height="250px" src="security-on.svg" alt="Simple signing experience" />
-</div>
+@if (this.loading$ | async) {
+  <app-loading-overlay
+    [visible]="this.loading$.value"
+    [title]="'Submission loading...'"
+    [message]="'Please wait while we securely log you into submission page.'"
+  >
+  </app-loading-overlay>
+} @else {
+  <div class="top-50 end-50 h-100 d-flex align-items-center justify-content-center">
+    <div class="d-flex flex-column align-items-center">
+      <h6 class="bg-warning p-2">
+        This submission has already been completed. If you need a PDF copy please contact with
+        support!
+      </h6>
+      <img width="250px" height="250px" src="security-on.svg" alt="Simple signing experience" />
+    </div>
+  </div>
+}

@@ -1,0 +1,27 @@
+<div class="d-flex align-items-center gap-1" [formGroup]="form">
+  <mat-form-field appearance="outline" class="range-field">
+    <mat-label>Enter a date range</mat-label>
+    <mat-date-range-input [rangePicker]="picker">
+      <input
+        matStartDate
+        placeholder="Start date"
+        formControlName="start"
+        (dateChange)="onDateChange()"
+      />
+      <input
+        matEndDate
+        placeholder="End date"
+        formControlName="end"
+        (dateChange)="onDateChange()"
+      />
+    </mat-date-range-input>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
+  <app-icon-button
+    matTooltipPosition="above"
+    matTooltip="apply"
+    iconName="add"
+    (buttonClick)="applySelection()"
+  ></app-icon-button>
+</div>

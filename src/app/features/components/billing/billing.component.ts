@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteDialogComponent } from '../../../shared/components/dialogs/delete-dialog/delete-dialog.component';
 import { ToolsService } from '../../../shared/services/tools.service';
+import { plans } from '../../models/billing.model';
 
 type UsageCard = {
   key: 'forms' | 'submissions' | 'emails' | 'pdf';
@@ -28,48 +29,7 @@ export class BillingComponent implements OnInit {
   loading = false;
   checkoutLoading$ = new BehaviorSubject(false);
   errorMessage = '';
-
-  readonly plans = [
-    {
-      code: 'Free' as PlanCode,
-      badge: 'Current',
-      title: 'Free',
-      price: '€0',
-      suffix: '/month',
-      features: [
-        'Up to 2 active flows',
-        '10 submissions / month',
-        '25 email sends / month',
-        'No PDF export',
-      ],
-    },
-    {
-      code: 'Pro' as PlanCode,
-      badge: 'Most popular',
-      title: 'Pro',
-      price: '€19',
-      suffix: '/month',
-      features: [
-        '25 active flows',
-        '250 submissions / month',
-        '500 email sends / month',
-        'PDF export included',
-      ],
-    },
-    {
-      code: 'Business' as PlanCode,
-      badge: 'Scalable',
-      title: 'Business',
-      price: '€49',
-      suffix: '/month',
-      features: [
-        '100 active flows',
-        '2000 submissions / month',
-        '5000 email sends / month',
-        'PDF export included',
-      ],
-    },
-  ];
+  plans = plans;
 
   constructor(
     private readonly billingApi: BillingApiService,
@@ -79,6 +39,12 @@ export class BillingComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOverview();
+
+    window.addEventListener('pageshow', (event: any) => {
+    if (event.persisted) {
+      this.checkoutLoading$.next(false);
+    }
+  });
   }
 
   loadOverview(): void {
@@ -137,13 +103,15 @@ export class BillingComponent implements OnInit {
     this.errorMessage = '';
 
     this.billingApi.createCheckout(planCode).subscribe({
+      
       next: (response) => {
+        console.log(response.checkoutUrl);
         window.location.href = response.checkoutUrl;
       },
       error: () => {
         this.errorMessage = 'Failed to start checkout.';
         this.checkoutLoading$.next(false);
-      },
+      }
     });
   }
 

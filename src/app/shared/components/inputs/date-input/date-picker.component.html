@@ -1,0 +1,20 @@
+@if (formGroup && controlName) {
+  <mat-form-field class="shared-date-picker w-100" [formGroup]="formGroup" appearance="outline">
+    <mat-label>{{ label }}</mat-label>
+
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [formControlName]="controlName"
+      [id]="controlName"
+      [required]="isRequired"
+      [placeholder]="placeholder"
+      [min]="minDate"
+      [max]="maxDate"
+      readonly
+    />
+
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+}

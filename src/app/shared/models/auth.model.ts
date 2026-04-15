@@ -55,6 +55,25 @@ export interface TwoFASetupResponse {
   otpauthUrl: string;
 }
 
+export interface SendOneTimeCodeRequest {
+  verifyToken: string;
+}
+
+export interface OneTimeCodeResponse {
+  success: boolean;
+  expiresAtUtc: number;
+}
+
+export interface VerifyOneTimeCodeRequest {
+  verifyToken: string;
+  code: string;
+}
+
+export interface VerifyOneTimeCodeResponse {
+  success: boolean;
+  verifiedAtUtc: number;
+}
+
 export interface EnableNotificationsResponse {
   enabled: boolean;
 }

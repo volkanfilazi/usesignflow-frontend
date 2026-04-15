@@ -1,11 +1,14 @@
 @if (controlName && formGroup && formGroup.get(controlName)) {
   <mat-form-field class="w-100" [formGroup]="formGroup">
-    <mat-label
-      >{{ label + (isRequired ? '*' : '') }}
+    <mat-label>
+      {{ label + (isRequired ? '*' : '') }}
       @if (badgeName) {
-        <span class="field-badge client">{{ badgeName }}</span>
+        <span class="field-badge" [ngClass]="assignee">
+          {{ badgeName }}
+        </span>
       }
     </mat-label>
+
     <div class="d-flex flex-row align-items-center justify-content-end">
       <input
         matInput
@@ -16,10 +19,11 @@
       />
       <mat-icon>arrow_drop_down</mat-icon>
     </div>
-    <mat-autocomplete #auto="matAutocomplete">
-      @for (option of options; track $index) {
-        <mat-option [value]="option">
-          {{ option }}
+
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayOptionLabel">
+      @for (option of normalizedOptions; track option.value) {
+        <mat-option [value]="option.value">
+          {{ option.label }}
         </mat-option>
       }
     </mat-autocomplete>

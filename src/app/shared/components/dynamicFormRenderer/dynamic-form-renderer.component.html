@@ -20,7 +20,7 @@
               [ngClass]="{
                 pending: getFormTitle().status === 'Pending',
                 completed: getFormTitle().status === 'Completed',
-                signed: getFormTitle().status === 'Signed'
+                signed: getFormTitle().status === 'Signed',
               }"
             >
               {{ getFormTitle().status }}
@@ -32,6 +32,20 @@
         </p>
       </div>
 
+      @if (canUseAuditMode) {
+        <div class="hero-tools">
+          <button
+            type="button"
+            class="audit-toggle"
+            [class.active]="auditMode"
+            (click)="toggleAuditMode(); $event.stopPropagation()"
+          >
+            <span class="audit-toggle-dot"></span>
+            {{ auditMode ? 'Audit Mode On' : 'Audit Mode' }}
+          </button>
+        </div>
+      }
+
       @if (!(loading$ | async) && !buildingForm && myGroup) {
         @if (form?.agreementContentHtml && agreementContentSafeHtml) {
           <div [innerHTML]="agreementContentSafeHtml"></div>
@@ -41,71 +55,78 @@
           @for (item of getFields(); track item.fieldId) {
             <div
               class="field-wrapper"
-              [class.client-field]="isDisabled(item)"
-              [class.signature-field]="item.type === 'Signature'"
-              [class.agreement-field]="item.type === 'Agreement'"
+              [class.signature-field]="item.type === FieldTypes.Signature"
+              [class.agreement-field]="item.type === FieldTypes.Agreement"
+              [class.verifyable-field]="auditMode && isVerifyableField(item)"
+              [class.verifyable-active]="auditMode && activeAuditFieldId === item.fieldId"
               [style.grid-column]="'span ' + item.colSpan"
+              #fieldRef
+              (click)="onAuditFieldClick(item, fieldRef, $event)"
             >
-              @if (item.type === 'ShortText') {
+              @if (item.type === FieldTypes.ShortText) {
                 <app-text-input
                   class="full-width-field"
                   [isRequired]="item.required"
                   [formGroup]="myGroup"
-                  [type]="'Text'"
-                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [badgeName]="item.assignedTo === 'You' ? 'Owner' : 'Client'"
+                  [assignee]="item.assignedTo === 'You' ? 'you' : 'client'"
                   [label]="getFieldLabel(item)"
                   [controlName]="item.fieldId"
                 ></app-text-input>
               }
 
-              @if (item.type === 'LongText') {
+              @if (item.type === FieldTypes.LongText) {
                 <app-text-area
                   [isRequired]="item.required"
                   [formGroup]="myGroup"
                   [max]="1000"
-                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [badgeName]="item.assignedTo === 'You' ? 'Owner' : 'Client'"
+                  [assignee]="item.assignedTo === 'You' ? 'you' : 'client'"
                   [label]="getFieldLabel(item)"
                   [controlName]="item.fieldId"
                 ></app-text-area>
               }
 
-              @if (item.type === 'Number') {
+              @if (item.type === FieldTypes.Number) {
                 <app-text-input
                   class="full-width-field"
                   [isRequired]="item.required"
                   [formGroup]="myGroup"
                   [type]="item.type"
-                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [assignee]="item.assignedTo === 'You' ? 'you' : 'client'"
+                  [badgeName]="item.assignedTo === 'You' ? 'Owner' : 'Client'"
                   [label]="item.label"
                   [controlName]="item.fieldId"
                 ></app-text-input>
               }
 
-              @if (item.type === 'Email') {
+              @if (item.type === FieldTypes.Email) {
                 <app-text-input
                   class="full-width-field"
                   [isRequired]="item.required"
                   [formGroup]="myGroup"
                   [type]="item.type"
-                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [assignee]="item.assignedTo === 'You' ? 'you' : 'client'"
+                  [badgeName]="item.assignedTo === 'You' ? 'Owner' : 'Client'"
                   [label]="getFieldLabel(item)"
                   [controlName]="item.fieldId"
                 ></app-text-input>
               }
 
-              @if (item.type === 'Dropdown') {
+              @if (item.type === FieldTypes.Dropdown) {
                 <app-combobox
                   class="full-width-field"
                   [isRequired]="item.required"
                   [formGroup]="myGroup"
-                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [assignee]="item.assignedTo === 'You' ? 'you' : 'client'"
+                  [badgeName]="item.assignedTo === 'You' ? 'Owner' : 'Client'"
                   [label]="getFieldLabel(item)"
                   [controlName]="item.fieldId"
                   [options]="item.options ?? []"
                 ></app-combobox>
               }
 
-              @if (item.type === 'Checkbox') {
+              @if (item.type === FieldTypes.Checkbox) {
                 <app-checkbox
                   class="full-width-field"
                   [isRequired]="item.required"
@@ -116,7 +137,7 @@
                 ></app-checkbox>
               }
 
-              @if (item.type === 'Agreement') {
+              @if (item.type === FieldTypes.Agreement) {
                 <div class="agreement-block">
                   <div class="agreement">
                     <h3>{{ item.agreement?.title }}</h3>
@@ -126,7 +147,8 @@
                   <app-checkbox
                     class="full-width-field"
                     [formGroup]="myGroup"
-                    [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                    [assignee]="item.assignedTo === 'You' ? 'you' : 'client'"
+                    [badgeName]="item.assignedTo === 'You' ? 'Owner' : 'Client'"
                     [label]="getFieldLabel(item)"
                     [controlName]="item.fieldId"
                     [checkboxName]="'I accept this agreement'"
@@ -134,11 +156,15 @@
                 </div>
               }
 
-              @if (item.type === 'Signature') {
+              @if (item.type === FieldTypes.Signature) {
+                @if (auditMode) {
+                  <div class="verify-chip">Verified field</div>
+                }
                 <app-signature-pad
                   [formGroup]="myGroup"
                   [isRequired]="item.required"
-                  [badgeName]="item.assignedTo === 'You' ? 'You' : 'Client'"
+                  [assignee]="item.assignedTo === 'You' ? 'you' : 'client'"
+                  [badgeName]="item.assignedTo === 'You' ? 'Owner' : 'Client'"
                   [label]="getFieldLabel(item)"
                   [disabled]="!canEditField(item)"
                   [controlName]="item.fieldId"
@@ -150,7 +176,7 @@
 
         @if (canShowExternalSaveButton()) {
           <div class="form-actions">
-            <button class="primary-action" (click)="onUpdateClick()">Save and continue</button>
+            <button class="primary-action" (click)="onUpdateClickByExternalUser()">Save and continue</button>
           </div>
         }
       }
@@ -160,4 +186,45 @@
 
 @if (validationErrors) {
   <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>
+}
+
+@if (auditMode && auditPanelVisible && auditPanelData) {
+  <div
+    class="audit-panel"
+    [style.top.px]="auditPanelPosition.top"
+    [style.left.px]="auditPanelPosition.left"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="audit-panel-header">
+      <span class="audit-panel-kicker">Field audit</span>
+      <button type="button" class="audit-panel-close" (click)="closeAuditPanel()">×</button>
+    </div>
+
+    <div class="audit-panel-body">
+      <div class="audit-row">
+        <span>{{ auditPanelData.actorLabel }}</span>
+        <strong>{{ auditPanelData.actorValue }}</strong>
+      </div>
+
+      <div class="audit-row">
+        <span>{{ auditPanelData.timeLabel }}</span>
+        <strong>{{ auditPanelData.timeValue }}</strong>
+      </div>
+
+      <div class="audit-row">
+        <span>IP address</span>
+        <strong>{{ auditPanelData.ipAddress }}</strong>
+      </div>
+
+      <div class="audit-row">
+        <span>Device</span>
+        <strong class="device-text">{{ auditPanelData.userAgent }}</strong>
+      </div>
+
+      <div class="audit-status">
+        <span class="audit-status-dot"></span>
+        Included in final record
+      </div>
+    </div>
+  </div>
 }

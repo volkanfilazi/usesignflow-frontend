@@ -1,7 +1,24 @@
 <div
-  class="w-100 bg-white sticky-top p-2 h-auto border-1 border-bottom d-flex align-items-center justify-content-between align-items-center"
+  class="w-100 bg-white sticky-top p-2 h-auto border-1 border-bottom d-flex flex-column gap-1 flex-sm-row align-items-sm-center justify-content-sm-between"
 >
   <h4>{{ title }}</h4>
+
+  @if (headerSearchService.state().visible) {
+    <app-expandable-table-search
+      class="w-100"
+      [placeholder]="headerSearchService.state().placeholder"
+      [initialValue]="headerSearchService.state().value"
+      (searchChanged)="onSearchChanged($event)"
+    ></app-expandable-table-search>
+  }
+
+  @if (dateRangeService.state().visible) {
+    <app-date-range-dropdown
+      [label]="'11 Mar, 2026 — 10 Apr, 2026'"
+      (apply)="onDateRangeApply($event)"
+    ></app-date-range-dropdown>
+  }
+
   <div
     class="d-flex align-items-sm-center gap-2 flex-column flex-sm-row w-100 justify-content-start justify-content-sm-end"
   >
@@ -9,20 +26,28 @@
       @if (action.text) {
         <button
           matButton="outlined"
-          [disabled]="loading$ | async"
-          (click)="pageActionService.runAction(action.id)"
+          [disabled]="action.loading$ | async"
+          (click)="onActionClick(action.id)"
         >
-          {{ action.text }}
+          <span class="d-flex flex-row align-items-center gap-1">
+            @if (action.loading$ | async) {
+              <app-spinner [diameter]="20"></app-spinner>
+            }
+            {{ action.text }}
+          </span>
         </button>
       } @else {
         <app-icon-button
+          [disabled]="(action.loading$ | async) ?? false"
           matTooltipPosition="above"
           [matTooltip]="action.iconTooltip"
+          [disabled]="action.disabled ?? false"
           [iconName]="action.iconName ?? ''"
-          (buttonClick)="pageActionService.runAction(action.id)"
+          (buttonClick)="onActionClick(action.id)"
         ></app-icon-button>
       }
     }
+
     <app-user-menu></app-user-menu>
   </div>
 </div>

@@ -7,7 +7,6 @@ import {
   exhaustMap,
   finalize,
   Subject,
-  switchMap,
   takeUntil,
   tap,
 } from 'rxjs';

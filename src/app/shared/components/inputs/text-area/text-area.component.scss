@@ -9,6 +9,15 @@
     color: var(--400);
   }
 
+  textarea:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    -webkit-text-fill-color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
   textarea {
     width: 100%;
     border: 1px solid #e5e7eb;

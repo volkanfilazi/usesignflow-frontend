@@ -1,0 +1,93 @@
+.settings-card {
+  padding: 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(34, 197, 94, 0.12);
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-section {
+  margin-bottom: 24px;
+}
+
+.settings-section h3 {
+  margin: 0 0 14px;
+  font-size: 16px;
+  color: var(--400);
+  font-weight: 800;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* custom row */
+.custom-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  input {
+    width: 70px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 0 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--500);
+    box-shadow: var(--shadow-focus-success);
+  }
+
+  span {
+    color: var(--100);
+    font-size: 13px;
+  }
+}
+
+/* reminders header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* reminder body */
+.reminder-body {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #fbfefc;
+  border: 1px solid #e6f7ea;
+}
+
+.sub-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--100);
+}
+
+/* max reminders */
+.max-row {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  input {
+    width: 80px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 0 8px;
+    font-weight: 600;
+  }
+}

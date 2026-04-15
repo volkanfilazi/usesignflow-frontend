@@ -1,0 +1,23 @@
+<div>
+  @if (this.showChart) {
+    <app-stats-overview-cards [cards]="overviewCards"></app-stats-overview-cards>
+    @if (trendChartData) {
+      <app-trend-chart-card [data]="trendChartData"></app-trend-chart-card>
+    }
+  } @else {
+    <app-table
+      [loading$]="loading$"
+      [columns]="columns"
+      [dataSource]="pagination?.items ?? []"
+      [searchValue]="searchTerm"
+      [tableEmptyStateMessage]="tableEmptyStateMessage"
+      [pagination]="pagination"
+      [sortField]="sortField"
+      [sortDir]="sortDir"
+      (sortChange)="onSort($event)"
+      (pageChanged)="onPageChanged($event)"
+      (rowClick)="onRowClick($event)"
+      (buttonClick)="navigteToFormList()"
+    ></app-table>
+  }
+</div>

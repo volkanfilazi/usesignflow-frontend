@@ -26,7 +26,7 @@
 }
 
 .signature-disabled::after {
-  content: 'Waiting for external signer';
+  content: '';
   position: absolute;
   inset: 0;
   display: flex;

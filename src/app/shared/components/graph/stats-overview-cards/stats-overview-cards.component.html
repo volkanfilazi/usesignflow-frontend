@@ -1,0 +1,13 @@
+@if (cards.length) {
+  <div class="stats-grid">
+    @for (card of cards; track $index) {
+      <article class="stat-card" [ngClass]="card.accent ?? 'default'">
+        <div class="stat-value">{{ card.value }}</div>
+        <div class="stat-label">{{ card.label }}</div>
+        @if (card.hint) {
+          <div class="stat-hint">{{ card.hint }}</div>
+        }
+      </article>
+    }
+  </div>
+}

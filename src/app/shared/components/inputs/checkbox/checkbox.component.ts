@@ -12,6 +12,7 @@ export class CheckboxComponent {
   @Input() isRequired: boolean = false;
   @Input() label: string | undefined;
   @Input() badgeName: string | undefined;
+  @Input() assignee: 'you' | 'client' = 'you';
   @Input() controlName: string | undefined;
   @Input() checkboxName: string | undefined;
 }

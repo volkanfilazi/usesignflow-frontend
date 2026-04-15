@@ -1,0 +1,14 @@
+<div class="dialog-wrapper px-3 py-1">
+  <div class="dialog-header">
+    <app-icon-button class="delete-button" (buttonClick)="close()"></app-icon-button>
+  </div>
+  <mat-dialog-content class="h-100 dialog-body">
+    <app-verification-code-input
+    codeType="One-time"
+      (codeCompleted)="codeCompleted($event)"
+    ></app-verification-code-input>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="d-flex align-items-center gap-1 dialog-footer">
+    <button mat-stroked-button class="dialog-btn dialog-cancel" (click)="close()">Cancel</button>
+  </mat-dialog-actions>
+</div>

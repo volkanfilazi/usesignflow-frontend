@@ -14,6 +14,7 @@ export class TextAreaComponent {
   @Input() disabled: boolean = false;
   @Input() label: string = '';
   @Input() badgeName: string = '';
+  @Input() assignee: 'you' | 'client' = 'you';
   @Input() placeholder: string = '';
   @Input() min: number = 5;
   @Input() max: number = 120;

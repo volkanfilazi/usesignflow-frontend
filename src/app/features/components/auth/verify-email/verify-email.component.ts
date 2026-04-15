@@ -1,25 +1,32 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { AuthApiService } from '../../../../core/services/auth-api.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-verify-email',
-  standalone: true,
-  imports: [RouterLink],
+  standalone: false,
   templateUrl: './verify-email.component.html',
   styleUrl: './verify-email.component.scss',
 })
 export class VerifyEmailComponent {
   private route = inject(ActivatedRoute);
-  resending = false;
 
+  resending = new BehaviorSubject(false);
   email = this.route.snapshot.queryParamMap.get('email') ?? '';
 
-  resendEmail() {
-    this.resending = true;
+  constructor(private readonly authApiService: AuthApiService) {}
 
-    // API çağrısı burada
-    setTimeout(() => {
-      this.resending = false;
-    }, 1200);
+  resendEmail() {
+    this.resending.next(true);
+    this.authApiService.resendVerification(this.email).subscribe({
+      next: () => {
+        this.resending.next(false);
+      },
+      error: (err) => {
+        console.error('Error resending verification email:', err);
+        this.resending.next(false);
+      },
+    });
   }
 }

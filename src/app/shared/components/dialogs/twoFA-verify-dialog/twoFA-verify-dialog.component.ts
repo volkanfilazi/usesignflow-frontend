@@ -31,9 +31,7 @@ export class TwoFAVerifyDialogComponent {
         next: (res) => {
           this.dialogRef.close(res);
         },
-        error: () => {
-          
-        },
+        error: () => {},
       });
   }
 }

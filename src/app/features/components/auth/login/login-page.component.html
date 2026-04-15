@@ -1,12 +1,6 @@
-<app-loading-overlay
-  [visible]="this.loading$.value"
-  [title]="'Signing you in...'"
-  [message]="'Please wait while we securely log you into your account.'"
->
-</app-loading-overlay>
-
 <div class="auth-page">
   <div class="auth-card">
+    <a routerLink="/" class="back-link">← Back to home</a>
     <div class="auth-header">
       <div class="brand-badge">F</div>
       <h2>Welcome back</h2>
@@ -77,3 +71,6 @@
     </div>
   </div>
 </div>
+@if (validationErrors && validationErrors.length > 0) {
+  <app-validation [validationMessages]="validationErrors" [myGroup]="formGroup"></app-validation>
+}

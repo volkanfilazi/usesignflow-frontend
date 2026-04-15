@@ -13,6 +13,24 @@ export enum FormElementsEnum {
   ValidationMaxLength = 'validationMaxLength',
 }
 
+export const FieldTypes = {
+  ShortText: 'ShortText',
+  LongText: 'LongText',
+  Email: 'Email',
+  Number: 'Number',
+  Checkbox: 'Checkbox',
+  Dropdown: 'Dropdown',
+  Signature: 'Signature',
+  Agreement: 'Agreement',
+} as const;
+
+export const options: FieldType[] = Object.values(FieldTypes);
+export type FieldType = (typeof FieldTypes)[keyof typeof FieldTypes];
+
+export type BuilderItem =
+  | { type: 'Field'; id: string }
+  | { type: typeof FieldTypes.Agreement; id: string; agreement: Agreements };
+
 export const FIELD_CONFIG: Record<
   FieldType,
   {
@@ -21,37 +39,37 @@ export const FIELD_CONFIG: Record<
     required?: boolean;
   }
 > = {
-  ShortText: {
-    label: 'ShortText',
+  [FieldTypes.ShortText]: {
+    label: 'Short text',
     colSpan: '4',
   },
-  LongText: {
-    label: 'LongText',
+  [FieldTypes.LongText]: {
+    label: 'Long text',
     colSpan: '4',
   },
-  Email: {
+  [FieldTypes.Email]: {
     label: 'Email',
     colSpan: '2',
     required: true,
   },
-  Number: {
+  [FieldTypes.Number]: {
     label: 'Number',
     colSpan: '2',
   },
-  Checkbox: {
+  [FieldTypes.Checkbox]: {
     label: 'Checkbox',
     colSpan: '2',
   },
-  Dropdown: {
+  [FieldTypes.Dropdown]: {
     label: 'Dropdown',
     colSpan: '4',
   },
-  Signature: {
+  [FieldTypes.Signature]: {
     label: 'Signature',
     colSpan: '2',
     required: true,
   },
-  Agreement: {
+  [FieldTypes.Agreement]: {
     label: 'Agreement',
     colSpan: '4',
   },
@@ -68,18 +86,11 @@ export const assignedToMap: Record<AssignedTo, AssignedToEnum> = {
   You: AssignedToEnum.You,
   Client: AssignedToEnum.Client,
 };
-export const options = [
-  'ShortText',
-  'LongText',
-  'Email',
-  'Number',
-  'Checkbox',
-  'Dropdown',
-  'Signature',
-  'Agreement',
-] as const;
-export type FormFieldType = (typeof options)[number];
-export type FieldType = (typeof options)[number];
+
+export type ComboboxOption = {
+  label: string;
+  value: FieldType;
+};
 
 export interface Agreements {
   id?: string;
@@ -98,7 +109,7 @@ export interface FieldDefinition {
   maxLength?: number;
   assignedTo?: AssignedTo;
   pattern?: string;
-  options?: string[] | [];
+  options?: string[];
   agreement?: Agreements;
   colSpan: number;
 }
@@ -107,12 +118,20 @@ export interface FormDefinition {
   id?: string;
   ownerUserId: string;
   formName: string;
+  requiresVerification?: boolean;
   agreementContentHtml?: string;
   expanded: boolean;
   version: string;
   createdAtUtc: string;
   updatedAtUtc?: string | null;
   fields: FieldDefinition[];
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  pageIndex: number;
+  pageSize: number;
+  totalCount: number;
 }
 
 export interface FormSubmission {
@@ -122,13 +141,37 @@ export interface FormSubmission {
   agreementContentHtml?: string;
   formVersion: string;
   createdByUserId: string;
+  hasClientStep: boolean;
+  externalConfirmed: boolean;
+  ownerConfirmed: boolean;
   status: SubmissionStatus;
   createdAtUtc: string;
   updatedAtUtc: string;
   rowVersion: number;
   answers: FormAnswer[];
   signatures: FormSignature[];
+  agreementAcceptances: FormAgreementAcceptance[];
   fieldsSnapshot: FieldDefinition[];
+  externalRecipientEmail?: string;
+}
+
+export interface FormSignature {
+  fieldId: string;
+  signedByUserId?: string | null;
+  signedByEmail?: string | null;
+  signatureUrl?: string | null;
+  signedAtUtc?: string | null;
+  signedFromIpAddress?: string | null;
+  signedUserAgent?: string | null;
+}
+
+export interface FormAgreementAcceptance {
+  fieldId: string;
+  acceptedByUserId?: string | null;
+  acceptedByEmail?: string | null;
+  acceptedAtUtc?: string | null;
+  acceptedFromIpAddress?: string | null;
+  acceptedUserAgent?: string | null;
 }
 
 export interface CreateFormDefinitionRequest {
@@ -244,7 +287,13 @@ export interface ResolveSubmissionAccessResponse {
   submissionId: string;
   email: string;
   isAuthenticated: boolean;
+  requiresVerification: boolean;
   isEmailMatch: boolean;
+}
+
+export interface ResolveVerifyTokenResponse {
+  submissionId: string;
+  requiresVerification: boolean;
 }
 
 export interface SignatureRequest {

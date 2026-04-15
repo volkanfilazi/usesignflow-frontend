@@ -23,6 +23,25 @@
       box-shadow 0.2s ease;
   }
 
+  input:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    -webkit-text-fill-color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  input:disabled::placeholder {
+    color: #b6bdc7;
+  }
+
+  input:disabled:focus {
+    border-color: #e5e7eb;
+    box-shadow: none;
+    outline: none;
+  }
+
   input:focus {
     border-color: #6dd58c;
     box-shadow: var(--shadow-focus-success);
