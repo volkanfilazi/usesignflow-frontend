@@ -13,8 +13,8 @@ import { ToolsService } from '../../../../shared/services/tools.service';
 })
 export class SubmissionSettingsComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
-  private readonly presetValues = ['1', '3', '7', '14', '30'];
-  private readonly reminderPresets = [1, 3, 7];
+  private readonly presetValues = ['2', '3', '7', '14', '30'];
+  private readonly reminderPresets = [2, 3, 7];
 
   loading$ = new BehaviorSubject(false);
   callActionLoading$ = new BehaviorSubject(false);

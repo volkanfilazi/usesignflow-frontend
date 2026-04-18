@@ -1,21 +1,20 @@
-import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, Input, Output, EventEmitter } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { AuthStateService } from '../../../core/services/auth-state.service';
+import { ThemeService } from '../../services/theme.service';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 
 export interface UserMenuItem {
   label: string;
   icon?: string;
   route?: string;
-  action?: 'logout' | 'custom';
+  action?: 'logout' | 'mode' | 'custom';
   danger?: boolean;
 }
 
 @Component({
   selector: 'app-user-menu',
-  standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatIcon],
+  standalone: false,
   templateUrl: './user-menu.component.html',
   styleUrls: ['./user-menu.component.scss'],
 })
@@ -28,14 +27,33 @@ export class UserMenuComponent {
 
   @Output() itemSelected = new EventEmitter<UserMenuItem>();
 
+  private readonly destroy$ = new Subject<void>();
+
+  formGroup: FormGroup | undefined;
   isOpen = false;
   userName = 'User';
 
   constructor(
     private elementRef: ElementRef<HTMLElement>,
     private readonly authStateService: AuthStateService,
+    private readonly themeService: ThemeService,
   ) {
     this.userName = this.authStateService.getFullName() ?? 'User';
+    this.themeService.mode();
+    this.formGroup = new FormGroup({
+      mode: new FormControl(this.themeService.mode() === 'light' ? false : true),
+    });
+
+    this.formGroup
+      .get('mode')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((item) => {
+        if (item) {
+          this.themeService.setMode('dark');
+        } else {
+          this.themeService.setMode('light');
+        }
+      });
   }
 
   toggleMenu(): void {

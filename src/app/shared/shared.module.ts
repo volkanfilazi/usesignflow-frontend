@@ -61,6 +61,8 @@ import { TrendChartCardComponent } from './components/graph/trend-chart-card/tre
 import { AdvancedDateRangePickerComponent } from './components/advanced-date-range-picker/advanced-date-range-picker.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import { BaseChartDirective } from 'ng2-charts';
+import { SwitchComponent } from './components/inputs/switch/switch.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -97,11 +99,12 @@ import { BaseChartDirective } from 'ng2-charts';
     OneTimeCodeDialogComponent,
     StatsOverviewCardsComponent,
     TrendChartCardComponent,
-    AdvancedDateRangePickerComponent
+    AdvancedDateRangePickerComponent,
+    SwitchComponent,
+    UserMenuComponent
   ],
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     PrimaryButtonComponent,
@@ -118,7 +121,6 @@ import { BaseChartDirective } from 'ng2-charts';
     MatIcon,
     MatButtonModule,
     MatProgressSpinnerModule,
-    UserMenuComponent,
     AuthLoadingOverlayComponent,
     MatCard,
     MatCardActions,
@@ -134,7 +136,8 @@ import { BaseChartDirective } from 'ng2-charts';
     ɵɵCdkFixedSizeVirtualScroll,
     MatDatepickerModule,
     MatNativeDateModule,
-    BaseChartDirective
+    BaseChartDirective,
+    RouterModule
 ],
   exports: [
     TextInputComponent,
@@ -159,7 +162,9 @@ import { BaseChartDirective } from 'ng2-charts';
     DatePickerComponent,
     StatsOverviewCardsComponent,
     TrendChartCardComponent,
-    AdvancedDateRangePickerComponent
+    AdvancedDateRangePickerComponent,
+    SwitchComponent,
+    UserMenuComponent
   ],
 })
 export class SharedModule {}

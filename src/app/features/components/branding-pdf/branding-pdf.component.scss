@@ -8,7 +8,6 @@
 
 .branding-page {
   padding: 24px;
-  background: #f8fafc;
   min-height: 100%;
   color: #0f172a;
 }
@@ -55,8 +54,7 @@
 }
 
 .branding-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
   overflow: hidden;
@@ -101,8 +99,7 @@
 }
 
 .branding-level-box {
-  border: 1px solid #e2e8f0;
-  background: linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%);
+  border: 1px solid var(--border-color);
   border-radius: 18px;
   padding: 16px;
   margin-bottom: 18px;
@@ -377,8 +374,7 @@
 }
 
 .preview-stage {
-  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 18px;
 }
@@ -550,8 +546,7 @@
 
 .upgrade-box {
   margin-top: 18px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1px solid var(--border-color);
   border-radius: 18px;
   padding: 16px;
   display: flex;

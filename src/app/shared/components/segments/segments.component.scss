@@ -22,7 +22,7 @@
 
 .segments {
   display: inline-flex;
-  background: rgba(241, 245, 249, 0.9);
+  background: var(--card-bg);
   border-radius: 14px;
   padding: 4px;
   border: 1px solid rgba(17, 24, 39, 0.08);

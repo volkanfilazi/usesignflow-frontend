@@ -61,6 +61,14 @@
             </button>
           }
         }
+
+        @if (formGroup) {
+          <hr />
+          <div class="d-flex align-items-center p-2 gap-2">
+            <span>Darkmode</span>
+            <app-switch [formGroup]="formGroup" controlName="mode"></app-switch>
+          </div>
+        }
       </div>
     </div>
   }

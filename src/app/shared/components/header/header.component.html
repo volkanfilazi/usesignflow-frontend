@@ -1,5 +1,5 @@
 <div
-  class="w-100 bg-white sticky-top p-2 h-auto border-1 border-bottom d-flex flex-column gap-1 flex-sm-row align-items-sm-center justify-content-sm-between"
+  class="header-container w-100 sticky-top p-2 h-auto border-1 border-bottom d-flex flex-column gap-1 flex-sm-row align-items-sm-center justify-content-sm-between"
 >
   <h4>{{ title }}</h4>
 
@@ -25,6 +25,7 @@
     @for (action of pageActionService.actions(); track action.id) {
       @if (action.text) {
         <button
+          class="header-outlined-button"
           matButton="outlined"
           [disabled]="action.loading$ | async"
           (click)="onActionClick(action.id)"
