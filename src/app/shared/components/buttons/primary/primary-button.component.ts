@@ -4,6 +4,7 @@ import { MatAnchor } from "@angular/material/button";
 @Component({
     selector: "app-primary-button",
     templateUrl: "./primary-button.component.html",
+    styleUrl: "./primary-button.component.scss",
     imports: [MatAnchor]
 })
 export class PrimaryButtonComponent {

@@ -10,6 +10,7 @@
   --main-bg: #f5fcf8;
   --card-bg: #fff;
   --border-color: #d4d4d4;
+  --blue: #132f75;
 
   --shadow-sm: 0 3px 7px rgba(17, 24, 39, 0.06);
   --shadow-md: 0 12px 28px rgba(17, 24, 39, 0.08);
@@ -23,7 +24,6 @@
 
   --0: rgba(0, 0, 0, 0.04);
   --100: #6b7280;
-
   --400: #111827;
 
   --light-red: #fcdcdc;
@@ -45,9 +45,11 @@
   --main-bg: #242424;
   --card-bg: #363636;
   --border-color: #fff;
+  --blue: #93b4fb;
+  --dark-red: #fd5959;
 
   --400: #fff;
-  --500: #16a34a;
+  --500: #7ef1a8;
 }
 
 html {
@@ -144,7 +146,6 @@ body {
 .builder-hero-content h1 {
   margin: 0;
   font-size: clamp(28px, 4vw, 38px);
-  color: #0f172a;
   line-height: 1.1;
 }
 
@@ -156,6 +157,7 @@ body {
 }
 
 .dialog-container {
+  background: var(--card-bg);
   padding: 5px;
 }
 
@@ -171,7 +173,6 @@ body {
   justify-content: flex-end;
   align-items: center;
   height: 12%;
-  background: white;
 }
 
 .dialog-body {
@@ -231,8 +232,12 @@ body {
   color: var(--400);
 }
 
-.mdc-form-field label {
+label, h1, h2, h3, h4, h5, h6, p, span {
   color: var(--400);
+}
+
+.mat-mdc-outlined-button:not(:disabled) {
+  color: none;
 }
 
 @media (max-width: 768px) {
