@@ -152,12 +152,14 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
   }
 
   ngOnInit(): void {
+    this.loading$.next(true);
     this.currentUserId = this.authService.getUserId() ?? '';
 
     if (this.previewForm) {
       this.editMode = EditMode.EDIT;
       this.configurePageAction();
       this.loadPreviewForm(this.previewForm);
+
       return;
     }
 
@@ -446,6 +448,7 @@ export class DynamicFormRendererComponent implements OnInit, OnDestroy, PendingC
     this.buildingForm = false;
     this.setAgreementContent(this.form?.agreementContentHtml);
     this.cdr.detectChanges();
+    this.loading$.next(false);
   }
 
   setAgreementContent(html: string | null | undefined): void {

@@ -74,20 +74,13 @@
           </app-text-input>
         </div>
         <div class="builder-input builder-input-sm d-flex gap-2">
-          <label for="requiresVerification" class="switch">
-            <input
-              formControlName="requiresVerification"
-              id="requiresVerification"
-              type="checkbox"
-            />
-            <span class="slider"></span>
-          </label>
+          <app-switch [formGroup]="myGroup" controlName="requiresVerification"></app-switch>
           <div class="d-flex align-items-center gap-2">
             <mat-icon
               matTooltip="Recommended: When Verification is enabled, the external user is verified and recorded in the audit trail, increasing the trust and reliability of the completed document."
               >info</mat-icon
             >
-            <strong>Require 2FA for external access</strong>
+            <span>Require 2FA for external access</span>
           </div>
         </div>
       </div>

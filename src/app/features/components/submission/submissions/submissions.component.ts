@@ -662,14 +662,6 @@ export class SubmissionsComponent {
   }
 
   isSendDisabled(row: FormSubmission): boolean {
-    const hasEmailQuota =
-      (this.overview?.usage?.emailsUsedThisMonth ?? 0) <
-      (this.overview?.entitlements?.maxEmailPerMonth ?? 0);
-
-    if (!hasEmailQuota) {
-      return true;
-    }
-
     return row.status === SubmissionStatus.Cancelled || row.status === SubmissionStatus.Expired;
   }
 

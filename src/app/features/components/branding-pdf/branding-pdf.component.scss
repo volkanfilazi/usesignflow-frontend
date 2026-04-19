@@ -8,9 +8,7 @@
 
 .branding-page {
   padding: 24px;
-  background: #f8fafc;
   min-height: 100%;
-  color: #0f172a;
 }
 
 .branding-page__header {
@@ -25,7 +23,6 @@
     font-size: 28px;
     line-height: 1.1;
     font-weight: 700;
-    color: #0f172a;
   }
 
   p {
@@ -55,8 +52,7 @@
 }
 
 .branding-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
   overflow: hidden;
@@ -79,12 +75,10 @@
     font-size: 20px;
     line-height: 1.2;
     font-weight: 700;
-    color: #0f172a;
   }
 
   p {
     margin: 0;
-    color: #64748b;
     font-size: 14px;
   }
 }
@@ -101,8 +95,7 @@
 }
 
 .branding-level-box {
-  border: 1px solid #e2e8f0;
-  background: linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%);
+  border: 1px solid var(--border-color);
   border-radius: 18px;
   padding: 16px;
   margin-bottom: 18px;
@@ -119,12 +112,10 @@
     margin: 0 0 6px;
     font-size: 16px;
     font-weight: 700;
-    color: #0f172a;
   }
 
   p {
     margin: 0;
-    color: #64748b;
     font-size: 13px;
     line-height: 1.55;
   }
@@ -239,7 +230,6 @@
   label {
     font-size: 13px;
     font-weight: 700;
-    color: #334155;
   }
 
   input {
@@ -247,7 +237,6 @@
     height: 46px;
     border-radius: 14px;
     border: 1px solid #cbd5e1;
-    background: #ffffff;
     padding: 0 14px;
     font-size: 14px;
     color: #0f172a;
@@ -262,7 +251,6 @@
     }
 
     &:disabled {
-      background: #f8fafc;
       color: #94a3b8;
       cursor: not-allowed;
     }
@@ -377,8 +365,7 @@
 }
 
 .preview-stage {
-  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 18px;
 }
@@ -550,8 +537,7 @@
 
 .upgrade-box {
   margin-top: 18px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1px solid var(--border-color);
   border-radius: 18px;
   padding: 16px;
   display: flex;

@@ -12,7 +12,7 @@
 
     <div class="user-meta">
       <span class="user-label">Account</span>
-      <strong class="user-name">{{ userName }}</strong>
+      <span class="user-name">{{ userName }}</span>
     </div>
 
     <span class="chevron" [class.open]="isOpen">▾</span>
@@ -27,7 +27,7 @@
 
         <div class="panel-user-info">
           <span>Signed in as</span>
-          <strong>{{ userName }}</strong>
+          <span class="fw-bold">{{ userName }}</span>
         </div>
       </div>
 
@@ -60,6 +60,14 @@
               <span>{{ item.label }}</span>
             </button>
           }
+        }
+
+        @if (formGroup) {
+          <hr />
+          <div class="d-flex align-items-center p-2 gap-2">
+            <span>Darkmode</span>
+            <app-switch [formGroup]="formGroup" controlName="mode"></app-switch>
+          </div>
         }
       </div>
     </div>

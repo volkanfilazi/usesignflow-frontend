@@ -5,14 +5,11 @@
 
 .dashboard-layout {
   height: 100%;
-  background:
-    radial-gradient(circle at top left, rgba(34, 197, 94, 0.05), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.05), transparent 28%),
-    linear-gradient(180deg, #f8fffb 0%, #f4fbf7 100%);
+  background: var(--main-bg);
 }
 
 .dashboard-sidenav {
-  border-right: 1px solid rgba(34, 197, 94, 0.1);
+  border-right: 1px solid var(--border-color);
   background: rgba(255, 255, 255, 0.9);
 }
 
@@ -32,7 +29,7 @@
   flex-direction: column;
   height: 100%;
   padding: 20px 16px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 255, 251, 0.96) 100%);
+  background: var(--main-bg);
 }
 
 .sidenav-brand {

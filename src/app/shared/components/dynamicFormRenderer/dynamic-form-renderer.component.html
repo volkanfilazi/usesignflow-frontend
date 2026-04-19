@@ -21,6 +21,7 @@
                 pending: getFormTitle().status === 'Pending',
                 completed: getFormTitle().status === 'Completed',
                 signed: getFormTitle().status === 'Signed',
+                canceled: getFormTitle().status === 'Cancelled',
               }"
             >
               {{ getFormTitle().status }}

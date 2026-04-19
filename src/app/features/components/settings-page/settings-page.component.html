@@ -31,10 +31,7 @@
               <strong>Two-factor authentication</strong>
               <p>Add an extra security layer to your account.</p>
             </div>
-            <label for="twoFactorEnabled" class="switch">
-              <input formControlName="twoFactorEnabled" id="twoFactorEnabled" type="checkbox" />
-              <span class="slider"></span>
-            </label>
+            <app-switch [formGroup]="formGroup" controlName="twoFactorEnabled"></app-switch>
           </div>
         }
       </div>
@@ -53,14 +50,7 @@
               <strong>Document signed notifications</strong>
               <p>Receive an email when a contract or form is completed.</p>
             </div>
-            <label for="notificationsEnabled" class="switch">
-              <input
-                formControlName="notificationsEnabled"
-                id="notificationsEnabled"
-                type="checkbox"
-              />
-              <span class="slider"></span>
-            </label>
+            <app-switch [formGroup]="formGroup" controlName="notificationsEnabled"></app-switch>
           </div>
         }
       </div>
