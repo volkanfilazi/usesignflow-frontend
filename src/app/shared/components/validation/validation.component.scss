@@ -4,7 +4,7 @@
   z-index: 1200;
   border-radius: 22px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--main-bg);
   border: 1px solid rgba(146, 227, 169, 0.22);
   box-shadow:
     0 20px 45px rgba(17, 24, 39, 0.12),
@@ -58,7 +58,6 @@
 .validation-title {
   font-size: 1rem;
   font-weight: 800;
-  color: #111827;
 }
 
 .validation-subtitle,
@@ -103,7 +102,7 @@
   padding: 12px;
   cursor: pointer;
   border-radius: 16px;
-  background: #fcfffd;
+  background: var(--card-bg);
   border: 1px solid rgba(146, 227, 169, 0.14);
   transition:
     transform 0.18s ease,

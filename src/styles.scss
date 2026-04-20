@@ -240,6 +240,77 @@ label, h1, h2, h3, h4, h5, h6, p, span {
   color: none;
 }
 
+// Register, login, reset password, forgot password, register page,
+.brand-badge {
+  width: 48px;
+  height: 48px;
+
+  margin: auto;
+  margin-bottom: 12px;
+
+  border-radius: 12px;
+
+  display: grid;
+  place-items: center;
+
+  background: linear-gradient(135deg, #92e3a9, #6dd58c);
+
+  font-weight: 800;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--main-bg);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--card-bg);
+  border: 1px solid rgba(146, 227, 169, 0.2);
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--100);
+  font-weight: 600;
+  margin-bottom: 18px;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--400);
+}
+
+input.invalid {
+  border: 1px solid #ef4444;
+  box-shadow: var(--shadow-focus-error);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+
+  h2 {
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  p {
+    color: var(--100);
+  }
+}
+
 @media (max-width: 768px) {
   .builder-page {
     padding: 16px;

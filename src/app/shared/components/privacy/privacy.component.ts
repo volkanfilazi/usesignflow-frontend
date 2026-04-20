@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-privacy',
   templateUrl: './privacy.component.html',
+  styleUrl: './privacy.component.scss',
   standalone: false,
 })
 export class PrivacyComponent implements OnInit {
