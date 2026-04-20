@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-legal',
   templateUrl: './legal.component.html',
+  styleUrl: './legal.component.scss',
   standalone: false,
 })
 export class LegalComponent implements OnInit {
