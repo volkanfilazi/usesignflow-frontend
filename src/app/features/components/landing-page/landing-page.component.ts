@@ -9,6 +9,36 @@ import { Component } from '@angular/core';
 export class LandingPageComponent {
   activeStep = 0;
 
+  useCases = [
+    {
+      title: 'Client onboarding',
+      description: 'Collect project details, agreement acceptance, approvals, and signatures before work starts.',
+    },
+    {
+      title: 'Freelancer agreements',
+      description: 'Send one flow to gather contractor details, contract acceptance, and signed confirmation.',
+    },
+    {
+      title: 'Vendor onboarding',
+      description: 'Standardize how partners submit business details, approvals, and signatures in one process.',
+    }
+  ]
+
+  workflowGrid = [
+    {
+      title: 'Build your workflow',
+      description: 'Custom fields, agreements, required steps, signatures.'
+    },
+    {
+      title: 'Send one secure link',
+      description: 'Recipients complete their part without creating an account.'
+    },
+    {
+      title: 'Track and export',
+      description: 'Monitor status and generate a final PDF record.'
+    }
+  ]
+
   featureCard = [
     {
       title: 'Track every submission in one place',
