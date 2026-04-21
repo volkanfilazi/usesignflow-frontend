@@ -112,23 +112,13 @@
     </div>
 
     <div class="workflow-grid">
-      <div class="workflow-step">
-        <div class="step-number">1</div>
-        <h4 class="text-black">Build your workflow</h4>
-        <p>Custom fields, agreements, required steps, signatures.</p>
-      </div>
-
-      <div class="workflow-step">
-        <div class="step-number">2</div>
-        <h4 class="text-black">Send one secure link</h4>
-        <p>Recipients complete their part without creating an account.</p>
-      </div>
-
-      <div class="workflow-step">
-        <div class="step-number">3</div>
-        <h4 class="text-black">Track and export</h4>
-        <p>Monitor status and generate a final PDF record.</p>
-      </div>
+      @for (workFlow of workflowGrid; track $index) {
+        <div class="workflow-step">
+          <div class="step-number">1</div>
+          <h4 class="text-black">{{ workFlow.title }}</h4>
+          <p>{{ workFlow.description }}</p>
+        </div>
+      }
     </div>
   </section>
 
@@ -199,28 +189,12 @@
     </div>
 
     <div class="workflow-grid">
-      <div class="workflow-step">
-        <h4 class="text-black">Client onboarding</h4>
-        <p>
-          Collect project details, agreement acceptance, approvals, and signatures before work
-          starts.
-        </p>
-      </div>
-
-      <div class="workflow-step">
-        <h4 class="text-black">Freelancer agreements</h4>
-        <p>
-          Send one flow to gather contractor details, contract acceptance, and signed confirmation.
-        </p>
-      </div>
-
-      <div class="workflow-step">
-        <h4 class="text-black">Vendor onboarding</h4>
-        <p>
-          Standardize how partners submit business details, approvals, and signatures in one
-          process.
-        </p>
-      </div>
+      @for (useCase of useCases; track $index) {
+        <div class="workflow-step">
+          <h4 class="text-black">{{ useCase.title }}</h4>
+          <p>{{ useCase.description }}</p>
+        </div>
+      }
     </div>
   </section>
 
