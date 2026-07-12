@@ -1,59 +1,232 @@
-# MyApp
+# SignFlow Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.5.
+Modern Angular frontend for the SignFlow platform.
 
-## Development server
+This application provides a secure and responsive user interface for managing digital workflows, document approvals, electronic signatures, and customer interactions. It communicates with the SignFlow REST API built with Java Spring Boot.
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
+## Overview
+
+The frontend is built using the latest Angular ecosystem and follows a scalable feature-based architecture suitable for enterprise applications.
+
+Key focus areas include:
+
+- Authentication & Authorization
+- Workflow Management
+- Document Management
+- Electronic Signatures
+- Dashboard & Analytics
+- Responsive UI
+- Performance
+- Maintainability
+
+---
+
+## Features
+
+### Authentication
+
+- JWT Authentication
+- Route Guards
+- Token Refresh
+- Role-Based Access Control (RBAC)
+
+### Dashboard
+
+- User overview
+- Submission statistics
+- Recent activities
+- Charts using Chart.js
+
+### Workflow Builder
+
+- Multi-step workflows
+- Dynamic forms
+- Validation
+- Conditional logic
+
+### Document Management
+
+- Upload documents
+- Preview documents
+- Download PDFs
+- Version handling
+
+### Rich Text Editor
+
+Powered by TipTap.
+
+Features include:
+
+- Formatting
+- Hyperlinks
+- Alignment
+- Placeholders
+- Underline
+- Custom toolbar
+
+### Electronic Signature
+
+- Signature Pad integration
+- QR Code generation
+- Secure signature workflow
+
+### User Management
+
+- User administration
+- Role management
+- Permissions
+- Profile management
+
+### Responsive Design
+
+Optimized for:
+
+- Desktop
+- Tablet
+- Mobile
+
+---
+
+## Tech Stack
+
+| Technology       | Version |
+| ---------------- | ------- |
+| Angular          | 21      |
+| Angular Material | 21      |
+| TypeScript       | 5       |
+| Bootstrap        | 5       |
+| RxJS             | 7       |
+| Chart.js         | 4       |
+| ng2-charts       | 10      |
+| TipTap           | 3       |
+| JWT Decode       | 4       |
+| Signature Pad    | 5       |
+| Playwright       | Latest  |
+
+---
+
+## Project Structure
+
+```
+src/
+ ├── app/
+ │    ├── core/
+ │    ├── shared/
+ │    ├── features/
+ │    ├── layout/
+ │    ├── guards/
+ │    ├── interceptors/
+ │    ├── services/
+ │    └── models/
+ │
+ ├── assets/
+ ├── environments/
+ └── styles/
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Architecture
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+The application follows a feature-based architecture.
 
-```bash
-ng generate component component-name
-```
+- Standalone Components
+- Lazy Loaded Features
+- Reusable Shared Components
+- Dependency Injection
+- Strongly Typed Models
+- Separation of Concerns
+- Modular Design
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## Testing
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+End-to-end testing is implemented using Playwright.
 
 ```bash
-ng test
+npm run playwright
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Run tests in headed mode:
 
 ```bash
-ng e2e
+npm run headed
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Generate Playwright selectors:
 
-## Additional Resources
+```bash
+npm run codeGen
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+## Development
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Start development server
+
+```bash
+npm start
+```
+
+Build production bundle
+
+```bash
+npm run build
+```
+
+---
+
+## Backend
+
+This frontend communicates with a REST API built using:
+
+- C#
+- ASP.NET Core Web API
+- JWT Authentication
+- MongoDB
+- REST APIs
+
+---
+
+## Design Principles
+
+This project focuses on:
+
+- Clean Architecture
+- Reusable Components
+- Maintainable Code
+- Scalable Feature Modules
+- Responsive Design
+- Performance Optimization
+- Enterprise Application Development
+
+---
+
+## Future Improvements
+
+- Dark Mode
+- Offline Support
+- Real-time Notifications
+- Internationalization (i18n)
+- Advanced Dashboard Widgets
+- PWA Support
+
+---
+
+## Author
+
+**Volkan Filazi**
+
+Full Stack Developer
+
+Angular • C# • .NET • MONGODB • Docker
