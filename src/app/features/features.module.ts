@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FeaturesRoutingModule } from './features-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TodoComponent } from './components/TODO/todo.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -50,6 +49,7 @@ import { BrandingPdfComponent } from './components/branding-pdf/branding-pdf.com
 import { SubmissionsComponent } from './components/submission/submissions/submissions.component';
 import { SubmissionSettingsComponent } from './components/submission/submission-settings/submission-settings.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { PrimaryButtonComponent } from "../shared/components/buttons/secondary/secondary-button.component";
 
 @NgModule({
   declarations: [
@@ -76,7 +76,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     ReactiveFormsModule,
     FeaturesRoutingModule,
     SharedModule,
-    TodoComponent,
     DragDropModule,
     MatIcon,
     CommonModule,
@@ -109,7 +108,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatTooltipModule,
     LandingFooterComponent,
     RichTextEditorComponent,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    PrimaryButtonComponent
 ],
 })
 export class FeaturesModule {}

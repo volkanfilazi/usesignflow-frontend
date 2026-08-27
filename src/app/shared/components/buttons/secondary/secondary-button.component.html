@@ -1,0 +1,12 @@
+<button  [disabled]="disabled" (click)="onClick()" class="btn btn-primary w-100">
+  @if (!disabled) {
+    <span class="btn-content">{{buttonName}}</span>
+  }
+
+  @if (disabled) {
+    <span class="d-flex align-items-center justify-content-center gap-2">
+        <span>{{ textUntilEventOver }}</span>
+        <app-spinner [diameter]="25"></app-spinner>
+    </span>
+  }
+</button>

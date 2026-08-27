@@ -101,15 +101,17 @@
             }
           </ul>
 
-          @if (isCurrentPlan(plan.code)) {
-            <button mat-stroked-button disabled>Current plan</button>
-          } @else if (isUpgrade(plan.code)) {
-            <button mat-flat-button class="select-plan-btn" (click)="selectPlan(plan.code)">
-              Upgrade to {{ plan.title }}
-            </button>
-          } @else if (isDowngrade(plan.code)) {
+          @if (isUpgrade(plan.code)) {
+            <app-secondary-button
+              [buttonName]="'Upgrade to ' + plan.title"
+              (buttonClick)="selectPlan(plan.code)"
+            ></app-secondary-button>
+          }
+          <!--
+          @else if (isDowngrade(plan.code)) {
             <button mat-stroked-button disabled>Downgrade</button>
           }
+          -->
         </div>
       }
     </div>

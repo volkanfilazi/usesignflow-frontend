@@ -1,56 +1,40 @@
-<div class="auth-page">
-  <div class="auth-card">
+<main class="auth-page">
+  <article class="auth-card">
     <a routerLink="/" class="back-link">← Back to home</a>
-    <div class="auth-header">
-      <div class="brand-badge">F</div>
-      <h2>Welcome back</h2>
+    <header class="auth-header">
+      <div class="brand-badge" aria-hidden="true">F</div>
+      <h1>Welcome back</h1>
       <p>Sign in to continue to SignFlow</p>
-    </div>
+    </header>
 
     @if (formGroup) {
       <form [formGroup]="formGroup" (ngSubmit)="login()">
-        <div class="form-group">
-          <label>Email</label>
-          <input
-            id="email"
-            formControlName="email"
-            [class.invalid]="isInvalid('email')"
-            type="email"
+        <div class="d-flex flex-column gap-3 mb-2">
+          <app-text-input
+            controlName="email"
+            [formGroup]="formGroup"
+            label="Email"
+            type="Email"
             placeholder="name@email.com"
-          />
-        </div>
-
-        <div class="form-group">
-          <label>Password</label>
-          <input
-            id="password"
-            formControlName="password"
-            [class.invalid]="isInvalid('password')"
-            type="password"
+          ></app-text-input>
+          <app-text-input
+            controlName="password"
+            [formGroup]="formGroup"
+            label="Password"
+            type="Password"
             placeholder="••••••••"
-          />
+          ></app-text-input>
         </div>
 
-        <button
-          class="btn btn-primary w-100 submit-btn"
-          type="submit"
-          [disabled]="this.loading$ | async"
-        >
-          @if (!(this.loading$ | async)) {
-            <span class="btn-content">Login</span>
-          }
-
-          @if (this.loading$.value) {
-            <span class="btn-loading">
-              <span class="btn-spinner"></span>
-              <span>Signing in...</span>
-            </span>
-          }
-        </button>
+        <app-secondary-button
+          [disabled]="loading$.value"
+          buttonName="Login"
+          textUntilEventOver="Signing in..."
+        ></app-secondary-button>
       </form>
     }
 
-    <div class="auth-footer">
+    <footer class="auth-footer">
       <div class="auth-footer-top">
         <span>Don't have an account?</span>
         <a routerLink="/register">Register</a>
@@ -68,9 +52,9 @@
         <span>Did you forget your password?</span>
         <a routerLink="/forgot-password">Forgot password</a>
       </div>
-    </div>
-  </div>
-</div>
+    </footer>
+  </article>
+</main>
 @if (validationErrors && validationErrors.length > 0) {
   <app-validation [validationMessages]="validationErrors" [myGroup]="formGroup"></app-validation>
 }
