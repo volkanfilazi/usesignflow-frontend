@@ -1,5 +1,5 @@
-<div class="auth-page">
-  <div class="auth-card">
+<main class="auth-page">
+  <article class="auth-card">
     @if (this.loading$ | async) {
       <app-loading-overlay
         [visible]="this.loading$.value"
@@ -10,14 +10,14 @@
     }
     <a routerLink="/" class="back-link">← Back to home</a>
 
-    <div class="auth-header">
+    <header class="auth-header">
       <div class="brand-badge">F</div>
-      <h2>Create your account</h2>
+      <h1>Create your account</h1>
       <p>Start building and sending digital contracts in minutes.</p>
-    </div>
+    </header>
 
     @if (formGroup) {
-      <form class="auth-form" [formGroup]="formGroup">
+      <form class="d-flex flex-column gap-3" [formGroup]="formGroup">
         <app-text-input
           [isRequired]="true"
           [label]="'Fullname'"
@@ -73,9 +73,12 @@
           ></app-checkbox>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100" (click)="register()">
-          Create account
-        </button>
+        <app-secondary-button
+          (buttonClick)="register()"
+          buttonName="Create Account"
+          [disabled]="loading$.value"
+          textUntilEventOver="Creating..."
+        ></app-secondary-button>
       </form>
     } @else {
       <div class="w-100 d-flex align-items-center justify-content-center">
@@ -87,12 +90,12 @@
       <span>or</span>
     </div>
 
-    <div class="auth-footer">
+    <footer class="auth-footer">
       <span>Already have an account?</span>
       <a routerLink="/login">Login</a>
-    </div>
-  </div>
-</div>
+    </footer>
+  </article>
+</main>
 
 @if (validationErrors && validationErrors.length > 0) {
   <app-validation [validationMessages]="validationErrors" [myGroup]="formGroup"></app-validation>

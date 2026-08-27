@@ -4,7 +4,7 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient,withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import routes from './app.routes';
 import { errorInterceptor } from './core/services/error-interceptor';
@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([errorInterceptor, authInterceptor])),
     provideCharts(withDefaultRegisterables()),
   ],
 };

@@ -40,7 +40,6 @@ import { DateRangeService } from '../../../../shared/services/header/date-range.
 
 @Component({
   selector: 'app-submissions',
-  styleUrl: './submissions.component.scss',
   templateUrl: './submissions.component.html',
   standalone: false,
 })

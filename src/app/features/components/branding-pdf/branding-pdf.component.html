@@ -56,18 +56,16 @@
           <!-- Logo panel -->
           <div class="logo-panel">
             <div class="logo-panel__preview">
-              <ng-container *ngIf="brandingForm.get('logoFileUrl')?.value; else fallbackLogo">
+              @if (brandingForm.get('logoFileUrl')?.value) {
                 <img [src]="brandingForm.get('logoFileUrl')?.value" alt="Logo" />
-              </ng-container>
-
-              <ng-template #fallbackLogo>
+              } @else {
                 <div
                   class="logo-panel__placeholder"
                   [style.background]="previewPlaceholderBackground"
                 >
                   {{ previewLogoText }}
                 </div>
-              </ng-template>
+              }
             </div>
 
             <div class="logo-panel__meta">
@@ -85,14 +83,9 @@
               Upload logo
             </label>
 
-            <button
-              *ngIf="brandingForm.get('logoFileUrl')?.value && canUploadLogo"
-              type="button"
-              class="ghost-btn"
-              (click)="removeLogo()"
-            >
-              Remove logo
-            </button>
+            @if (brandingForm.get('logoFileUrl')?.value && canUploadLogo) {
+              <button type="button" class="ghost-btn" (click)="removeLogo()">Remove logo</button>
+            }
           </div>
 
           <!-- Form inputs -->
@@ -107,7 +100,9 @@
                   controlName="companyName"
                   placeholder="Your company name"
                 ></app-text-input>
-                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+                @if (!canEditCompanyInfo) {
+                  <small>Available on Business plan.</small>
+                }
               </div>
 
               <div class="form-field">
@@ -119,7 +114,8 @@
                   controlName="website"
                   placeholder="yourcompany.com"
                 ></app-text-input>
-                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+                @if (!canEditCompanyInfo) {}
+                <small>Available on Business plan.</small>
               </div>
 
               <div class="form-field">
@@ -132,7 +128,9 @@
                   type="Email"
                   placeholder="hello@yourcompany.com"
                 ></app-text-input>
-                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+                @if (!canEditCompanyInfo) {
+                  <small>Available on Business plan.</small>
+                }
               </div>
 
               <div class="form-field">
@@ -144,7 +142,9 @@
                   controlName="phone"
                   placeholder="+00 000 000 00 00"
                 ></app-text-input>
-                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+                @if (!canEditCompanyInfo) {
+                  <small>Available on Business plan.</small>
+                }
               </div>
 
               <div class="form-field form-field--full">
@@ -156,7 +156,9 @@
                   controlName="address"
                   placeholder="City, Country"
                 ></app-text-input>
-                <small *ngIf="!canEditCompanyInfo">Available on Business plan.</small>
+                @if (!canEditCompanyInfo) {
+                  <small>Available on Business plan.</small>
+                }
               </div>
 
               <div class="form-field form-field--full">
@@ -180,7 +182,9 @@
                   />
                 </div>
 
-                <small *ngIf="!canUseBrandColor">Available on Business plan.</small>
+                @if (!canUseBrandColor) {
+                  <small>Available on Business plan.</small>
+                }
               </div>
             </div>
           </div>
@@ -219,39 +223,41 @@
                 </div>
               </div>
 
-              <div class="preview-header__right" *ngIf="showCompanyDetailsInPreview">
-                <div class="preview-logo" [style.background]="previewLogoBackground">
-                  <ng-container *ngIf="brandingForm.get('logoFileUrl')?.value; else textLogo">
-                    <img [src]="brandingForm.get('logoFileUrl')?.value" alt="Logo" />
-                  </ng-container>
-
-                  <ng-template #textLogo>
-                    <span>{{ previewLogoText }}</span>
-                  </ng-template>
+              @if (showCompanyDetailsInPreview) {
+                <div class="preview-header__right">
+                  <div class="preview-logo" [style.background]="previewLogoBackground">
+                    @if (brandingForm.get('logoFileUrl')?.value) {
+                      <img [src]="brandingForm.get('logoFileUrl')?.value" alt="Logo" />
+                    } @else {
+                      <span>{{ previewLogoText }}</span>
+                    }
+                  </div>
+                  <strong>{{ visibleCompanyName }}</strong>
+                  <span>{{ visibleWebsite }}</span>
+                  <span>{{ visibleEmail }}</span>
+                  <span>{{ visiblePhone }}</span>
                 </div>
-                <strong>{{ visibleCompanyName }}</strong>
-                <span>{{ visibleWebsite }}</span>
-                <span>{{ visibleEmail }}</span>
-                <span>{{ visiblePhone }}</span>
-              </div>
+              }
 
-              <div
-                class="preview-header__right"
-                *ngIf="!showCompanyDetailsInPreview && showLogoInPreview"
-              >
-                <strong>{{ visibleCompanyName }}</strong>
-                <span *ngIf="isPro">Custom logo enabled</span>
-                <span *ngIf="isPro && !isBusiness">Watermark removed</span>
-              </div>
+              @if (!showCompanyDetailsInPreview && showLogoInPreview) {
+                <div class="preview-header__right">
+                  <strong>{{ visibleCompanyName }}</strong>
+                  @if (isPro) {
+                    <span>Custom logo enabled</span>
+                  }
+                  @if (isPro && !isBusiness) {
+                    <span>Watermark removed</span>
+                  }
+                </div>
+              }
 
-              <div
-                class="preview-header__right"
-                *ngIf="!showCompanyDetailsInPreview && !showLogoInPreview"
-              >
-                <strong>SignFlow</strong>
-                <span>Default branding</span>
-                <span>Watermark visible</span>
-              </div>
+              @if (!showCompanyDetailsInPreview && !showLogoInPreview) {
+                <div class="preview-header__right">
+                  <strong>SignFlow</strong>
+                  <span>Default branding</span>
+                  <span>Watermark visible</span>
+                </div>
+              }
             </div>
 
             <div class="preview-sheet__content">
@@ -284,34 +290,47 @@
                   <strong>john.doe@example.com</strong>
                 </div>
 
-                <div class="preview-detail-row" *ngIf="showCompanyDetailsInPreview">
-                  <span>Address</span>
-                  <strong>{{ visibleAddress }}</strong>
-                </div>
+                @if (showCompanyDetailsInPreview) {
+                  <div class="preview-detail-row">
+                    <span>Address</span>
+                    <strong>{{ visibleAddress }}</strong>
+                  </div>
+                }
               </div>
             </div>
 
-            <div class="preview-watermark" *ngIf="showWatermarkInPreview">SignFlow</div>
+            @if (showWatermarkInPreview) {
+              <div class="preview-watermark">SignFlow</div>
+            }
           </div>
         </div>
 
-        <div class="upgrade-box" *ngIf="!isBusiness">
-          <div class="upgrade-box__content">
-            <h3 *ngIf="isFree">Unlock custom PDF branding</h3>
-            <h3 *ngIf="isPro">Unlock full company branding</h3>
+        @if (!isBusiness) {
+          <div class="upgrade-box">
+            <div class="upgrade-box__content">
+              @if (isFree) {
+                <h3>Unlock custom PDF branding</h3>
+              }
 
-            <p *ngIf="isFree">
-              Upgrade to Pro or Business to remove watermark and add your own logo.
-            </p>
+              @if (isPro) {
+                <h3>Unlock full company branding</h3>
+              }
 
-            <p *ngIf="isPro">
-              Upgrade to Business to show company details and use your brand color in the PDF
-              header.
-            </p>
+              @if (isFree) {
+                <p>Upgrade to Pro or Business to remove watermark and add your own logo.</p>
+              }
+
+              @if (isPro) {
+                <p>
+                  Upgrade to Business to show company details and use your brand color in the PDF
+                  header.
+                </p>
+              }
+            </div>
+
+            <button type="button" class="primary-btn" (click)="changePlan()">Upgrade plan</button>
           </div>
-
-          <button type="button" class="primary-btn" (click)="changePlan()">Upgrade plan</button>
-        </div>
+        }
       </section>
     </div>
   </form>

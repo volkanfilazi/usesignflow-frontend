@@ -186,43 +186,6 @@ npm run build
 
 ---
 
-## Backend
-
-This frontend communicates with a REST API built using:
-
-- C#
-- ASP.NET Core Web API
-- JWT Authentication
-- MongoDB
-- REST APIs
-
----
-
-## Design Principles
-
-This project focuses on:
-
-- Clean Architecture
-- Reusable Components
-- Maintainable Code
-- Scalable Feature Modules
-- Responsive Design
-- Performance Optimization
-- Enterprise Application Development
-
----
-
-## Future Improvements
-
-- Dark Mode
-- Offline Support
-- Real-time Notifications
-- Internationalization (i18n)
-- Advanced Dashboard Widgets
-- PWA Support
-
----
-
 ## Author
 
 **Volkan Filazi**
