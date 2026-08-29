@@ -1,5 +1,5 @@
 @if (cards.length) {
-  <div class="stats-grid">
+  <div class="stats-grid gap-2 mb-2">
     @for (card of cards; track $index) {
       <article class="stat-card" [ngClass]="card.accent ?? 'default'">
         <div class="stat-value">{{ card.value }}</div>

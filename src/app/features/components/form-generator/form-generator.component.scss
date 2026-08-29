@@ -252,13 +252,10 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 18px;
   padding: 14px 16px;
-  border: 1px solid #d8f1df;
+  border: 1px solid var(--border-color);
   border-radius: 22px;
   background: var(--main-bg);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 10px 30px rgba(22, 163, 74, 0.08);
 }
 
 .builder-toolbar-group {
@@ -288,7 +285,7 @@
   min-height: 40px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid var(--400);
+  border: 1px solid var(--border-color);
   background: transparent;
   color: #166534;
   cursor: pointer;
@@ -313,16 +310,6 @@
 .toolbar-chip span {
   font-size: 13px;
   font-weight: 600;
-}
-
-.toolbar-chip-accent {
-  background: #166534;
-  color: #fff;
-  border-color: #166534;
-}
-
-.toolbar-chip-accent:hover {
-  background: #15803d;
 }
 
 @media (max-width: 1100px) {

@@ -1,5 +1,5 @@
-<div class="billing-page">
-  <section class="billing-hero">
+<div class="billing-page p-2 d-flex flex-column gap-3">
+  <section class="billing-hero p-4">
     <div class="billing-hero-content">
       <span class="billing-kicker">Usage & billing</span>
       <h1>Manage your plan and usage</h1>
@@ -42,7 +42,7 @@
     </div>
   </section>
 
-  <section class="usage-section">
+  <section class="p-4">
     <div class="section-head">
       <div>
         <span class="section-kicker">Current usage</span>
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div class="usage-grid">
+    <div class="usage-grid gap-2">
       @for (card of usageCards; track card.key) {
         <div class="usage-card" [class.warning]="card.isWarning" [class.locked]="card.isLocked">
           <div class="usage-card-head">
@@ -71,7 +71,7 @@
     </div>
   </section>
 
-  <section class="plans-section">
+  <section class="px-4">
     <div class="section-head">
       <div>
         <span class="section-kicker">Plans</span>

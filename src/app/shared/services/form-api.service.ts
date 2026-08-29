@@ -129,9 +129,6 @@ export class FormsApiService {
       params = params.set('end', end);
     }
 
-    console.log('keys', params.keys());
-    console.log('params string', params.toString());
-
     return this.http.get<SubmissionSummaryResponse<FormSubmission>>(
       `${this.baseUrl}/submissions/mine/summary`,
       {
@@ -201,7 +198,7 @@ export class FormsApiService {
     request: SendForSignatureRequest,
   ): Observable<SignatureRequest> {
     return this.http.post<SignatureRequest>(
-      `${this.baseUrl}/submissions/${submissionId}/send-for-signature`,
+      `${this.baseUrl}/submissions/${submissionId}/send-to-external`,
       request,
     );
   }
