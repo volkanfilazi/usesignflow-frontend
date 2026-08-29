@@ -1,9 +1,11 @@
 <div>
   @if (this.showChart) {
-    <app-stats-overview-cards [cards]="overviewCards"></app-stats-overview-cards>
-    @if (trendChartData) {
-      <app-trend-chart-card [data]="trendChartData"></app-trend-chart-card>
-    }
+    <div class="d-flex flex-column p-2">
+      <app-stats-overview-cards [cards]="overviewCards"></app-stats-overview-cards>
+      @if (trendChartData) {
+        <app-trend-chart-card [data]="trendChartData"></app-trend-chart-card>
+      }
+    </div>
   } @else {
     <app-table
       [loading$]="loading$"

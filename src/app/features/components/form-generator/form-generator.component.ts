@@ -278,7 +278,7 @@ export class FormGeneratorComponent
   addAgreement() {
     const dialogRef = this.matDialog.open(AgreementListComponent, {
       width: '600px',
-      height: '70%',
+      height: '80%',
     });
 
     dialogRef.afterClosed().subscribe((confirmed) => {

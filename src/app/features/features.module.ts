@@ -40,7 +40,7 @@ import { BillingComponent } from './components/billing/billing.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EmailComponent } from './components/emails/emails.component';
 import { LandingFooterComponent } from "../shared/components/landing-footer/landing-footer.component";
-import { RichTextEditorComponent } from '../shared/components/reach-text-editor/rich-text-editor.component';
+import { RichTextEditorComponent } from '../shared/components/rich-text-editor/rich-text-editor.component';
 import { ForgotPasswordComponent } from './components/auth/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/auth/reset-password/reset-password.component';
 import { PricingPageComponent } from './components/pricing-page/pricing-page.component';

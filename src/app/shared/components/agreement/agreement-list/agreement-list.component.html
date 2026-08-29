@@ -13,9 +13,9 @@
     @if (mode === 'list') {
       <div class="dialog-body">
         @if (agreements && agreements.length > 0) {
-          <div class="d-flex flex-column gap-1 mt-1">
+          <div class="d-flex flex-column gap-1 mt-1 p-2">
             @for (item of agreements; track item.id ?? $index) {
-              <mat-card class="p-2" appearance="outlined">
+              <mat-card class="global-card p-2 shadow-none">
                 <div class="form-card-top">
                   <div class="d-flex justify-content-between align-items-center gap-1">
                     <div class="d-flex align-items-center gap-1">
@@ -47,11 +47,11 @@
                     (click)="$event.stopPropagation(); useAgreement(item)"
                     [buttonName]="'Use'"
                   ></app-primary-button>
-                  <app-primary-button
-                    (click)="$event.stopPropagation(); deleteAgreement(item)"
-                    [buttonName]="'Delete'"
-                    color="warn"
-                  ></app-primary-button>
+                  <app-icon-button
+                    (buttonClick)="deleteAgreement(item)"
+                    iconName="delete"
+                    class="delete-button"
+                  ></app-icon-button>
                 </mat-card-actions>
               </mat-card>
             }
@@ -94,7 +94,7 @@
         </div>
 
         @if (agreementForm) {
-          <div class="dialog-body">
+          <div class="dialog-body px-2">
             <form [formGroup]="agreementForm" class="d-flex flex-column gap-3">
               <app-text-input
                 [isRequired]="true"

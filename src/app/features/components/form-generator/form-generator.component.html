@@ -1,349 +1,364 @@
-<div class="builder-toolbar">
-  <div class="builder-toolbar-group">
-    <span class="toolbar-label">Quick add</span>
+<div class="px-2 d-flex flex-column gap-3">
+  <div class="builder-toolbar">
+    <div class="builder-toolbar-group">
+      <span class="toolbar-label">Quick add</span>
 
-    @for (item of toolbarItems; track $index) {
+      @for (item of toolbarItems; track $index) {
+        <button
+          type="button"
+          class="toolbar-chip"
+          [style]="this.isDisabled() ? 'opacity: 0.5' : ''"
+          [disabled]="this.isDisabled()"
+          (click)="addFieldByType(item.type)"
+        >
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.name }}</span>
+        </button>
+      }
       <button
         type="button"
         class="toolbar-chip"
+        matTooltipPosition="above"
+        matTooltip="requires the other party's approval"
         [style]="this.isDisabled() ? 'opacity: 0.5' : ''"
         [disabled]="this.isDisabled()"
-        (click)="addFieldByType(item.type)"
+        (click)="addAgreement()"
       >
-        <mat-icon>{{ item.icon }}</mat-icon>
-        <span>{{ item.name }}</span>
+        <mat-icon>gavel</mat-icon>
+        <span>Agreement</span>
       </button>
-    }
-    <button
-      type="button"
-      class="toolbar-chip toolbar-chip-accent"
-      matTooltipPosition="above"
-      matTooltip="requires the other party's approval"
-      [style]="this.isDisabled() ? 'opacity: 0.5' : ''"
-      [disabled]="this.isDisabled()"
-      (click)="addAgreement()"
-    >
-      <mat-icon>gavel</mat-icon>
-      <span>Agreement</span>
-    </button>
-  </div>
-
-  <div class="builder-toolbar-group builder-toolbar-group-end">
-    @if (hasExpanded()) {
-      <button type="button" class="toolbar-chip" (click)="collapseAll()">
-        <mat-icon>unfold_less</mat-icon>
-        <span>Collapse all</span>
-      </button>
-    }
-
-    @if (hasCollapsed()) {
-      <button type="button" class="toolbar-chip" (click)="expandAll()">
-        <mat-icon>unfold_more</mat-icon>
-        <span>Expand all</span>
-      </button>
-    }
-  </div>
-</div>
-@if (myGroup) {
-  <div class="px-2" [formGroup]="myGroup">
-    <section class="builder-hero">
-      <div class="builder-hero-content">
-        <span class="builder-kicker">Flow builder</span>
-        <h1>Create your form structure</h1>
-        <p>Define the form name, version, and build reusable field groups for your dynamic form.</p>
-      </div>
-
-      <div class="builder-top-form">
-        <div class="builder-input builder-input-wide">
-          <app-text-input
-            [isRequired]="true"
-            [label]="'Flow name'"
-            [formGroup]="myGroup"
-            [controlName]="'formName'"
-          >
-          </app-text-input>
-        </div>
-
-        <div class="builder-input builder-input-sm">
-          <app-text-input
-            [isRequired]="true"
-            [label]="'Version'"
-            [formGroup]="myGroup"
-            [controlName]="'version'"
-          >
-          </app-text-input>
-        </div>
-        <div class="builder-input builder-input-sm d-flex gap-2">
-          <app-switch [formGroup]="myGroup" controlName="requiresVerification"></app-switch>
-          <div class="d-flex align-items-center gap-2">
-            <mat-icon
-              matTooltip="Recommended: When Verification is enabled, the external user is verified and recorded in the audit trail, increasing the trust and reliability of the completed document."
-              >info</mat-icon
-            >
-            <span>Require 2FA for external access</span>
-          </div>
-        </div>
-      </div>
-      <app-rich-text-editor
-        class="mt-3"
-        label="Introduction"
-        formControlName="agreementContentHtml"
-      >
-      </app-rich-text-editor>
-    </section>
-
-    <section class="builder-list-section">
-      <div class="section-head">
-        <div>
-          <span class="section-kicker">Form fields</span>
-          <h2>Field groups</h2>
-        </div>
-
-        <div class="section-meta d-flex align-items-center gap-1">
-          <span>{{ builderItems.length }} items</span>
-        </div>
-      </div>
-    </section>
-
-    <div
-      cdkDropList
-      [cdkDropListData]="builderItems"
-      (cdkDropListDropped)="drop($event)"
-      class="builder-list"
-    >
-      @for (item of builderItems; track item.id; let i = $index) {
-        <div class="group-card" cdkDrag [attr.data-field-id]="item.id" [formGroup]="myGroup">
-          @if (item.type === 'Field') {
-            <div>
-              <div class="group-card-header">
-                <div class="group-index">
-                  <span>#{{ i + 1 }}</span>
-                </div>
-
-                <div class="group-title-wrap">
-                  <h3>Field group</h3>
-                  <p>Configure label, type, layout, and validation.</p>
-                </div>
-
-                <app-icon-button
-                  [iconName]="isCollapsed(item.id) ? 'expand_more' : 'expand_less'"
-                  class="success-button"
-                  (buttonClick)="toggleCollapse(item.id)"
-                ></app-icon-button>
-
-                <app-icon-button
-                  iconName="content_copy"
-                  [disabled]="this.isDisabled()"
-                  class="success-button"
-                  (buttonClick)="duplicateElement(item.id)"
-                ></app-icon-button>
-
-                <app-icon-button
-                  cdkDragHandle
-                  iconName="drag_indicator"
-                  class="success-button"
-                ></app-icon-button>
-
-                <app-icon-button
-                  iconName="close"
-                  class="delete-button"
-                  [disabled]="this.isDisabled()"
-                  (buttonClick)="removeElement(item.id)"
-                ></app-icon-button>
-              </div>
-
-              @if (!isCollapsed(item.id)) {
-                <div class="group-card-body">
-                  <div class="field-grid">
-                    <div class="field-item field-item-lg">
-                      <app-text-input
-                        [label]="'Element label'"
-                        [isRequired]="true"
-                        [formGroup]="myGroup"
-                        [controlName]="getDynamicControlName(FormElementsEnum.Label, item.id)"
-                      ></app-text-input>
-                    </div>
-
-                    <div class="d-flex flex-column gap-2">
-                      <div class="field-item field-item-md">
-                        <app-combobox
-                          [formGroup]="myGroup"
-                          [controlName]="getDynamicControlName(FormElementsEnum.Type, item.id)"
-                          [label]="'Choose an element type'"
-                          [options]="fieldOptions"
-                          (typeChanged)="comboboxChanged(item.id, $event)"
-                        ></app-combobox>
-                      </div>
-
-                      <div class="field-item field-item-md">
-                        <app-segments
-                          [formGroup]="myGroup"
-                          [controlName]="
-                            getDynamicControlName(FormElementsEnum.AssignedTo, item.id)
-                          "
-                          [label]="'Assigned to'"
-                          [options]="assignedToOptions"
-                        ></app-segments>
-                      </div>
-                    </div>
-
-                    @if (myGroup.get(FormElementsEnum.SelectOptions + item.id)) {
-                      <div class="field-item field-item-full">
-                        <app-chips-input
-                          [formGroup]="myGroup"
-                          [controlName]="
-                            getDynamicControlName(FormElementsEnum.SelectOptions, item.id)
-                          "
-                        ></app-chips-input>
-                      </div>
-                    }
-
-                    <div class="field-item field-item-md colspan-card">
-                      <label class="field-label" [id]="FormElementsEnum.ColSpan + item.id">
-                        Desktop - Tablet width (Mobile 100%)
-                      </label>
-
-                      <mat-radio-group
-                        class="colspan-group"
-                        [formControlName]="getDynamicControlName(FormElementsEnum.ColSpan, item.id)"
-                        [name]="FormElementsEnum.ColSpan + item.id"
-                      >
-                        <mat-radio-button id="radio_1" value="4">100%</mat-radio-button>
-                        <mat-radio-button id="radio_2" value="3">75%</mat-radio-button>
-                        <mat-radio-button id="radio_3" value="2">50%</mat-radio-button>
-                        <mat-radio-button id="radio_4" value="1">25%</mat-radio-button>
-                      </mat-radio-group>
-                    </div>
-
-                    <div class="field-item field-item-xs required-box">
-                      <app-checkbox
-                        [formGroup]="myGroup"
-                        [controlName]="getDynamicControlName(FormElementsEnum.Required, item.id)"
-                        [checkboxName]="requiredCheckboxLabel"
-                      ></app-checkbox>
-                    </div>
-
-                    @if (
-                      myGroup.get(FormElementsEnum.Type + item.id)?.value ===
-                        FieldTypes.ShortText ||
-                      myGroup.get(FormElementsEnum.Type + item.id)?.value === FieldTypes.LongText
-                    ) {
-                      <div class="field-item field-item-full optional-rules-card">
-                        <div class="optional-rules-head">
-                          <span class="optional-rules-badge">Optional</span>
-                          <h4>Validation rules</h4>
-                          <p>Control text length for this field.</p>
-                        </div>
-
-                        <div class="d-flex flex-wrap gap-1">
-                          <div class="field-item">
-                            <app-text-input
-                              [label]="'Min length'"
-                              [formGroup]="myGroup"
-                              [controlName]="
-                                getDynamicControlName(FormElementsEnum.ValidationMinLength, item.id)
-                              "
-                            ></app-text-input>
-                          </div>
-
-                          <div class="field-item">
-                            <app-text-input
-                              [label]="'Max length'"
-                              [formGroup]="myGroup"
-                              [controlName]="
-                                getDynamicControlName(FormElementsEnum.ValidationMaxLength, item.id)
-                              "
-                            ></app-text-input>
-                          </div>
-                        </div>
-                      </div>
-                    }
-
-                    @if (
-                      myGroup.get(FormElementsEnum.Type + item.id)?.value === FieldTypes.Number
-                    ) {
-                      <div class="field-item field-item-full optional-rules-card">
-                        <div class="optional-rules-head">
-                          <span class="optional-rules-badge">Optional</span>
-                          <h4>Validation rules</h4>
-                          <p>Set value boundaries for numeric input.</p>
-                        </div>
-
-                        <div class="d-flex flex-wrap gap-1">
-                          <div class="field-item">
-                            <app-text-input
-                              [label]="'Min value'"
-                              [formGroup]="myGroup"
-                              [controlName]="
-                                getDynamicControlName(FormElementsEnum.ValidationMin, item.id)
-                              "
-                            ></app-text-input>
-                          </div>
-
-                          <div class="field-item">
-                            <app-text-input
-                              [label]="'Max value'"
-                              [formGroup]="myGroup"
-                              [controlName]="
-                                getDynamicControlName(FormElementsEnum.ValidationMax, item.id)
-                              "
-                            ></app-text-input>
-                          </div>
-                        </div>
-                      </div>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          }
-
-          @if (item.type === FieldTypes.Agreement) {
-            <div>
-              <div class="group-card-header">
-                <div class="group-index">
-                  <span>#{{ i + 1 }}</span>
-                </div>
-
-                <div class="group-title-wrap">
-                  <h3>Agreement</h3>
-                  <p>External user should accept this agreement.</p>
-                </div>
-
-                <app-icon-button
-                  [iconName]="isCollapsed(item.id) ? 'expand_more' : 'expand_less'"
-                  class="success-button"
-                  (buttonClick)="toggleCollapse(item.id)"
-                ></app-icon-button>
-
-                <app-icon-button
-                  cdkDragHandle
-                  [disabled]="this.isDisabled()"
-                  iconName="drag_indicator"
-                  class="success-button"
-                ></app-icon-button>
-
-                <app-icon-button
-                  iconName="close"
-                  class="delete-button"
-                  (buttonClick)="removeAgreement(item.id)"
-                ></app-icon-button>
-              </div>
-
-              @if (!isCollapsed(item.id)) {
-                <div class="d-flex flex-column gap-1 mt-1">
-                  <div>{{ item.agreement.title }}</div>
-                  <p class="agreement-content">{{ item.agreement.content }}</p>
-                </div>
-              }
-            </div>
-          }
-        </div>
-      }
     </div>
 
-    @if (validationErrors) {
-      <app-validation [validationMessages]="validationErrors" [myGroup]="myGroup"></app-validation>
-    }
+    <div class="builder-toolbar-group builder-toolbar-group-end">
+      @if (hasExpanded()) {
+        <button type="button" class="toolbar-chip" (click)="collapseAll()">
+          <mat-icon>unfold_less</mat-icon>
+          <span>Collapse all</span>
+        </button>
+      }
+
+      @if (hasCollapsed()) {
+        <button type="button" class="toolbar-chip" (click)="expandAll()">
+          <mat-icon>unfold_more</mat-icon>
+          <span>Expand all</span>
+        </button>
+      }
+    </div>
   </div>
-}
+  @if (myGroup) {
+    <div [formGroup]="myGroup">
+      <section class="builder-hero">
+        <div class="builder-hero-content">
+          <span class="builder-kicker">Flow builder</span>
+          <h1>Create your form structure</h1>
+          <p>
+            Define the form name, version, and build reusable field groups for your dynamic form.
+          </p>
+        </div>
+
+        <div class="builder-top-form">
+          <div class="builder-input builder-input-wide">
+            <app-text-input
+              [isRequired]="true"
+              [label]="'Flow name'"
+              [formGroup]="myGroup"
+              [controlName]="'formName'"
+            >
+            </app-text-input>
+          </div>
+
+          <div class="builder-input builder-input-sm">
+            <app-text-input
+              [isRequired]="true"
+              [label]="'Version'"
+              [formGroup]="myGroup"
+              [controlName]="'version'"
+            >
+            </app-text-input>
+          </div>
+          <div class="builder-input builder-input-sm d-flex gap-2">
+            <app-switch [formGroup]="myGroup" controlName="requiresVerification"></app-switch>
+            <div class="d-flex align-items-center gap-2">
+              <mat-icon
+                matTooltip="Recommended: When Verification is enabled, the external user is verified and recorded in the audit trail, increasing the trust and reliability of the completed document."
+                >info</mat-icon
+              >
+              <span>Require 2FA for external access</span>
+            </div>
+          </div>
+        </div>
+        <app-rich-text-editor
+          class="mt-3"
+          label="Introduction"
+          formControlName="agreementContentHtml"
+        >
+        </app-rich-text-editor>
+      </section>
+
+      <section class="builder-list-section">
+        <div class="section-head">
+          <div>
+            <span class="section-kicker">Form fields</span>
+            <h2>Field groups</h2>
+          </div>
+
+          <div class="section-meta d-flex align-items-center gap-1">
+            <span>{{ builderItems.length }} items</span>
+          </div>
+        </div>
+      </section>
+
+      <div
+        cdkDropList
+        [cdkDropListData]="builderItems"
+        (cdkDropListDropped)="drop($event)"
+        class="builder-list"
+      >
+        @for (item of builderItems; track item.id; let i = $index) {
+          <div class="group-card" cdkDrag [attr.data-field-id]="item.id" [formGroup]="myGroup">
+            @if (item.type === 'Field') {
+              <div>
+                <div class="group-card-header">
+                  <div class="group-index">
+                    <span>#{{ i + 1 }}</span>
+                  </div>
+
+                  <div class="group-title-wrap">
+                    <h3>Field group</h3>
+                    <p>Configure label, type, layout, and validation.</p>
+                  </div>
+
+                  <app-icon-button
+                    [iconName]="isCollapsed(item.id) ? 'expand_more' : 'expand_less'"
+                    class="success-button"
+                    (buttonClick)="toggleCollapse(item.id)"
+                  ></app-icon-button>
+
+                  <app-icon-button
+                    iconName="content_copy"
+                    [disabled]="this.isDisabled()"
+                    class="success-button"
+                    (buttonClick)="duplicateElement(item.id)"
+                  ></app-icon-button>
+
+                  <app-icon-button
+                    cdkDragHandle
+                    iconName="drag_indicator"
+                    class="success-button"
+                  ></app-icon-button>
+
+                  <app-icon-button
+                    iconName="close"
+                    class="delete-button"
+                    [disabled]="this.isDisabled()"
+                    (buttonClick)="removeElement(item.id)"
+                  ></app-icon-button>
+                </div>
+
+                @if (!isCollapsed(item.id)) {
+                  <div class="group-card-body">
+                    <div class="field-grid">
+                      <div class="field-item field-item-lg">
+                        <app-text-input
+                          [label]="'Element label'"
+                          [isRequired]="true"
+                          [formGroup]="myGroup"
+                          [controlName]="getDynamicControlName(FormElementsEnum.Label, item.id)"
+                        ></app-text-input>
+                      </div>
+
+                      <div class="d-flex flex-column gap-2">
+                        <div class="field-item field-item-md">
+                          <app-combobox
+                            [formGroup]="myGroup"
+                            [controlName]="getDynamicControlName(FormElementsEnum.Type, item.id)"
+                            [label]="'Choose an element type'"
+                            [options]="fieldOptions"
+                            (typeChanged)="comboboxChanged(item.id, $event)"
+                          ></app-combobox>
+                        </div>
+
+                        <div class="field-item field-item-md">
+                          <app-segments
+                            [formGroup]="myGroup"
+                            [controlName]="
+                              getDynamicControlName(FormElementsEnum.AssignedTo, item.id)
+                            "
+                            [label]="'Assigned to'"
+                            [options]="assignedToOptions"
+                          ></app-segments>
+                        </div>
+                      </div>
+
+                      @if (myGroup.get(FormElementsEnum.SelectOptions + item.id)) {
+                        <div class="field-item field-item-full">
+                          <app-chips-input
+                            [formGroup]="myGroup"
+                            [controlName]="
+                              getDynamicControlName(FormElementsEnum.SelectOptions, item.id)
+                            "
+                          ></app-chips-input>
+                        </div>
+                      }
+
+                      <div class="field-item field-item-md colspan-card">
+                        <label class="field-label" [id]="FormElementsEnum.ColSpan + item.id">
+                          Desktop - Tablet width (Mobile 100%)
+                        </label>
+
+                        <mat-radio-group
+                          class="colspan-group"
+                          [formControlName]="
+                            getDynamicControlName(FormElementsEnum.ColSpan, item.id)
+                          "
+                          [name]="FormElementsEnum.ColSpan + item.id"
+                        >
+                          <mat-radio-button id="radio_1" value="4">100%</mat-radio-button>
+                          <mat-radio-button id="radio_2" value="3">75%</mat-radio-button>
+                          <mat-radio-button id="radio_3" value="2">50%</mat-radio-button>
+                          <mat-radio-button id="radio_4" value="1">25%</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+
+                      <div class="field-item field-item-xs required-box">
+                        <app-checkbox
+                          [formGroup]="myGroup"
+                          [controlName]="getDynamicControlName(FormElementsEnum.Required, item.id)"
+                          [checkboxName]="requiredCheckboxLabel"
+                        ></app-checkbox>
+                      </div>
+
+                      @if (
+                        myGroup.get(FormElementsEnum.Type + item.id)?.value ===
+                          FieldTypes.ShortText ||
+                        myGroup.get(FormElementsEnum.Type + item.id)?.value === FieldTypes.LongText
+                      ) {
+                        <div class="field-item field-item-full optional-rules-card">
+                          <div class="optional-rules-head">
+                            <span class="optional-rules-badge">Optional</span>
+                            <h4>Validation rules</h4>
+                            <p>Control text length for this field.</p>
+                          </div>
+
+                          <div class="d-flex flex-wrap gap-1">
+                            <div class="field-item">
+                              <app-text-input
+                                [label]="'Min length'"
+                                [formGroup]="myGroup"
+                                [controlName]="
+                                  getDynamicControlName(
+                                    FormElementsEnum.ValidationMinLength,
+                                    item.id
+                                  )
+                                "
+                              ></app-text-input>
+                            </div>
+
+                            <div class="field-item">
+                              <app-text-input
+                                [label]="'Max length'"
+                                [formGroup]="myGroup"
+                                [controlName]="
+                                  getDynamicControlName(
+                                    FormElementsEnum.ValidationMaxLength,
+                                    item.id
+                                  )
+                                "
+                              ></app-text-input>
+                            </div>
+                          </div>
+                        </div>
+                      }
+
+                      @if (
+                        myGroup.get(FormElementsEnum.Type + item.id)?.value === FieldTypes.Number
+                      ) {
+                        <div class="field-item field-item-full optional-rules-card">
+                          <div class="optional-rules-head">
+                            <span class="optional-rules-badge">Optional</span>
+                            <h4>Validation rules</h4>
+                            <p>Set value boundaries for numeric input.</p>
+                          </div>
+
+                          <div class="d-flex flex-wrap gap-1">
+                            <div class="field-item">
+                              <app-text-input
+                                [label]="'Min value'"
+                                [formGroup]="myGroup"
+                                [controlName]="
+                                  getDynamicControlName(FormElementsEnum.ValidationMin, item.id)
+                                "
+                              ></app-text-input>
+                            </div>
+
+                            <div class="field-item">
+                              <app-text-input
+                                [label]="'Max value'"
+                                [formGroup]="myGroup"
+                                [controlName]="
+                                  getDynamicControlName(FormElementsEnum.ValidationMax, item.id)
+                                "
+                              ></app-text-input>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (item.type === FieldTypes.Agreement) {
+              <div>
+                <div class="group-card-header">
+                  <div class="group-index">
+                    <span>#{{ i + 1 }}</span>
+                  </div>
+
+                  <div class="group-title-wrap">
+                    <h3>Agreement</h3>
+                    <p>External user should accept this agreement.</p>
+                  </div>
+
+                  <app-icon-button
+                    [iconName]="isCollapsed(item.id) ? 'expand_more' : 'expand_less'"
+                    class="success-button"
+                    (buttonClick)="toggleCollapse(item.id)"
+                  ></app-icon-button>
+
+                  <app-icon-button
+                    cdkDragHandle
+                    [disabled]="this.isDisabled()"
+                    iconName="drag_indicator"
+                    class="success-button"
+                  ></app-icon-button>
+
+                  <app-icon-button
+                    iconName="close"
+                    class="delete-button"
+                    (buttonClick)="removeAgreement(item.id)"
+                  ></app-icon-button>
+                </div>
+
+                @if (!isCollapsed(item.id)) {
+                  <div class="d-flex flex-column gap-1 mt-1">
+                    <div>{{ item.agreement.title }}</div>
+                    <p class="agreement-content">{{ item.agreement.content }}</p>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      @if (validationErrors) {
+        <app-validation
+          [validationMessages]="validationErrors"
+          [myGroup]="myGroup"
+        ></app-validation>
+      }
+    </div>
+  }
+</div>

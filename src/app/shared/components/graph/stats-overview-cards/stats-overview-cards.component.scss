@@ -1,16 +1,13 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
 }
 
 .stat-card {
   background: #ffffff;
-  border: 1px solid #e8efe9;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.04);
 }
 
 .stat-value {
