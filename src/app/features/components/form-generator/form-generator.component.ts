@@ -382,6 +382,31 @@ export class FormGeneratorComponent
     this.builderItems = [...this.builderItems];
   }
 
+  groupByAssignment(): void {
+    const youItems = this.builderItems.filter(
+      (item) => this.myGroup.get(FormElementsEnum.AssignedTo + item.id)?.value === 'You',
+    );
+    const clientItems = this.builderItems.filter(
+      (item) => this.myGroup.get(FormElementsEnum.AssignedTo + item.id)?.value === 'Client',
+    );
+
+    this.builderItems = [...youItems, ...clientItems];
+  }
+
+  get canGroupByAssignment(): boolean {
+    if (this.builderItems.length < 3) {
+      return false;
+    }
+
+    const assignments = new Set(
+      this.builderItems.map(
+        (item) => this.myGroup.get(FormElementsEnum.AssignedTo + item.id)?.value,
+      ),
+    );
+
+    return assignments.size > 1;
+  }
+
   comboboxChanged(id: string, value: string) {
     if (value === FieldTypes.Dropdown) {
       if (!this.myGroup.get(FormElementsEnum.SelectOptions + id)) {
