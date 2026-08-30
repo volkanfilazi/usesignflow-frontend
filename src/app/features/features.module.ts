@@ -50,6 +50,7 @@ import { SubmissionsComponent } from './components/submission/submissions/submis
 import { SubmissionSettingsComponent } from './components/submission/submission-settings/submission-settings.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { PrimaryButtonComponent } from "../shared/components/buttons/secondary/secondary-button.component";
+import { MatChip } from "@angular/material/chips";
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import { PrimaryButtonComponent } from "../shared/components/buttons/secondary/s
     LandingFooterComponent,
     RichTextEditorComponent,
     MatSlideToggleModule,
-    PrimaryButtonComponent
+    PrimaryButtonComponent,
+    MatChip
 ],
 })
 export class FeaturesModule {}

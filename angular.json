@@ -23,6 +23,7 @@
           "options": {
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
+            "outputMode": "server",
             "polyfills": ["zone.js"],
             "ssr": {
               "entry": "src/server.ts"

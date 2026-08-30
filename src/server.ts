@@ -1,32 +1,44 @@
 import {
   AngularNodeAppEngine,
   createNodeRequestHandler,
-  writeResponseToNodeResponse,
   isMainModule,
+  writeResponseToNodeResponse,
 } from '@angular/ssr/node';
-import { createServer } from 'node:http';
+import express from 'express';
+import { join } from 'node:path';
 
+const browserDistFolder = join(import.meta.dirname, '../browser');
+
+const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-const reqHandler = createNodeRequestHandler(async (req, res) => {
-  const response = await angularApp.handle(req);
+app.use(
+  express.static(browserDistFolder, {
+    maxAge: '1y',
+    index: false,
+    redirect: false,
+  }),
+);
 
-  if (response) {
-    await writeResponseToNodeResponse(response, res);
-  } else {
-    res.statusCode = 404;
-    res.end();
-  }
+app.use((req, res, next) => {
+  angularApp
+    .handle(req)
+    .then((response) =>
+      response ? writeResponseToNodeResponse(response, res) : next(),
+    )
+    .catch(next);
 });
 
-export default reqHandler;
+if (isMainModule(import.meta.url) || process.env['pm_id']) {
+  const port = process.env['PORT'] || 4000;
 
-if (isMainModule(import.meta.url)) {
-  const port = Number(process.env['PORT'] ?? 4000);
+  app.listen(port, (error: any) => {
+    if (error) {
+      throw error;
+    }
 
-  const server = createServer(reqHandler);
-
-  server.listen(port, () => {
-    console.log(`Angular SSR running at http://localhost:${port}`);
+    console.log(`Node Express server listening on http://localhost:${port}`);
   });
 }
+
+export const reqHandler = createNodeRequestHandler(app);

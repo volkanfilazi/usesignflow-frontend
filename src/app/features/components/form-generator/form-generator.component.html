@@ -30,6 +30,12 @@
     </div>
 
     <div class="builder-toolbar-group builder-toolbar-group-end">
+      @if (canGroupByAssignment) {
+        <button type="button" class="toolbar-chip" (click)="groupByAssignment()">
+        <mat-icon>group_work</mat-icon>
+        <span>Group by assignment</span>
+      </button>
+      }
       @if (hasExpanded()) {
         <button type="button" class="toolbar-chip" (click)="collapseAll()">
           <mat-icon>unfold_less</mat-icon>
@@ -124,7 +130,21 @@
                   </div>
 
                   <div class="group-title-wrap">
-                    <h3>Field group</h3>
+                    <div class="d-flex align-items-center gap-1">
+                      <h3>Field group</h3>
+                      <span
+                        _ngcontent-ng-c2817134682=""
+                        class="field-badge completed"
+                        [ngClass]="
+                          this.myGroup.get(FormElementsEnum.AssignedTo + item.id)?.value ===
+                          'Client'
+                            ? 'client'
+                            : 'you'
+                        "
+                      >
+                        {{ this.myGroup.get(FormElementsEnum.AssignedTo + item.id)?.value }}
+                      </span>
+                    </div>
                     <p>Configure label, type, layout, and validation.</p>
                   </div>
 
